@@ -101,7 +101,7 @@ public class GraphNodeTest {
     private class OrdinaryPage {}
 
     @Page
-    @CrawlStartPoint
+    @CrawlStartPoint(url="")
     private class StartPointPage {}
 
 }

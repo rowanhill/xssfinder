@@ -4,8 +4,9 @@ import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.Page;
 
 @Page
-@CrawlStartPoint
+@CrawlStartPoint(url=HomePage.URL)
 public class HomePage {
+    public static final String URL = "http://localhost:8080/";
 
     public SecondPage goToSecondPage() {
         return null;

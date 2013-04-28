@@ -1,5 +1,6 @@
 package org.xssfinder.routing;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -21,7 +22,8 @@ public class GraphsFactory {
         for (PageDescriptor descriptor : pageDescriptors) {
             Set<PageDescriptor> descriptorSet = setMembership.get(descriptor.getPageClass());
 
-            for (Class<?> linkedPageClass : descriptor.getLinkedPages()) {
+            for (Method traversalMethod : descriptor.getTraversalMethods()) {
+                Class<?> linkedPageClass = traversalMethod.getReturnType();
                 Set<PageDescriptor> linkedDescriptorsSet = setMembership.get(linkedPageClass);
                 descriptorSet.addAll(linkedDescriptorsSet);
                 for (PageDescriptor linkedDescriptor : linkedDescriptorsSet) {

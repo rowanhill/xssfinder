@@ -11,9 +11,9 @@ public class RouteGenerator {
         this.graphsFactory = graphsFactory;
     }
 
-    public List<List<Class<?>>> generateRoutes(Set<Class<?>> pageClasses) {
+    public List<Route> generateRoutes(Set<Class<?>> pageClasses) {
         Set<Graph> graphs = graphsFactory.createGraphs(pageClasses);
-        List<List<Class<?>>> routes = new ArrayList<List<Class<?>>>();
+        List<Route> routes = new ArrayList<Route>();
 
         for (Graph graph : graphs) {
             routes.addAll(graph.getRoutes());

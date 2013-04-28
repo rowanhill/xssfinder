@@ -64,12 +64,10 @@ public class GraphTest {
         Graph graph = new Graph(pagesDescriptors);
 
         // when
-        List<List<Class<?>>> routes = graph.getRoutes();
+        List<Route> routes = graph.getRoutes();
 
         // then
-        List<Class<?>> expectedRoute = ImmutableList.of(StartPageOne.class, OrdinaryPage.class);
-        List<List<Class<?>>> expectedRoutes = ImmutableList.of(expectedRoute);
-        assertThat(routes, is(expectedRoutes));
+        assertThat(routes.size(), is(1));
     }
 
     @SuppressWarnings("unchecked")
@@ -82,30 +80,27 @@ public class GraphTest {
         Graph graph = new Graph(pagesDescriptors);
 
         // when
-        List<List<Class<?>>> routes = graph.getRoutes();
+        List<Route> routes = graph.getRoutes();
 
         // then
-        List<Class<?>> firstRoute = ImmutableList.of(ForkStartPage.class, ForkChildPageOne.class);
-        List<Class<?>> secondRoute = ImmutableList.of(ForkStartPage.class, ForkChildPageTwo.class);
         assertThat(routes.size(), is(2));
-        assertThat(routes, containsInAnyOrder(firstRoute, secondRoute));
     }
 
     @Page
     private class OrdinaryPage {}
 
     @Page
-    @CrawlStartPoint
+    @CrawlStartPoint(url="")
     private class StartPageOne {
         public OrdinaryPage goToOrdinaryPage() { return null; }
     }
 
     @Page
-    @CrawlStartPoint
+    @CrawlStartPoint(url="")
     private class StartPageTwo {}
 
     @Page
-    @CrawlStartPoint
+    @CrawlStartPoint(url="")
     private class ForkStartPage {
         public ForkChildPageOne gotoFirstChild() { return null; }
         public ForkChildPageTwo gotoSecondChild() { return null; }

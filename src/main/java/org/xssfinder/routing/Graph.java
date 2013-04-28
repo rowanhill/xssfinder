@@ -1,5 +1,8 @@
 package org.xssfinder.routing;
 
+import org.xssfinder.CrawlStartPoint;
+
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class Graph {
@@ -11,7 +14,7 @@ public class Graph {
         this.rootPageClass = findRootNode(pageDescriptors);
     }
 
-    public List<List<Class<?>>> getRoutes() {
+    public List<Route> getRoutes() {
         Map<Class<?>, GraphNode> nodes = createNodes(pageDescriptors);
         Set<GraphNode> leafNodes = new HashSet<GraphNode>(nodes.values());
 
@@ -25,25 +28,37 @@ public class Graph {
                 throw new DisjointGraphException();
             }
             int nextDistance = nearestNode.getDistance()+1;
-            for (Class<?> neighbourClass : nearestNode.getNeighbours()) {
-                GraphNode neighbour = nodes.get(neighbourClass);
+            for (Method traversalMethod : nearestNode.getTraversalMethods()) {
+                GraphNode neighbour = nodes.get(traversalMethod.getReturnType());
                 if (neighbour.getDistance() > nextDistance) {
                     leafNodes.remove(nearestNode);
                     neighbour.setDistance(nextDistance);
                     neighbour.setPredecessor(nearestNode);
+                    neighbour.setPredecessorTraversalMethod(traversalMethod);
                     nodeQueue.remove(neighbour);
                     nodeQueue.add(neighbour);
                 }
             }
         }
 
-        List<List<Class<?>>> routes = new ArrayList<List<Class<?>>>();
+        List<Route> routes = new ArrayList<Route>();
         for (GraphNode node : leafNodes) {
-            LinkedList<Class<?>> route = new LinkedList<Class<?>>();
+            LinkedList<GraphNode> routeNodes = new LinkedList<GraphNode>();
+            PageTraversal nextTraversal = null;
             while (node != null) {
-                route.addFirst(node.getPageClass());
+                routeNodes.addFirst(node);
                 node = node.getPredecessor();
+                if (node != null) {
+                    PageTraversal traversal = new PageTraversal(node.getPredecessorTraversalMethod());
+                    if (nextTraversal != null) {
+                        traversal.setNextTraversal(nextTraversal);
+                    }
+                    nextTraversal = traversal;
+                }
             }
+            GraphNode firstNode = routeNodes.getFirst();
+            Route route = new Route(firstNode.getPageClass());
+            route.setPageTraversal(nextTraversal);
             routes.add(route);
         }
 
