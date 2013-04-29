@@ -26,8 +26,10 @@ public class RouteRunner {
             PageTraversal traversal = route.getPageTraversal();
             do {
                 //TODO Perform XSS attacks on page
-                page = traverseToNextPage(page, traversal.getMethod());
-                traversal = traversal.getNextTraversal();
+                if (traversal != null) {
+                    page = traverseToNextPage(page, traversal.getMethod());
+                    traversal = traversal.getNextTraversal();
+                }
             } while (traversal != null);
         }
     }
