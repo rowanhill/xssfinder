@@ -1,6 +1,5 @@
 package org.xssfinder.routing;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,8 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -68,6 +67,29 @@ public class GraphTest {
 
         // then
         assertThat(routes.size(), is(1));
+    }
+
+    @Test
+    public void simpleLinearlyRelatedPagesRouteHasOneTraversal() {
+        // given
+        pagesDescriptors.add(startPage1Descriptor);
+        pagesDescriptors.add(ordinaryPageDescriptor);
+        Graph graph = new Graph(pagesDescriptors);
+
+        // when
+        List<Route> routes = graph.getRoutes();
+
+        // then
+        Route route = routes.get(0);
+        Class<?> pageClass = route.getRootPageClass();
+        assertThat(pageClass == StartPageOne.class, is(true));
+
+        PageTraversal traversal = route.getPageTraversal();
+        pageClass = traversal.getMethod().getReturnType();
+        assertThat(pageClass == OrdinaryPage.class, is(true));
+
+        traversal = traversal.getNextTraversal();
+        assertThat(traversal, is(nullValue()));
     }
 
     @SuppressWarnings("unchecked")

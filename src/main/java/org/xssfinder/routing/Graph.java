@@ -86,14 +86,12 @@ public class Graph {
         PageTraversal nextTraversal = null;
         while (node != null) {
             routeNodes.addFirst(node);
-            node = node.getPredecessor();
-            if (node != null) {
+            if (node.getPredecessorTraversalMethod() != null) {
                 PageTraversal traversal = new PageTraversal(node.getPredecessorTraversalMethod());
-                if (nextTraversal != null) {
-                    traversal.setNextTraversal(nextTraversal);
-                }
+                traversal.setNextTraversal(nextTraversal);
                 nextTraversal = traversal;
             }
+            node = node.getPredecessor();
         }
         return nextTraversal;
     }
