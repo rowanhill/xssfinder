@@ -1,5 +1,9 @@
 package org.xssfinder.routing;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SetMultimap;
+import org.xssfinder.SubmitAction;
+
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -15,7 +19,85 @@ public class Graph {
     public List<Route> getRoutes() {
         Map<Class<?>, GraphNode> nodes = createNodes(pageDescriptors);
         Set<GraphNode> leafNodes = findShortestPathsAndReturnLeafNodes(nodes);
-        return getRoutesFromLeafNodes(leafNodes);
+        List<Route> routes = getRoutesFromLeafNodes(leafNodes);
+        return appendUntraversedRequiredTraversalsToRoutes(routes, pageDescriptors);
+    }
+
+    private List<Route> appendUntraversedRequiredTraversalsToRoutes(List<Route> routes, Set<PageDescriptor> pageDescriptors) {
+        Map<Method, PageDescriptor> submitMethodsToPageDescriptor = findSubmitMethodsToPageDescriptor(pageDescriptors);
+        for (Method usedMethod : findAllUsedSubmitMethods(routes)) {
+            submitMethodsToPageDescriptor.remove(usedMethod);
+        }
+        return getRoutesAppendedWithUnusedSubmitMethods(routes, invertMap(submitMethodsToPageDescriptor));
+    }
+
+    private Map<Method, PageDescriptor> findSubmitMethodsToPageDescriptor(Set<PageDescriptor> pageDescriptors) {
+        Map<Method, PageDescriptor> submitMethodsToPageDescriptor = new HashMap<Method, PageDescriptor>();
+        for (PageDescriptor descriptor : pageDescriptors) {
+            for (Method submitMethod : descriptor.getSubmitMethods()) {
+                submitMethodsToPageDescriptor.put(submitMethod, descriptor);
+            }
+        }
+        return submitMethodsToPageDescriptor;
+    }
+
+    private Set<Method> findAllUsedSubmitMethods(List<Route> routes) {
+        Set<Method> usedMethods = new HashSet<Method>();
+        for (Route route : routes) {
+            usedMethods.addAll(findAllUsedSubmitMethodsInRoute(route));
+        }
+        return usedMethods;
+    }
+
+    private Set<Method> findAllUsedSubmitMethodsInRoute(Route route) {
+        Set<Method> usedMethods = new HashSet<Method>();
+        PageTraversal traversal = route.getPageTraversal();
+        while (traversal != null && traversal.getMethod() != null) {
+            if (traversal.getMethod().isAnnotationPresent(SubmitAction.class)) {
+                usedMethods.add(traversal.getMethod());
+            }
+            traversal = traversal.getNextTraversal();
+        }
+        return usedMethods;
+    }
+
+    private SetMultimap<PageDescriptor, Method> invertMap(Map<Method, PageDescriptor> map) {
+        SetMultimap<PageDescriptor, Method> invertedMap = HashMultimap.create();
+        for (Map.Entry<Method, PageDescriptor> entry : map.entrySet()) {
+            invertedMap.put(entry.getValue(), entry.getKey());
+        }
+        return invertedMap;
+    }
+
+    private List<Route> getRoutesAppendedWithUnusedSubmitMethods(
+            List<Route> routes,
+            SetMultimap<PageDescriptor, Method> methodsByPage
+    ) {
+        List<Route> newRoutes = new ArrayList<Route>();
+        for (Route route : routes) {
+            PageTraversal lastTraversal = route.getLastPageTraversal();
+            Class<?> endClass = lastTraversal.getMethod().getReturnType();
+            Set<Method> unusedMethods = getUnusedSubmitMethodsOnPage(endClass, methodsByPage);
+            if (unusedMethods.isEmpty()) {
+                newRoutes.add(route);
+            } else {
+                for (Method unusedMethod : unusedMethods) {
+                    Route augmentedRoute = route.clone();
+                    augmentedRoute.appendTraversalByMethod(unusedMethod);
+                    newRoutes.add(augmentedRoute);
+                }
+            }
+        }
+        return newRoutes;
+    }
+
+    private Set<Method> getUnusedSubmitMethodsOnPage(Class<?> pageClass, SetMultimap<PageDescriptor, Method> methodsByPage) {
+        for (PageDescriptor descriptor : methodsByPage.keySet()) {
+            if (descriptor.getPageClass() == pageClass) {
+                return methodsByPage.get(descriptor);
+            }
+        }
+        return Collections.emptySet();
     }
 
     private Class<?> findRootNode(Set<PageDescriptor> pageDescriptors) {

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.Page;
+import org.xssfinder.SubmitAction;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
@@ -78,6 +79,33 @@ public class PageDescriptorTest {
         assertThat(traversalMethods, is(expectedPages));
     }
 
+    @Test
+    public void submitMethodsIsEmptyForLeafNode() throws Exception {
+        // given
+        PageDescriptor descriptor = new PageDescriptor(OrdinaryPage.class);
+
+        // when
+        Set<Method> submitMethods = descriptor.getSubmitMethods();
+
+        // then
+        Set<Method> emptySet = ImmutableSet.of();
+        assertThat(submitMethods, is(emptySet));
+    }
+
+    @Test
+    public void submitMethodsContainsSubmitMethodButNotOtherTraversals() throws Exception {
+        // given
+        PageDescriptor descriptor = new PageDescriptor(SubmittablePage.class);
+
+        // when
+        Set<Method> submitMethods = descriptor.getSubmitMethods();
+
+        // then
+        Set<Method> expectedPages = new HashSet<Method>();
+        expectedPages.add(SubmittablePage.class.getMethod("submitToOrdinaryPage"));
+        assertThat(submitMethods, is(expectedPages));
+    }
+
     @Page
     private class OrdinaryPage {}
 
@@ -85,5 +113,13 @@ public class PageDescriptorTest {
     @CrawlStartPoint(url="")
     private class StartPage {
         public OrdinaryPage goToOrdinaryPage() { return null; }
+    }
+
+    @Page
+    private class SubmittablePage {
+        public OrdinaryPage goToOrdinaryPage() { return null; }
+
+        @SubmitAction
+        public OrdinaryPage submitToOrdinaryPage() { return null; }
     }
 }

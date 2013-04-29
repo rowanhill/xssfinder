@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.Page;
+import org.xssfinder.SubmitAction;
 
 import java.util.HashSet;
 import java.util.List;
@@ -108,6 +109,34 @@ public class GraphTest {
         assertThat(routes.size(), is(2));
     }
 
+    @Test
+    public void submitActionThatWouldNotFormPartOfMinimalRoutesIsAppended() {
+        // given
+        pagesDescriptors.add(new PageDescriptor(LoginPage.class));
+        pagesDescriptors.add(new PageDescriptor(SignUpPage.class));
+        Graph graph = new Graph(pagesDescriptors);
+
+        // when
+        List<Route> routes = graph.getRoutes();
+
+        // then
+        assertThat(routes.size(), is(1));
+        Route route = routes.get(0);
+        Class<?> pageClass = route.getRootPageClass();
+        assertThat(pageClass == LoginPage.class, is(true));
+
+        PageTraversal traversal = route.getPageTraversal();
+        pageClass = traversal.getMethod().getReturnType();
+        assertThat(pageClass == SignUpPage.class, is(true));
+
+        traversal = traversal.getNextTraversal();
+        pageClass = traversal.getMethod().getReturnType();
+        assertThat(pageClass == LoginPage.class, is(true));
+
+        traversal = traversal.getNextTraversal();
+        assertThat(traversal, is(nullValue()));
+    }
+
     @Page
     private class OrdinaryPage {}
 
@@ -133,4 +162,17 @@ public class GraphTest {
 
     @Page
     private class ForkChildPageTwo {}
+
+    @Page
+    @CrawlStartPoint(url="")
+    private class LoginPage {
+        public SignUpPage register() { return null; }
+    }
+
+    @Page
+    private class SignUpPage {
+        @SubmitAction
+        public LoginPage submit() { return null; }
+        public LoginPage cancel() { return null; }
+    }
 }
