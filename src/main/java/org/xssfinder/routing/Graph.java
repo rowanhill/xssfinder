@@ -1,7 +1,5 @@
 package org.xssfinder.routing;
 
-import org.xssfinder.CrawlStartPoint;
-
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -16,12 +14,40 @@ public class Graph {
 
     public List<Route> getRoutes() {
         Map<Class<?>, GraphNode> nodes = createNodes(pageDescriptors);
-        Set<GraphNode> leafNodes = new HashSet<GraphNode>(nodes.values());
+        Set<GraphNode> leafNodes = findShortestPathsAndReturnLeafNodes(nodes);
+        return getRoutesFromLeafNodes(leafNodes);
+    }
 
+    private Class<?> findRootNode(Set<PageDescriptor> pageDescriptors) {
+        Class<?> root = null;
+        for (PageDescriptor pageDescriptor : pageDescriptors) {
+            if (pageDescriptor.isRoot()) {
+                if (root != null) {
+                    throw new MultipleRootPagesFoundException();
+                }
+                root = pageDescriptor.getPageClass();
+            }
+        }
+        if (root == null) {
+            throw new NoRootPageFoundException();
+        }
+        return root;
+    }
+
+    private  Map<Class<?>, GraphNode> createNodes(Set<PageDescriptor> pageDescriptors) {
+        Map<Class<?>, GraphNode> nodes = new HashMap<Class<?>, GraphNode>();
+        for (PageDescriptor pageDescriptor : pageDescriptors) {
+            nodes.put(pageDescriptor.getPageClass(), new GraphNode(pageDescriptor));
+        }
+        return nodes;
+    }
+
+    private Set<GraphNode> findShortestPathsAndReturnLeafNodes(Map<Class<?>, GraphNode> nodes) {
         nodes.get(rootPageClass).setDistance(0);
         PriorityQueue<GraphNode> nodeQueue = new PriorityQueue<GraphNode>(nodes.size(), new NodeDistanceComparator());
         nodeQueue.addAll(nodes.values());
 
+        Set<GraphNode> leafNodes = new HashSet<GraphNode>(nodes.values());
         while (!nodeQueue.isEmpty()) {
             GraphNode nearestNode = nodeQueue.poll();
             if (nearestNode.getDistance() == Integer.MAX_VALUE) {
@@ -40,53 +66,36 @@ public class Graph {
                 }
             }
         }
+        return leafNodes;
+    }
 
+    private List<Route> getRoutesFromLeafNodes(Set<GraphNode> leafNodes) {
         List<Route> routes = new ArrayList<Route>();
         for (GraphNode node : leafNodes) {
             LinkedList<GraphNode> routeNodes = new LinkedList<GraphNode>();
-            PageTraversal nextTraversal = null;
-            while (node != null) {
-                routeNodes.addFirst(node);
-                node = node.getPredecessor();
-                if (node != null) {
-                    PageTraversal traversal = new PageTraversal(node.getPredecessorTraversalMethod());
-                    if (nextTraversal != null) {
-                        traversal.setNextTraversal(nextTraversal);
-                    }
-                    nextTraversal = traversal;
-                }
-            }
+            PageTraversal nextTraversal = buildPageTraversalsEndingInNode(node, routeNodes);
             GraphNode firstNode = routeNodes.getFirst();
             Route route = new Route(firstNode.getPageClass());
             route.setPageTraversal(nextTraversal);
             routes.add(route);
         }
-
         return routes;
     }
 
-    private  Map<Class<?>, GraphNode> createNodes(Set<PageDescriptor> pageDescriptors) {
-        Map<Class<?>, GraphNode> nodes = new HashMap<Class<?>, GraphNode>();
-        for (PageDescriptor pageDescriptor : pageDescriptors) {
-            nodes.put(pageDescriptor.getPageClass(), new GraphNode(pageDescriptor));
-        }
-        return nodes;
-    }
-
-    private Class<?> findRootNode(Set<PageDescriptor> pageDescriptors) {
-        Class<?> root = null;
-        for (PageDescriptor pageDescriptor : pageDescriptors) {
-            if (pageDescriptor.isRoot()) {
-                if (root != null) {
-                    throw new MultipleRootPagesFoundException();
+    private PageTraversal buildPageTraversalsEndingInNode(GraphNode node, LinkedList<GraphNode> routeNodes) {
+        PageTraversal nextTraversal = null;
+        while (node != null) {
+            routeNodes.addFirst(node);
+            node = node.getPredecessor();
+            if (node != null) {
+                PageTraversal traversal = new PageTraversal(node.getPredecessorTraversalMethod());
+                if (nextTraversal != null) {
+                    traversal.setNextTraversal(nextTraversal);
                 }
-                root = pageDescriptor.getPageClass();
+                nextTraversal = traversal;
             }
         }
-        if (root == null) {
-            throw new NoRootPageFoundException();
-        }
-        return root;
+        return nextTraversal;
     }
 
     private class NodeDistanceComparator implements Comparator<GraphNode> {
