@@ -12,7 +12,7 @@ public class WebDriverPageInstantiator implements PageInstantiator {
     }
 
     @Override
-    public <T> Object instantiatePage(Class<T> pageClass) {
+    public <T> T instantiatePage(Class<T> pageClass) {
         try {
             Constructor<T> constructor = pageClass.getConstructor(WebDriver.class);
             return constructor.newInstance(driver);
