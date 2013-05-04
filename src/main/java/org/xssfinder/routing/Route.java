@@ -9,9 +9,10 @@ public class Route {
     private final String url;
     private PageTraversal pageTraversal;
 
-    public Route(Class<?> rootPageClass) {
+    public Route(Class<?> rootPageClass, PageTraversal pageTraversal) {
         this.rootPageClass = rootPageClass;
         this.url = rootPageClass.getAnnotation(CrawlStartPoint.class).url();
+        this.pageTraversal = pageTraversal;
     }
 
     public Class<?> getRootPageClass() {
@@ -24,10 +25,6 @@ public class Route {
 
     public PageTraversal getPageTraversal() {
         return pageTraversal;
-    }
-
-    public void setPageTraversal(PageTraversal pageTraversal) {
-        this.pageTraversal = pageTraversal;
     }
 
     public PageTraversal getLastPageTraversal() {
@@ -48,24 +45,10 @@ public class Route {
         }
     }
 
+    @SuppressWarnings({"CloneDoesntCallSuperClone", "CloneDoesntDeclareCloneNotSupportedException"})
     @Override
     public Route clone() {
-        Route route = new Route(rootPageClass);
-
-        PageTraversal traversal = pageTraversal;
-        if (traversal != null) {
-            PageTraversal firstClonedTraversal = new PageTraversal(traversal.getMethod());
-            PageTraversal currentClonedTraversal = firstClonedTraversal;
-            traversal = traversal.getNextTraversal();
-            while (traversal != null) {
-                PageTraversal newTraversal = new PageTraversal(traversal.getMethod());
-                currentClonedTraversal.setNextTraversal(newTraversal);
-                currentClonedTraversal = newTraversal;
-                traversal = traversal.getNextTraversal();
-            }
-            route.setPageTraversal(firstClonedTraversal);
-        }
-
-        return route;
+        PageTraversal traversal = pageTraversal == null ? null : pageTraversal.clone();
+        return new Route(rootPageClass, traversal);
     }
 }

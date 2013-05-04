@@ -21,4 +21,14 @@ public class PageTraversal {
     public void setNextTraversal(PageTraversal nextTraversal) {
         this.nextTraversal = nextTraversal;
     }
+
+    @Override
+    @SuppressWarnings({"CloneDoesntDeclareCloneNotSupportedException", "CloneDoesntCallSuperClone"})
+    public PageTraversal clone() {
+        PageTraversal clone = new PageTraversal(this.method);
+        if (this.nextTraversal != null) {
+            clone.setNextTraversal(this.nextTraversal.clone());
+        }
+        return clone;
+    }
 }
