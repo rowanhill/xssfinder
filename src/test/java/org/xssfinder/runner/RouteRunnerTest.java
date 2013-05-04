@@ -1,6 +1,7 @@
 package org.xssfinder.runner;
 
 import org.dummytest.simple.HomePage;
+import org.dummytest.simple.SecondPage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,10 +13,9 @@ import org.xssfinder.routing.Route;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public class RouteRunnerTest {
     private static final String URL = "http://localhost";
@@ -24,6 +24,8 @@ public class RouteRunnerTest {
     private DriverWrapper mockDriverWrapper;
     @Mock
     private PageInstantiator mockPageInstantiator;
+    @Mock
+    private PageTraverser mockPageTraverser;
     @Mock
     private Route route;
 
@@ -38,7 +40,7 @@ public class RouteRunnerTest {
     @Test
     public void runnerOpensWebDriverAtStartPointOfRoute() {
         // given
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, routes);
+        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, mockPageTraverser, routes);
 
         // when
         runner.run();
@@ -50,15 +52,85 @@ public class RouteRunnerTest {
     @Test
     public void runnerInstantiatesPagesInRoute() throws Exception {
         // given
-        PageTraversal mockPageTraversal = mock(PageTraversal.class);
-        when(route.getRootPageClass()).thenReturn((Class)HomePage.class);
-        when(mockPageTraversal.getMethod()).thenReturn(HomePage.class.getMethod("goToSecondPage"));
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, routes);
+        setRootPageToHomePage();
+        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, mockPageTraverser, routes);
 
         // when
         runner.run();
 
         // then
         verify(mockPageInstantiator).instantiatePage(HomePage.class);
+    }
+
+    @Test
+    public void noTraversalsTakenForSinglePageRoute() throws Exception {
+        // given
+        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, mockPageTraverser, routes);
+
+        // when
+        runner.run();
+
+        // then
+        verifyZeroInteractions(mockPageTraverser);
+    }
+
+    @Test
+    public void traversalIsTakenForTwoPageRoute() throws Exception {
+        // given
+        setRootPageToHomePage();
+        HomePage mockHomePage = setUpInstantiationOfHomePage();
+        PageTraversal mockPageTraversal = addTraversalToRoute();
+        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, mockPageTraverser, routes);
+
+        // when
+        runner.run();
+
+        // then
+        verify(mockPageTraverser).traverse(mockHomePage, mockPageTraversal);
+    }
+
+    @Test
+    public void traversalIsTakenOnPageFromPreviousTraversal() throws Exception {
+        // given
+        setRootPageToHomePage();
+        HomePage mockHomePage = setUpInstantiationOfHomePage();
+        SecondPage mockSecondPage1 = setUpTraversalOfTraversal(mockHomePage, addTraversalToRoute());
+        PageTraversal mockPageTraversal = addTraversal(route.getPageTraversal());
+        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, mockPageTraverser, routes);
+
+        // when
+        runner.run();
+
+        // then
+        verify(mockPageTraverser).traverse(mockSecondPage1, mockPageTraversal);
+    }
+
+    private void setRootPageToHomePage() {
+        when(route.getRootPageClass()).thenReturn((Class)HomePage.class);
+    }
+
+    private HomePage setUpInstantiationOfHomePage() {
+        HomePage mockHomePage = mock(HomePage.class);
+        when(mockPageInstantiator.instantiatePage(HomePage.class)).thenReturn(mockHomePage);
+        return mockHomePage;
+    }
+
+    private PageTraversal addTraversalToRoute() throws Exception {
+        PageTraversal mockPageTraversal = mock(PageTraversal.class);
+        when(mockPageTraversal.getMethod()).thenReturn(HomePage.class.getMethod("goToSecondPage"));
+        when(route.getPageTraversal()).thenReturn(mockPageTraversal);
+        return mockPageTraversal;
+    }
+
+    private PageTraversal addTraversal(PageTraversal mockPageTraversal) {
+        PageTraversal mockPageTraversal2 = mock(PageTraversal.class);
+        when(mockPageTraversal.getNextTraversal()).thenReturn(mockPageTraversal2);
+        return mockPageTraversal2;
+    }
+
+    private SecondPage setUpTraversalOfTraversal(Object page, PageTraversal traversal) {
+        SecondPage mockSecondPage = mock(SecondPage.class);
+        when(mockPageTraverser.traverse(page, traversal)).thenReturn(mockSecondPage);
+        return mockSecondPage;
     }
 }

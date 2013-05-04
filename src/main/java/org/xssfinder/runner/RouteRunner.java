@@ -3,17 +3,23 @@ package org.xssfinder.runner;
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.routing.Route;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 public class RouteRunner {
     private final DriverWrapper driverWrapper;
     private final PageInstantiator pageInstantiator;
+    private final PageTraverser pageTraverser;
     private final List<Route> routes;
 
-    public RouteRunner(DriverWrapper driverWrapper, PageInstantiator pageInstantiator, List<Route> routes) {
+    public RouteRunner(
+            DriverWrapper driverWrapper,
+            PageInstantiator pageInstantiator,
+            PageTraverser pageTraverser,
+            List<Route> routes
+    ) {
         this.driverWrapper = driverWrapper;
         this.pageInstantiator = pageInstantiator;
+        this.pageTraverser = pageTraverser;
         this.routes = routes;
     }
 
@@ -24,24 +30,14 @@ public class RouteRunner {
             Object page = pageInstantiator.instantiatePage(route.getRootPageClass());
 
             PageTraversal traversal = route.getPageTraversal();
-            do {
+            //TODO Warn of missing @SubmitAction if needed
+            while (traversal != null) {
+                //TODO If @SubmitAction
                 //TODO Perform XSS attacks on page
-                if (traversal != null) {
-                    page = traverseToNextPage(page, traversal.getMethod());
-                    traversal = traversal.getNextTraversal();
-                }
-            } while (traversal != null);
-        }
-    }
-
-    private Object traverseToNextPage(Object page, Method method) {
-        if (method.getParameterTypes().length > 0) {
-            throw new UntraversableException("Cannot traverse methods that take parameters");
-        }
-        try {
-            return method.invoke(page);
-        } catch (Exception e) {
-            throw new UntraversableException(e);
+                //TODO Else warn of missing @SubmitAction if needed
+                page = pageTraverser.traverse(page, traversal);
+                traversal = traversal.getNextTraversal();
+            }
         }
     }
 }
