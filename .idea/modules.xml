@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/xssfinder.iml" filepath="$PROJECT_DIR$/xssfinder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xssfinder-annotations/xssfinder-annotations.iml" filepath="$PROJECT_DIR$/xssfinder-annotations/xssfinder-annotations.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xssfinder-core/xssfinder-core.iml" filepath="$PROJECT_DIR$/xssfinder-core/xssfinder-core.iml" />
     </modules>
   </component>
 </project>

@@ -1,3 +1,5 @@
 .idea/dictionaries/*.xml
 .idea/workspace.xml
 target/*
+xssfinder-annotations/target/*
+xssfinder-core/target/*
