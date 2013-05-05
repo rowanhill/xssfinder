@@ -3,3 +3,4 @@
 target/*
 xssfinder-annotations/target/*
 xssfinder-core/target/*
+xssfinder-test/target/*

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/xssfinder.iml" filepath="$PROJECT_DIR$/xssfinder.iml" />
       <module fileurl="file://$PROJECT_DIR$/xssfinder-annotations/xssfinder-annotations.iml" filepath="$PROJECT_DIR$/xssfinder-annotations/xssfinder-annotations.iml" />
       <module fileurl="file://$PROJECT_DIR$/xssfinder-core/xssfinder-core.iml" filepath="$PROJECT_DIR$/xssfinder-core/xssfinder-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xssfinder-test/xssfinder-test.iml" filepath="$PROJECT_DIR$/xssfinder-test/xssfinder-test.iml" />
     </modules>
   </component>
 </project>

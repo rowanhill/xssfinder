@@ -12,6 +12,7 @@
     <modules>
         <module>xssfinder-core</module>
         <module>xssfinder-annotations</module>
+        <module>xssfinder-test</module>
     </modules>
 
     <dependencyManagement>

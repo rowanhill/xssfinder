@@ -24,6 +24,7 @@
         <processorPath useClasspath="true" />
         <module name="xssfinder-annotations" />
         <module name="xssfinder-core" />
+        <module name="xssfinder-test" />
       </profile>
     </annotationProcessing>
   </component>
