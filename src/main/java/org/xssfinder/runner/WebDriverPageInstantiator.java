@@ -14,7 +14,8 @@ public class WebDriverPageInstantiator implements PageInstantiator {
     @Override
     public <T> T instantiatePage(Class<T> pageClass) {
         try {
-            Constructor<T> constructor = pageClass.getConstructor(WebDriver.class);
+            Constructor<T> constructor = pageClass.getDeclaredConstructor(WebDriver.class);
+            constructor.setAccessible(true);
             return constructor.newInstance(driver);
         } catch(Exception e) {
             throw new PageInstantiationException(e);

@@ -11,6 +11,7 @@ public class PageTraverser {
             throw new UntraversableException("Cannot traverse methods that take parameters");
         }
         try {
+            method.setAccessible(true);
             return method.invoke(page);
         } catch (Exception e) {
             throw new UntraversableException(e);
