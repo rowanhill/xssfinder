@@ -6,7 +6,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 public class DefaultHtmlUnitDriverWrapper implements DriverWrapper {
     private final WebDriver driver;
 
-    DefaultHtmlUnitDriverWrapper() {
+    public DefaultHtmlUnitDriverWrapper() {
         driver = new HtmlUnitDriver();
     }
 
