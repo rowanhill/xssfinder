@@ -13,12 +13,11 @@ public class RouteRunner {
 
     public RouteRunner(
             DriverWrapper driverWrapper,
-            PageInstantiator pageInstantiator,
             PageTraverser pageTraverser,
             List<Route> routes
     ) {
         this.driverWrapper = driverWrapper;
-        this.pageInstantiator = pageInstantiator;
+        this.pageInstantiator = driverWrapper.getPageInstantiator();
         this.pageTraverser = pageTraverser;
         this.routes = routes;
     }

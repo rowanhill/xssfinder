@@ -33,6 +33,7 @@ public class RouteRunnerTest {
 
     @Before
     public void setUp() {
+        when(mockDriverWrapper.getPageInstantiator()).thenReturn(mockPageInstantiator);
         when(route.getUrl()).thenReturn(URL);
         routes.add(route);
     }
@@ -40,7 +41,7 @@ public class RouteRunnerTest {
     @Test
     public void runnerOpensWebDriverAtStartPointOfRoute() {
         // given
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, mockPageTraverser, routes);
+        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, routes);
 
         // when
         runner.run();
@@ -53,7 +54,7 @@ public class RouteRunnerTest {
     public void runnerInstantiatesPagesInRoute() throws Exception {
         // given
         setRootPageToHomePage();
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, mockPageTraverser, routes);
+        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, routes);
 
         // when
         runner.run();
@@ -65,7 +66,7 @@ public class RouteRunnerTest {
     @Test
     public void noTraversalsTakenForSinglePageRoute() throws Exception {
         // given
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, mockPageTraverser, routes);
+        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, routes);
 
         // when
         runner.run();
@@ -80,7 +81,7 @@ public class RouteRunnerTest {
         setRootPageToHomePage();
         HomePage mockHomePage = setUpInstantiationOfHomePage();
         PageTraversal mockPageTraversal = addTraversalToRoute();
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, mockPageTraverser, routes);
+        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, routes);
 
         // when
         runner.run();
@@ -96,7 +97,7 @@ public class RouteRunnerTest {
         HomePage mockHomePage = setUpInstantiationOfHomePage();
         SecondPage mockSecondPage1 = setUpTraversalOfTraversal(mockHomePage, addTraversalToRoute());
         PageTraversal mockPageTraversal = addTraversal(route.getPageTraversal());
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageInstantiator, mockPageTraverser, routes);
+        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, routes);
 
         // when
         runner.run();
