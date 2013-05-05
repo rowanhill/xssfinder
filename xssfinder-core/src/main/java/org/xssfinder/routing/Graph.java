@@ -76,7 +76,7 @@ public class Graph {
         List<Route> newRoutes = new ArrayList<Route>();
         for (Route route : routes) {
             PageTraversal lastTraversal = route.getLastPageTraversal();
-            Class<?> endClass = lastTraversal.getMethod().getReturnType();
+            Class<?> endClass = lastTraversal == null ? route.getRootPageClass() : lastTraversal.getMethod().getReturnType();
             Set<Method> unusedMethods = getUnusedSubmitMethodsOnPage(endClass, methodsByPage);
             if (unusedMethods.isEmpty()) {
                 newRoutes.add(route);

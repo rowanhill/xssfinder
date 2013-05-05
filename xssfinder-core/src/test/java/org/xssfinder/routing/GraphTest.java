@@ -137,6 +137,33 @@ public class GraphTest {
         assertThat(traversal, is(nullValue()));
     }
 
+    @Test
+    public void singleCircularPageProducesSingleRouteTraversingToSamePage() {
+        // given
+        pagesDescriptors.add(new PageDescriptor(CircularHomePage.class));
+        Graph graph = new Graph(pagesDescriptors);
+
+        // when
+        List<Route> routes = graph.getRoutes();
+
+        // then
+        assertThat(routes.size(), is(1));
+        Route route = routes.get(0);
+        Class<?> pageClass = route.getRootPageClass();
+        assertThat(pageClass == CircularHomePage.class, is(true));
+
+        PageTraversal traversal = route.getPageTraversal();
+        pageClass = traversal.getMethod().getReturnType();
+        assertThat(pageClass == CircularHomePage.class, is(true));
+    }
+
+    @Page
+    @CrawlStartPoint(url="")
+    private static class CircularHomePage {
+        @SubmitAction
+        public CircularHomePage submit() { return this; }
+    }
+
     @Page
     private class OrdinaryPage {}
 
