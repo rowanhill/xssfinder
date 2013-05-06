@@ -1,6 +1,5 @@
 package org.xssfinder.routing;
 
-import org.dummytest.simple.HomePage;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -13,9 +12,9 @@ import static org.mockito.Mockito.when;
 
 public class PageTraversalTest {
     @Test
-    public void methodIsAvailable() {
+    public void methodIsAvailable() throws Exception {
         // given
-        Method mockMethod = HomePage.class.getMethods()[0];
+        Method mockMethod = Page.class.getDeclaredMethod("goToPage");
         PageTraversal pageTraversal = new PageTraversal(mockMethod);
 
         // when
@@ -26,9 +25,9 @@ public class PageTraversalTest {
     }
 
     @Test
-    public void nextPageTraversalDefaultsToNull() {
+    public void nextPageTraversalDefaultsToNull() throws Exception {
         // given
-        Method mockMethod = HomePage.class.getMethods()[0];
+        Method mockMethod = Page.class.getDeclaredMethod("goToPage");
         PageTraversal pageTraversal = new PageTraversal(mockMethod);
 
         // when
@@ -39,9 +38,9 @@ public class PageTraversalTest {
     }
 
     @Test
-    public void nextPageTraversalCanBeSet() {
+    public void nextPageTraversalCanBeSet() throws Exception {
         // given
-        Method mockMethod = HomePage.class.getMethods()[0];
+        Method mockMethod = Page.class.getDeclaredMethod("goToPage");
         PageTraversal pageTraversal = new PageTraversal(mockMethod);
         PageTraversal mockPageTraversal = mock(PageTraversal.class);
 
@@ -54,9 +53,9 @@ public class PageTraversalTest {
     }
 
     @Test
-    public void cloningCreatesTraversalWithSameMethod() {
+    public void cloningCreatesTraversalWithSameMethod() throws Exception {
         // given
-        Method mockMethod = HomePage.class.getMethods()[0];
+        Method mockMethod = Page.class.getDeclaredMethod("goToPage");
         PageTraversal traversal = new PageTraversal(mockMethod);
 
         // when
@@ -67,11 +66,10 @@ public class PageTraversalTest {
     }
 
     @Test
-    public void cloneHasNoNextTraversalIfOriginalDoesNot() {
+    public void cloneHasNoNextTraversalIfOriginalDoesNot() throws Exception {
         // given
-        Method mockMethod = HomePage.class.getMethods()[0];
+        Method mockMethod = Page.class.getDeclaredMethod("goToPage");
         PageTraversal traversal = new PageTraversal(mockMethod);
-
 
         // when
         PageTraversal cloneTraversal = traversal.clone();
@@ -81,12 +79,12 @@ public class PageTraversalTest {
     }
 
     @Test
-    public void cloneHasNextTraversalIfOriginalDoes() {
+    public void cloneHasNextTraversalIfOriginalDoes() throws Exception {
         // given
         PageTraversal mockNextTraversal = mock(PageTraversal.class);
         PageTraversal mockCloneNextTraversal = mock(PageTraversal.class);
         when(mockNextTraversal.clone()).thenReturn(mockCloneNextTraversal);
-        Method mockMethod = HomePage.class.getMethods()[0];
+        Method mockMethod = Page.class.getDeclaredMethod("goToPage");
         PageTraversal traversal = new PageTraversal(mockMethod);
         traversal.setNextTraversal(mockNextTraversal);
 
@@ -95,5 +93,10 @@ public class PageTraversalTest {
 
         // then
         assertThat(cloneTraversal.getNextTraversal(), is(mockCloneNextTraversal));
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    private static class Page {
+        Page goToPage() { return null; }
     }
 }
