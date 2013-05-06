@@ -6,14 +6,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.xssfinder.xss.XssAttack;
 import org.xssfinder.xss.XssGenerator;
 
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -27,6 +25,19 @@ import static org.mockito.Mockito.when;
 public class DefaultHtmlUnitDriverWrapperTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8089);
+    public static final String INDEX_PAGE =
+            "<html>\n" +
+            "    <body>\n" +
+            "        <form action=\"/submit\" method=\"post\">\n" +
+            "            <input type=\"text\" name=\"text1\" />\n" +
+            "            <input type=\"text\" name=\"text2\" />\n" +
+            "            <input type=\"password\" name=\"password\" />\n" +
+            "            <input type=\"search\" name=\"search\" />\n" +
+            "            <textarea name=\"textarea\"></textarea>\n" +
+            "            <input type=\"submit\" id=\"submit\" value=\"Submit\" />\n" +
+            "        </form>\n" +
+            "    </body>\n" +
+            "</html>";
 
     @Test
     public void createsWebDriverPageInstantiator() {
@@ -57,22 +68,11 @@ public class DefaultHtmlUnitDriverWrapperTest {
         // given
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         XssGenerator mockXssGenerator = mock(XssGenerator.class);
-        when(mockXssGenerator.createXssString()).thenReturn("xss");
-        String indexPage =
-                "<html>\n" +
-                "    <body>\n" +
-                "        <form action=\"/submit\" method=\"post\">\n" +
-                "            <input type=\"text\" name=\"text1\" />\n" +
-                "            <input type=\"text\" name=\"text2\" />\n" +
-                "            <input type=\"password\" name=\"password\" />\n" +
-                "            <input type=\"search\" name=\"search\" />\n" +
-                "            <textarea name=\"textarea\"></textarea>\n" +
-                "            <input type=\"submit\" id=\"submit\" value=\"Submit\" />\n" +
-                "        </form>\n" +
-                "    </body>\n" +
-                "</html>";
+        XssAttack mockAttack = mock(XssAttack.class);
+        when(mockAttack.getAttackString()).thenReturn("xss");
+        when(mockXssGenerator.createXssAttack()).thenReturn(mockAttack);
         stubFor(get(urlEqualTo("/"))
-                .willReturn(aResponse().withBody(indexPage))
+                .willReturn(aResponse().withBody(INDEX_PAGE))
         );
         driverWrapper.visit("http://localhost:8089/");
 
@@ -92,6 +92,31 @@ public class DefaultHtmlUnitDriverWrapperTest {
         assertThat(params, hasEntry("search", "xss"));
         assertThat(params, hasEntry("password", "xss"));
         assertThat(params, hasEntry("textarea", "xss"));
+    }
+
+    @Test
+    public void puttingInXssAttackStringsReturnsAttackedInputIdentifiers() {
+        // given
+        DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
+        XssGenerator mockXssGenerator = mock(XssGenerator.class);
+        XssAttack mockAttack = mock(XssAttack.class);
+        when(mockAttack.getAttackString()).thenReturn("xss");
+        when(mockAttack.getIdentifier()).thenReturn("xssId");
+        when(mockXssGenerator.createXssAttack()).thenReturn(mockAttack);
+        stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse().withBody(INDEX_PAGE))
+        );
+        driverWrapper.visit("http://localhost:8089/");
+
+        // when
+        Map<String, String> inputsToXss = driverWrapper.putXssAttackStringsInInputs(mockXssGenerator);
+
+        // then
+        assertThat(inputsToXss, hasEntry("body/form[1]/input[1]", "xssId"));
+        assertThat(inputsToXss, hasEntry("body/form[1]/input[2]", "xssId"));
+        assertThat(inputsToXss, hasEntry("body/form[1]/input[3]", "xssId"));
+        assertThat(inputsToXss, hasEntry("body/form[1]/input[4]", "xssId"));
+        assertThat(inputsToXss, hasEntry("body/form[1]/textarea[1]", "xssId"));
     }
 
     private void clickSubmit(DefaultHtmlUnitDriverWrapper driverWrapper) throws Exception {

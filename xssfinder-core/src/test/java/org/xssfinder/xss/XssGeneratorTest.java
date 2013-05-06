@@ -4,30 +4,42 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class XssGeneratorTest {
     @Test
-    public void generatesScriptToAddInfoToWindow() {
+    public void createsAttackStartingWithOneAsIdentifier() {
         // given
-        XssGenerator generator = new XssGenerator();
+        XssAttackFactory mockFactory = mock(XssAttackFactory.class);
+        XssAttack mockAttack = mock(XssAttack.class);
+        when(mockFactory.createXssAttack("1")).thenReturn(mockAttack);
+        XssGenerator generator = new XssGenerator(mockFactory);
 
         // when
-        String xss = generator.createXssString();
+        XssAttack attack = generator.createXssAttack();
 
         // then
-        assertThat(xss, is("<script type=\"text/javascript\">if (typeof(window.xssfinder) === \"undefined\"){window.xssfinder = [];}window.xssfinder.push(1);</script>"));
+        assertThat(attack, is(mockAttack));
     }
 
     @Test
-    public void xssIdIncrements() {
+    public void identifiersIncrement() {
         // given
-        XssGenerator generator = new XssGenerator();
+        XssAttackFactory mockFactory = mock(XssAttackFactory.class);
+        XssAttack mockAttack1 = mock(XssAttack.class);
+        when(mockFactory.createXssAttack("1")).thenReturn(mockAttack1);
+        XssAttack mockAttack2 = mock(XssAttack.class);
+        when(mockFactory.createXssAttack("2")).thenReturn(mockAttack2);
+        XssGenerator generator = new XssGenerator(mockFactory);
 
         // when
-        generator.createXssString();
-        String xss = generator.createXssString();
+        XssAttack attack1 = generator.createXssAttack();
+        XssAttack attack2 = generator.createXssAttack();
 
         // then
-        assertThat(xss, is("<script type=\"text/javascript\">if (typeof(window.xssfinder) === \"undefined\"){window.xssfinder = [];}window.xssfinder.push(2);</script>"));
+        assertThat(attack1, is(mockAttack1));
+        assertThat(attack2, is(mockAttack2));
+
     }
 }

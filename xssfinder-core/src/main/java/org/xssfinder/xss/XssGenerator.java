@@ -1,17 +1,16 @@
 package org.xssfinder.xss;
 
 public class XssGenerator {
+    private final XssAttackFactory xssAttackFactory;
     private int nextXssId = 1;
 
-    public String createXssString() {
-        String xss =
-                "<script type=\"text/javascript\">" +
-                    "if (typeof(window.xssfinder) === \"undefined\"){" +
-                        "window.xssfinder = [];" +
-                    "}"+
-                    String.format("window.xssfinder.push(%d);", nextXssId) +
-                "</script>";
+    public XssGenerator(XssAttackFactory xssAttackFactory) {
+        this.xssAttackFactory = xssAttackFactory;
+    }
+
+    public XssAttack createXssAttack() {
+        XssAttack attack = xssAttackFactory.createXssAttack(Integer.toString(nextXssId));
         nextXssId++;
-        return xss;
+        return attack;
     }
 }

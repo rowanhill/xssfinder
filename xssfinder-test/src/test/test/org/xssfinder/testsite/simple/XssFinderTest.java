@@ -11,10 +11,17 @@ import org.xssfinder.runner.DefaultHtmlUnitDriverWrapper;
 import org.xssfinder.runner.PageTraverser;
 import org.xssfinder.runner.RouteRunner;
 import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.xss.XssAttackFactory;
 import org.xssfinder.xss.XssGenerator;
+import org.xssfinder.xss.XssJournal;
 
 import java.util.List;
 import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 public class XssFinderTest {
 
@@ -44,9 +51,12 @@ public class XssFinderTest {
 
         // Create a runner using HtmlUnitDriver
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
-        RouteRunner runner = new RouteRunner(driverWrapper, new PageTraverser(), new XssGenerator(), routes);
+        XssJournal journal = new XssJournal();
+        RouteRunner runner = new RouteRunner(driverWrapper, new PageTraverser(), new XssGenerator(new XssAttackFactory()), journal, routes);
 
         // Run!
         runner.run();
+
+        assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
     }
 }

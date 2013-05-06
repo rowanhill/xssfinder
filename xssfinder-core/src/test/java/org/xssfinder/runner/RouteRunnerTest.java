@@ -1,21 +1,27 @@
 package org.xssfinder.runner;
 
+import com.google.common.collect.ImmutableMap;
 import org.dummytest.simple.HomePage;
 import org.dummytest.simple.SecondPage;
+import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.routing.Route;
+import org.xssfinder.xss.XssDescriptor;
 import org.xssfinder.xss.XssGenerator;
+import org.xssfinder.xss.XssJournal;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.xssfinder.runner.RouteRunnerTest.XssDescriptorMatcher.hasXssId;
 
 @SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
@@ -31,6 +37,8 @@ public class RouteRunnerTest {
     @Mock
     private XssGenerator mockXssGenerator;
     @Mock
+    private XssJournal mockXssJournal;
+    @Mock
     private Route route;
 
     private List<Route> routes = new ArrayList<Route>();
@@ -43,7 +51,7 @@ public class RouteRunnerTest {
         when(route.getUrl()).thenReturn(URL);
         routes.add(route);
 
-        runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, mockXssGenerator, routes);
+        runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, mockXssGenerator, mockXssJournal, routes);
     }
 
     @Test
@@ -125,6 +133,46 @@ public class RouteRunnerTest {
         inOrder.verify(mockPageTraverser).traverse(mockSecondPage, mockPageTraversal2);
         inOrder.verifyNoMoreInteractions();
         verify(mockDriverWrapper, times(1)).putXssAttackStringsInInputs(mockXssGenerator);
+    }
+
+    @Test
+    public void attackedInputsAreAddedToJournal() throws Exception {
+        // given
+        setRootPageToHomePage();
+        setUpInstantiationOfHomePage();
+        PageTraversal mockPageTraversal = addTraversalToRoute();
+        when(mockPageTraversal.isSubmit()).thenReturn(true);
+        when(mockDriverWrapper.putXssAttackStringsInInputs(mockXssGenerator))
+                .thenReturn(ImmutableMap.of("/some/input", "1"));
+
+        // when
+        runner.run();
+
+        // then
+        verify(mockXssJournal).addXssDescriptor(eq("1"), argThat(hasXssId("/some/input")));
+    }
+
+    static class XssDescriptorMatcher extends ArgumentMatcher<XssDescriptor> {
+        private final String xssIdentifier;
+
+        public static XssDescriptorMatcher hasXssId(String xssIdentifier) {
+            return new XssDescriptorMatcher(xssIdentifier);
+        }
+
+        private XssDescriptorMatcher(String xssIdentifier) {
+            this.xssIdentifier = xssIdentifier;
+        }
+
+        @Override
+        public boolean matches(Object argument) {
+            return argument instanceof XssDescriptor &&
+                    ((XssDescriptor) argument).getInputIdentifier().equals(xssIdentifier);
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText(String.format("XssDescriptor<\"%s\">", xssIdentifier));
+        }
     }
 
     private void setRootPageToHomePage() {
