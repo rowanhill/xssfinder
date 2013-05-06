@@ -11,6 +11,7 @@ import org.xssfinder.runner.DefaultHtmlUnitDriverWrapper;
 import org.xssfinder.runner.PageTraverser;
 import org.xssfinder.runner.RouteRunner;
 import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.xss.XssGenerator;
 
 import java.util.List;
 import java.util.Set;
@@ -43,7 +44,7 @@ public class XssFinderTest {
 
         // Create a runner using HtmlUnitDriver
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
-        RouteRunner runner = new RouteRunner(driverWrapper, new PageTraverser(), routes);
+        RouteRunner runner = new RouteRunner(driverWrapper, new PageTraverser(), new XssGenerator(), routes);
 
         // Run!
         runner.run();

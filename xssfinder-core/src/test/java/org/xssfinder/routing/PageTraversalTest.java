@@ -1,6 +1,7 @@
 package org.xssfinder.routing;
 
 import org.junit.Test;
+import org.xssfinder.SubmitAction;
 
 import java.lang.reflect.Method;
 
@@ -95,8 +96,36 @@ public class PageTraversalTest {
         assertThat(cloneTraversal.getNextTraversal(), is(mockCloneNextTraversal));
     }
 
+    @Test
+    public void annotatedMethodsAreSubmitTraversals() throws Exception {
+        // given
+        Method submitMethod = Page.class.getDeclaredMethod("submitToPage");
+        PageTraversal traversal = new PageTraversal(submitMethod);
+
+        // when
+        boolean isSubmit = traversal.isSubmit();
+
+        // then
+        assertThat(isSubmit, is(true));
+    }
+
+    @Test
+    public void unannotatedMethodsAreNotSubmitTraversals() throws Exception {
+        // given
+        Method submitMethod = Page.class.getDeclaredMethod("goToPage");
+        PageTraversal traversal = new PageTraversal(submitMethod);
+
+        // when
+        boolean isSubmit = traversal.isSubmit();
+
+        // then
+        assertThat(isSubmit, is(false));
+    }
+
     @SuppressWarnings("UnusedDeclaration")
     private static class Page {
         Page goToPage() { return null; }
+        @SubmitAction
+        Page submitToPage() { return null; }
     }
 }

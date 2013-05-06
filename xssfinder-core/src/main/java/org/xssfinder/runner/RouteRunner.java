@@ -2,11 +2,13 @@ package org.xssfinder.runner;
 
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.routing.Route;
+import org.xssfinder.xss.XssGenerator;
 
 import java.util.List;
 
 public class RouteRunner {
     private final DriverWrapper driverWrapper;
+    private final XssGenerator xssGenerator;
     private final PageInstantiator pageInstantiator;
     private final PageTraverser pageTraverser;
     private final List<Route> routes;
@@ -14,11 +16,13 @@ public class RouteRunner {
     public RouteRunner(
             DriverWrapper driverWrapper,
             PageTraverser pageTraverser,
+            XssGenerator xssGenerator,
             List<Route> routes
     ) {
         this.driverWrapper = driverWrapper;
         this.pageInstantiator = driverWrapper.getPageInstantiator();
         this.pageTraverser = pageTraverser;
+        this.xssGenerator = xssGenerator;
         this.routes = routes;
     }
 
@@ -31,8 +35,9 @@ public class RouteRunner {
             PageTraversal traversal = route.getPageTraversal();
             //TODO Warn of missing @SubmitAction if needed
             while (traversal != null) {
-                //TODO If @SubmitAction
-                //TODO Perform XSS attacks on page
+                if (traversal.isSubmit()) {
+                    driverWrapper.putXssAttackStringsInInputs(xssGenerator);
+                }
                 //TODO Else warn of missing @SubmitAction if needed
                 page = pageTraverser.traverse(page, traversal);
                 traversal = traversal.getNextTraversal();

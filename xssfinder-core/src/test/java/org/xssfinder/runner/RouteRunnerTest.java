@@ -5,10 +5,12 @@ import org.dummytest.simple.SecondPage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.routing.Route;
+import org.xssfinder.xss.XssGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,22 +29,25 @@ public class RouteRunnerTest {
     @Mock
     private PageTraverser mockPageTraverser;
     @Mock
+    private XssGenerator mockXssGenerator;
+    @Mock
     private Route route;
 
     private List<Route> routes = new ArrayList<Route>();
+
+    private RouteRunner runner;
 
     @Before
     public void setUp() {
         when(mockDriverWrapper.getPageInstantiator()).thenReturn(mockPageInstantiator);
         when(route.getUrl()).thenReturn(URL);
         routes.add(route);
+
+        runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, mockXssGenerator, routes);
     }
 
     @Test
     public void runnerOpensWebDriverAtStartPointOfRoute() {
-        // given
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, routes);
-
         // when
         runner.run();
 
@@ -54,7 +59,6 @@ public class RouteRunnerTest {
     public void runnerInstantiatesPagesInRoute() throws Exception {
         // given
         setRootPageToHomePage();
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, routes);
 
         // when
         runner.run();
@@ -65,9 +69,6 @@ public class RouteRunnerTest {
 
     @Test
     public void noTraversalsTakenForSinglePageRoute() throws Exception {
-        // given
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, routes);
-
         // when
         runner.run();
 
@@ -81,7 +82,6 @@ public class RouteRunnerTest {
         setRootPageToHomePage();
         HomePage mockHomePage = setUpInstantiationOfHomePage();
         PageTraversal mockPageTraversal = addTraversalToRoute();
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, routes);
 
         // when
         runner.run();
@@ -97,13 +97,34 @@ public class RouteRunnerTest {
         HomePage mockHomePage = setUpInstantiationOfHomePage();
         SecondPage mockSecondPage1 = setUpTraversalOfTraversal(mockHomePage, addTraversalToRoute());
         PageTraversal mockPageTraversal = addTraversal(route.getPageTraversal());
-        RouteRunner runner = new RouteRunner(mockDriverWrapper, mockPageTraverser, routes);
 
         // when
         runner.run();
 
         // then
         verify(mockPageTraverser).traverse(mockSecondPage1, mockPageTraversal);
+    }
+
+    @Test
+    public void inputsAreFilledWithXssAttacksPriorToSubmitActionTraversal() throws Exception {
+        // given
+        setRootPageToHomePage();
+        HomePage mockHomePage = setUpInstantiationOfHomePage();
+        PageTraversal mockPageTraversal1 = addTraversalToRoute();
+        SecondPage mockSecondPage = setUpTraversalOfTraversal(mockHomePage, mockPageTraversal1);
+        PageTraversal mockPageTraversal2 = addTraversal(mockPageTraversal1);
+        when(mockPageTraversal2.isSubmit()).thenReturn(true);
+
+        // when
+        runner.run();
+
+        // then
+        InOrder inOrder = inOrder(mockPageTraverser, mockDriverWrapper);
+        inOrder.verify(mockPageTraverser).traverse(mockHomePage, mockPageTraversal1);
+        inOrder.verify(mockDriverWrapper).putXssAttackStringsInInputs(mockXssGenerator);
+        inOrder.verify(mockPageTraverser).traverse(mockSecondPage, mockPageTraversal2);
+        inOrder.verifyNoMoreInteractions();
+        verify(mockDriverWrapper, times(1)).putXssAttackStringsInInputs(mockXssGenerator);
     }
 
     private void setRootPageToHomePage() {

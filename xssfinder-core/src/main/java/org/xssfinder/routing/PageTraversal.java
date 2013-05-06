@@ -1,5 +1,7 @@
 package org.xssfinder.routing;
 
+import org.xssfinder.SubmitAction;
+
 import java.lang.reflect.Method;
 
 public class PageTraversal {
@@ -20,6 +22,10 @@ public class PageTraversal {
 
     public void setNextTraversal(PageTraversal nextTraversal) {
         this.nextTraversal = nextTraversal;
+    }
+
+    public boolean isSubmit() {
+        return method.isAnnotationPresent(SubmitAction.class);
     }
 
     @Override
