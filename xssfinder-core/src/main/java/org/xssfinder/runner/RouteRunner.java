@@ -39,9 +39,12 @@ public class RouteRunner {
                     driverWrapper.putXssAttackStringsInInputs(xssGenerator);
                 }
                 //TODO Else warn of missing @SubmitAction if needed
+                //TODO Check for XSS
                 page = pageTraverser.traverse(page, traversal);
                 traversal = traversal.getNextTraversal();
             }
         }
+
+        //TODO Visit all routes again checking for XSS
     }
 }
