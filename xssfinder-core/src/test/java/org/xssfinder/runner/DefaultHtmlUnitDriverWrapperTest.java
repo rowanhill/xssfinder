@@ -2,6 +2,7 @@ package org.xssfinder.runner;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
+import com.google.common.collect.ImmutableSet;
 import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -36,6 +37,9 @@ public class DefaultHtmlUnitDriverWrapperTest {
             "            <textarea name=\"textarea\"></textarea>\n" +
             "            <input type=\"submit\" id=\"submit\" value=\"Submit\" />\n" +
             "        </form>\n" +
+            "        <script type=\"text/javascript\">\n" +
+            "            window.xssfinder = ['123', '456'];\n" +
+            "        </script>\n" +
             "    </body>\n" +
             "</html>";
 
@@ -117,6 +121,23 @@ public class DefaultHtmlUnitDriverWrapperTest {
         assertThat(inputsToXss, hasEntry("body/form[1]/input[3]", "xssId"));
         assertThat(inputsToXss, hasEntry("body/form[1]/input[4]", "xssId"));
         assertThat(inputsToXss, hasEntry("body/form[1]/textarea[1]", "xssId"));
+    }
+
+    @Test
+    public void gettingXssIdsGetsValuesFromJsArrayVar() {
+        // given
+        DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
+        stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse().withBody(INDEX_PAGE))
+        );
+        driverWrapper.visit("http://localhost:8089/");
+
+        // when
+        Set<String> xssIds = driverWrapper.getCurrentXssIds();
+
+        // then
+        Set<String> expectedIds = ImmutableSet.of("123", "456");
+        assertThat(xssIds, is(expectedIds));
     }
 
     private void clickSubmit(DefaultHtmlUnitDriverWrapper driverWrapper) throws Exception {

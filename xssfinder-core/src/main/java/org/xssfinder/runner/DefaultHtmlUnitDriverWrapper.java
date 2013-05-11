@@ -1,7 +1,6 @@
 package org.xssfinder.runner;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.xssfinder.xss.XssAttack;
@@ -10,10 +9,10 @@ import org.xssfinder.xss.XssGenerator;
 import java.util.*;
 
 public class DefaultHtmlUnitDriverWrapper implements DriverWrapper {
-    private final WebDriver driver;
+    private final HtmlUnitDriver driver;
 
     public DefaultHtmlUnitDriverWrapper() {
-        driver = new HtmlUnitDriver();
+        driver = new HtmlUnitDriver(true);
     }
 
     @Override
@@ -24,6 +23,13 @@ public class DefaultHtmlUnitDriverWrapper implements DriverWrapper {
     @Override
     public void visit(String url) {
         driver.get(url);
+    }
+
+    @Override
+    public Set<String> getCurrentXssIds() {
+        Object result = driver.executeScript("return window.xssfinder");
+        //noinspection unchecked
+        return new HashSet<String>((ArrayList<String>)result);
     }
 
     @Override

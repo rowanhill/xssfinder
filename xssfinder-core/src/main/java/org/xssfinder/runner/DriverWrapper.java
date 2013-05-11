@@ -11,4 +11,6 @@ public interface DriverWrapper {
     void visit(String url);
 
     Map<String, String> putXssAttackStringsInInputs(XssGenerator xssGenerator);
+
+    Set<String> getCurrentXssIds();
 }

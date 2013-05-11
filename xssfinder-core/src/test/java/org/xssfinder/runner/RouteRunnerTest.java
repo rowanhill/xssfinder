@@ -110,7 +110,7 @@ public class RouteRunnerTest {
     }
 
     @Test
-    public void allPenultimatePageIsAttacked() throws Exception {
+    public void allButFinalPageIsAttacked() throws Exception {
         // given
         routeStartsAtHomePage();
         HomePage mockHomePage = instantiatorReturnsMockHomePage();
