@@ -7,9 +7,7 @@ import org.junit.Test;
 import org.xssfinder.routing.GraphsFactory;
 import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
-import org.xssfinder.runner.DefaultHtmlUnitDriverWrapper;
-import org.xssfinder.runner.PageTraverser;
-import org.xssfinder.runner.RouteRunner;
+import org.xssfinder.runner.*;
 import org.xssfinder.scanner.PageFinder;
 import org.xssfinder.xss.XssAttackFactory;
 import org.xssfinder.xss.XssGenerator;
@@ -55,7 +53,8 @@ public class XssFinderIT {
         // Create a runner using HtmlUnitDriver
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         XssJournal journal = new XssJournal();
-        RouteRunner runner = new RouteRunner(driverWrapper, new PageTraverser(), new XssGenerator(new XssAttackFactory()), journal, routes);
+        PageAttacker pageAttacker = new PageAttacker(new XssGenerator(new XssAttackFactory()), new XssDescriptorFactory());
+        RouteRunner runner = new RouteRunner(pageAttacker, driverWrapper, new PageTraverser(), journal, routes);
 
         // Run!
         runner.run();
