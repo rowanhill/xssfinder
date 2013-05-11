@@ -4,8 +4,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.xssfinder.routing.GraphsFactory;
 import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
@@ -25,10 +23,13 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class XssFinderTest {
+public class XssFinderIT {
 
     @Before
     public void setUp() throws Exception {
+        if (System.getProperty("jetty.port") != null) {
+            return;
+        }
         Server server = new Server(8085);
         server.setStopAtShutdown(true);
 
