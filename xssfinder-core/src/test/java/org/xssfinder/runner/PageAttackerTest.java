@@ -14,8 +14,6 @@ import org.xssfinder.xss.XssGenerator;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -46,6 +44,15 @@ public class PageAttackerTest {
     public void attackingDoesNothingIfNextTraversalIsNotSubmission() {
         // when
         pageAttacker.attackIfAboutToSubmit(mockPage, mockDriverWrapper, mockPageTraversal);
+
+        // then
+        verifyZeroInteractions(mockDriverWrapper);
+    }
+
+    @Test
+    public void attackingDoesNothingIfNextTraversalIsNull() {
+        // when
+        pageAttacker.attackIfAboutToSubmit(mockPage, mockDriverWrapper, null);
 
         // then
         verifyZeroInteractions(mockDriverWrapper);

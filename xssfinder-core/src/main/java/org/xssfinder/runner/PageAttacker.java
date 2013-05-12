@@ -19,7 +19,7 @@ public class PageAttacker {
 
     public Map<String, XssDescriptor> attackIfAboutToSubmit(Object page, DriverWrapper driverWrapper, PageTraversal pageTraversal) {
         Map<String, XssDescriptor> xssIdsToDescriptors = new HashMap<String, XssDescriptor>();
-        if (pageTraversal.isSubmit()) {
+        if (pageTraversal != null && pageTraversal.isSubmit()) {
             Map<String, String> inputIdsToXssIds = driverWrapper.putXssAttackStringsInInputs(xssGenerator);
             for (Map.Entry<String, String> entry : inputIdsToXssIds.entrySet()) {
                 XssDescriptor xssDescriptor = xssDescriptorFactory.createXssDescriptor(page, entry.getKey());
