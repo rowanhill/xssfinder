@@ -14,7 +14,7 @@ public class XssDescriptorFactoryTest {
         XssDescriptorFactory factory = new XssDescriptorFactory();
 
         // when
-        XssDescriptor descriptor = factory.createXssDescriptor(new Object(), "body/form[0]/input[0]");
+        XssDescriptor descriptor = factory.createXssDescriptor(new Object(), "body/form[1]/input[1]");
 
         // then
         assertThat(descriptor, is(not(nullValue())));
