@@ -1,4 +1,6 @@
-package org.xssfinder.runner;
+package org.xssfinder.xss;
+
+import org.xssfinder.runner.DriverWrapper;
 
 import java.util.Collections;
 import java.util.Set;

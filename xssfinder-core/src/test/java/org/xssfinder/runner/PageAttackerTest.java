@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.xss.XssDescriptor;
+import org.xssfinder.xss.XssDescriptorFactory;
 import org.xssfinder.xss.XssGenerator;
 
 import java.util.Map;

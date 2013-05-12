@@ -1,10 +1,11 @@
-package org.xssfinder.runner;
+package org.xssfinder.xss;
 
 import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.runner.DriverWrapper;
 
 import java.util.Set;
 

@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.routing.Route;
+import org.xssfinder.xss.XssDetector;
 import org.xssfinder.xss.XssGenerator;
 import org.xssfinder.xss.XssJournal;
 

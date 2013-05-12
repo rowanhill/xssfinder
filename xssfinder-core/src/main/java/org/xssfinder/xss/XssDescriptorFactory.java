@@ -1,4 +1,4 @@
-package org.xssfinder.runner;
+package org.xssfinder.xss;
 
 import org.xssfinder.xss.XssDescriptor;
 

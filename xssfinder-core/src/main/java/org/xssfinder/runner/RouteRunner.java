@@ -3,6 +3,7 @@ package org.xssfinder.runner;
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.routing.Route;
 import org.xssfinder.xss.XssDescriptor;
+import org.xssfinder.xss.XssDetector;
 import org.xssfinder.xss.XssJournal;
 
 import java.util.List;

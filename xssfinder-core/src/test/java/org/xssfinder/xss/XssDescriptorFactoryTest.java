@@ -1,7 +1,6 @@
-package org.xssfinder.runner;
+package org.xssfinder.xss;
 
 import org.junit.Test;
-import org.xssfinder.xss.XssDescriptor;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;

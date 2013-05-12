@@ -9,9 +9,7 @@ import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
 import org.xssfinder.runner.*;
 import org.xssfinder.scanner.PageFinder;
-import org.xssfinder.xss.XssAttackFactory;
-import org.xssfinder.xss.XssGenerator;
-import org.xssfinder.xss.XssJournal;
+import org.xssfinder.xss.*;
 
 import java.util.List;
 import java.util.Set;

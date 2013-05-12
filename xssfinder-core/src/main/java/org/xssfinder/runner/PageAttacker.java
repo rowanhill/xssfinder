@@ -2,6 +2,7 @@ package org.xssfinder.runner;
 
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.xss.XssDescriptor;
+import org.xssfinder.xss.XssDescriptorFactory;
 import org.xssfinder.xss.XssGenerator;
 
 import java.util.HashMap;
