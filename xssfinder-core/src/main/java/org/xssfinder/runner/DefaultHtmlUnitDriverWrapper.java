@@ -29,7 +29,7 @@ public class DefaultHtmlUnitDriverWrapper implements DriverWrapper {
     public Set<String> getCurrentXssIds() {
         Object result = driver.executeScript("return window.xssfinder");
         //noinspection unchecked
-        return new HashSet<String>((ArrayList<String>)result);
+        return result != null ? new HashSet<String>((ArrayList<String>)result) : new HashSet<String>();
     }
 
     @Override

@@ -24,9 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DefaultHtmlUnitDriverWrapperTest {
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(8089);
-    public static final String INDEX_PAGE =
+    private static final String INDEX_PAGE =
             "<html>\n" +
             "    <body>\n" +
             "        <form action=\"/submit\" method=\"post\">\n" +
@@ -42,6 +40,10 @@ public class DefaultHtmlUnitDriverWrapperTest {
             "        </script>\n" +
             "    </body>\n" +
             "</html>";
+    private static final String JSLESS_PAGE = "<html><body></body></html>";
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(8089);
 
     @Test
     public void createsWebDriverPageInstantiator() {
@@ -137,6 +139,23 @@ public class DefaultHtmlUnitDriverWrapperTest {
 
         // then
         Set<String> expectedIds = ImmutableSet.of("123", "456");
+        assertThat(xssIds, is(expectedIds));
+    }
+
+    @Test
+    public void currentXssIdsIsEmptySetIfNotFoundOnPage() {
+        // given
+        DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
+        stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse().withBody(JSLESS_PAGE))
+        );
+        driverWrapper.visit("http://localhost:8089/");
+
+        // when
+        Set<String> xssIds = driverWrapper.getCurrentXssIds();
+
+        // then
+        Set<String> expectedIds = ImmutableSet.of();
         assertThat(xssIds, is(expectedIds));
     }
 

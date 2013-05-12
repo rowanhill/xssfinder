@@ -30,4 +30,18 @@ public class XssDetectorTest {
         // then
         assertThat(xssIds, is(expectedXssIds));
     }
+
+    @Test
+    public void currentXssIdsIsEmptySetIfNullIsReturnedFromDriverWrapper() {
+        // given
+        when(mockDriverWrapper.getCurrentXssIds()).thenReturn(null);
+        XssDetector xssDetector = new XssDetector();
+
+        // when
+        Set<String> xssIds = xssDetector.getCurrentXssIds(mockDriverWrapper);
+
+        // then
+        Set<String> expectedXssIds = ImmutableSet.of();
+        assertThat(xssIds, is(expectedXssIds));
+    }
 }

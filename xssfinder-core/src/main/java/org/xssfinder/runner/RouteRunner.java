@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class RouteRunner {
     private final PageAttacker pageAttacker;
+    private final XssDetector xssDetector;
     private final DriverWrapper driverWrapper;
     private final XssJournal xssJournal;
     private final PageInstantiator pageInstantiator;
@@ -18,12 +19,14 @@ public class RouteRunner {
 
     public RouteRunner(
             PageAttacker pageAttacker,
+            XssDetector xssDetector,
             DriverWrapper driverWrapper,
             PageTraverser pageTraverser,
             XssJournal xssJournal,
             List<Route> routes
     ) {
         this.pageAttacker = pageAttacker;
+        this.xssDetector = xssDetector;
         this.driverWrapper = driverWrapper;
         this.pageInstantiator = driverWrapper.getPageInstantiator();
         this.pageTraverser = pageTraverser;
@@ -38,18 +41,19 @@ public class RouteRunner {
             Object page = pageInstantiator.instantiatePage(route.getRootPageClass());
 
             PageTraversal traversal = route.getPageTraversal();
-            //TODO Warn of missing @SubmitAction if needed
             while (traversal != null) {
                 Map<String, XssDescriptor> xssIdsToXssDescriptors =
                         pageAttacker.attackIfAboutToSubmit(page, driverWrapper, traversal);
                 for (Map.Entry<String, XssDescriptor> entry : xssIdsToXssDescriptors.entrySet()) {
                     xssJournal.addXssDescriptor(entry.getKey(), entry.getValue());
                 }
-                //TODO Else warn of missing @SubmitAction if needed
-                //TODO Check for XSS
+                //TODO Warn of missing @SubmitAction if needed
+                xssJournal.markAsSuccessful(xssDetector.getCurrentXssIds(driverWrapper));
                 page = pageTraverser.traverse(page, traversal);
                 traversal = traversal.getNextTraversal();
             }
+            //TODO Warn of missing @SubmitAction if needed
+            xssJournal.markAsSuccessful(xssDetector.getCurrentXssIds(driverWrapper));
         }
 
         //TODO Visit all routes again checking for XSS

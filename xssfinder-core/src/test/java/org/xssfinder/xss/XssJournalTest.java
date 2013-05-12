@@ -1,6 +1,9 @@
 package org.xssfinder.xss;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
+
+import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -32,5 +35,21 @@ public class XssJournalTest {
 
         // then
         assertThat(descriptor, is(mockDescriptor));
+    }
+
+    @Test
+    public void canGetDescriptorsMarkedAsSuccessful() {
+        // given
+        XssDescriptor mockDescriptor = mock(XssDescriptor.class);
+        XssJournal journal = new XssJournal();
+        journal.addXssDescriptor("1", mockDescriptor);
+
+        // when
+        journal.markAsSuccessful(ImmutableSet.of("1"));
+        Set<XssDescriptor> successfulDescriptors = journal.getSuccessfulXssDescriptors();
+
+        // then
+        Set<XssDescriptor> expectedDescriptors = ImmutableSet.of(mockDescriptor);
+        assertThat(successfulDescriptors, is(expectedDescriptors));
     }
 }

@@ -1,10 +1,12 @@
 package org.xssfinder.runner;
 
+import com.google.common.collect.ImmutableSet;
 import org.dummytest.simple.HomePage;
 import org.dummytest.simple.SecondPage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.routing.PageTraversal;
@@ -12,8 +14,7 @@ import org.xssfinder.routing.Route;
 import org.xssfinder.xss.XssGenerator;
 import org.xssfinder.xss.XssJournal;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
@@ -24,6 +25,8 @@ public class RouteRunnerTest {
 
     @Mock
     private PageAttacker mockPageAttacker;
+    @Mock
+    private XssDetector mockXssDetector;
     @Mock
     private DriverWrapper mockDriverWrapper;
     @Mock
@@ -47,7 +50,7 @@ public class RouteRunnerTest {
         when(route.getUrl()).thenReturn(URL);
         routes.add(route);
 
-        runner = new RouteRunner(mockPageAttacker, mockDriverWrapper, mockPageTraverser, mockXssJournal, routes);
+        runner = new RouteRunner(mockPageAttacker, mockXssDetector, mockDriverWrapper, mockPageTraverser, mockXssJournal, routes);
     }
 
     @Test
@@ -124,6 +127,30 @@ public class RouteRunnerTest {
         // then
         verify(mockPageAttacker).attackIfAboutToSubmit(mockHomePage, mockDriverWrapper, mockPageTraversal1);
         verify(mockPageAttacker).attackIfAboutToSubmit(mockSecondPage, mockDriverWrapper, mockPageTraversal2);
+    }
+
+    @Test
+    public void xssFoundOnPageIsMarkedAsSuccessful() throws Exception {
+        // given
+        routeStartsAtHomePage();
+        HomePage mockHomePage = instantiatorReturnsMockHomePage();
+        PageTraversal mockPageTraversal = addTraversalToRoute();
+        setUpTraversalOfTraversal(mockHomePage, mockPageTraversal);
+        Set<String> homePageXssIdentifiers = Collections.emptySet();
+        Set<String> secondPageXssIdentifiers = ImmutableSet.of("1");
+        when(mockXssDetector.getCurrentXssIds(mockDriverWrapper)).thenReturn(
+                homePageXssIdentifiers,
+                secondPageXssIdentifiers
+        );
+
+        // when
+        runner.run();
+
+        // then
+        InOrder inOrder = inOrder(mockXssJournal);
+        inOrder.verify(mockXssJournal).markAsSuccessful(homePageXssIdentifiers);
+        inOrder.verify(mockXssJournal).markAsSuccessful(secondPageXssIdentifiers);
+        inOrder.verifyNoMoreInteractions();
     }
 
     private void routeStartsAtHomePage() {

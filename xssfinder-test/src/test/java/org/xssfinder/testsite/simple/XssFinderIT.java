@@ -54,7 +54,7 @@ public class XssFinderIT {
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         XssJournal journal = new XssJournal();
         PageAttacker pageAttacker = new PageAttacker(new XssGenerator(new XssAttackFactory()), new XssDescriptorFactory());
-        RouteRunner runner = new RouteRunner(pageAttacker, driverWrapper, new PageTraverser(), journal, routes);
+        RouteRunner runner = new RouteRunner(pageAttacker, new XssDetector(), driverWrapper, new PageTraverser(), journal, routes);
 
         // Run!
         runner.run();
