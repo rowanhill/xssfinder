@@ -9,14 +9,13 @@ import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
 import org.xssfinder.runner.*;
 import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.testsite.simple.page.HomePage;
 import org.xssfinder.xss.*;
 
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class XssFinderIT {
@@ -61,5 +60,9 @@ public class XssFinderIT {
         runner.run(routes);
 
         assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
+        assertThat(journal.getSuccessfulXssDescriptors().size(), is(1));
+        XssDescriptor descriptor = journal.getSuccessfulXssDescriptors().iterator().next();
+        assertThat(descriptor.getPageClass() == HomePage.class, is(true));
+        assertThat(descriptor.getInputIdentifier(), is("body/form[1]/input[1]"));
     }
 }
