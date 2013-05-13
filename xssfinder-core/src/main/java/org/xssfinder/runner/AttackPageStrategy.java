@@ -1,7 +1,7 @@
 package org.xssfinder.runner;
 
 import org.xssfinder.xss.XssDescriptor;
-import org.xssfinder.xss.XssJournal;
+import org.xssfinder.reporting.XssJournal;
 
 import java.util.Map;
 

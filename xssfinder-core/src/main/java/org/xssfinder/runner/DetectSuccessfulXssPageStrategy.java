@@ -1,7 +1,7 @@
 package org.xssfinder.runner;
 
 import org.xssfinder.xss.XssDetector;
-import org.xssfinder.xss.XssJournal;
+import org.xssfinder.reporting.XssJournal;
 
 public class DetectSuccessfulXssPageStrategy implements PageStrategy {
     private final XssDetector xssDetector;

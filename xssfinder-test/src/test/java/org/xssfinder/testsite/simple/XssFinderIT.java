@@ -4,6 +4,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Before;
 import org.junit.Test;
+import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.GraphsFactory;
 import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;

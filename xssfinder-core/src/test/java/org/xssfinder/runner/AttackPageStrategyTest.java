@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.xss.XssDescriptor;
-import org.xssfinder.xss.XssJournal;
+import org.xssfinder.reporting.XssJournal;
 
 import java.util.Map;
 

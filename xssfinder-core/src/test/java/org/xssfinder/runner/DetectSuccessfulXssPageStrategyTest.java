@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.xss.XssDetector;
-import org.xssfinder.xss.XssJournal;
+import org.xssfinder.reporting.XssJournal;
 
 import java.util.Set;
 

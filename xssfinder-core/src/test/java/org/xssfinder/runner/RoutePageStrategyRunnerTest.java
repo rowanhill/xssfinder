@@ -7,7 +7,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.routing.Route;
-import org.xssfinder.xss.XssJournal;
+import org.xssfinder.reporting.XssJournal;
 
 import java.util.ArrayList;
 import java.util.List;

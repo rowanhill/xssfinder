@@ -2,7 +2,7 @@ package org.xssfinder.runner;
 
 import com.google.common.collect.ImmutableList;
 import org.xssfinder.routing.Route;
-import org.xssfinder.xss.XssJournal;
+import org.xssfinder.reporting.XssJournal;
 
 import java.util.List;
 

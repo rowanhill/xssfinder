@@ -1,4 +1,6 @@
-package org.xssfinder.xss;
+package org.xssfinder.reporting;
+
+import org.xssfinder.xss.XssDescriptor;
 
 import java.util.HashMap;
 import java.util.HashSet;

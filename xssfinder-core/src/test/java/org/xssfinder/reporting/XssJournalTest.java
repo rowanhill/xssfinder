@@ -1,7 +1,8 @@
-package org.xssfinder.xss;
+package org.xssfinder.reporting;
 
 import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
+import org.xssfinder.xss.XssDescriptor;
 
 import java.util.Set;
 
