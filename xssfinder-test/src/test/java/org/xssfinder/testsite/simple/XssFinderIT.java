@@ -51,10 +51,10 @@ public class XssFinderIT {
         RouteRunnerFactory runnerFactory = new RouteRunnerFactory();
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         XssJournal journal = new XssJournal();
-        RouteRunner runner = runnerFactory.createRouteRunner(driverWrapper, journal);
+        RouteRunner runner = runnerFactory.createRouteRunner(driverWrapper);
 
         // Run!
-        runner.run(routes);
+        runner.run(routes, journal);
 
         assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
         assertThat(journal.getSuccessfulXssDescriptors().size(), is(1));

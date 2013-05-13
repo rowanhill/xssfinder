@@ -2,6 +2,7 @@ package org.xssfinder.runner;
 
 import com.google.common.collect.ImmutableList;
 import org.xssfinder.routing.Route;
+import org.xssfinder.xss.XssJournal;
 
 import java.util.List;
 
@@ -21,8 +22,8 @@ public class RouteRunner {
         this.detectStrategy = detectStrategy;
     }
 
-    public void run(List<Route> routes) {
-        strategyRunner.run(routes, ImmutableList.of(attackStrategy, detectStrategy));
-        strategyRunner.run(routes, ImmutableList.of((PageStrategy)detectStrategy));
+    public void run(List<Route> routes, XssJournal xssJournal) {
+        strategyRunner.run(routes, ImmutableList.of(attackStrategy, detectStrategy), xssJournal);
+        strategyRunner.run(routes, ImmutableList.of((PageStrategy)detectStrategy), xssJournal);
     }
 }

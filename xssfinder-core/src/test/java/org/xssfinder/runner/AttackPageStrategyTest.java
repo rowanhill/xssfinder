@@ -34,10 +34,10 @@ public class AttackPageStrategyTest {
         when(mockPageAttacker.attackIfAboutToSubmit(mockContext))
                 .thenReturn(descriptorsById);
 
-        AttackPageStrategy strategy = new AttackPageStrategy(mockPageAttacker, mockXssJournal);
+        AttackPageStrategy strategy = new AttackPageStrategy(mockPageAttacker);
 
         // when
-        strategy.processPage(mockContext);
+        strategy.processPage(mockContext, mockXssJournal);
 
         // then
         verify(mockXssJournal).addXssDescriptor("1", mockXssDescriptor);

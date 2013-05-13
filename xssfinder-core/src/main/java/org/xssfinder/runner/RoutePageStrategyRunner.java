@@ -1,6 +1,7 @@
 package org.xssfinder.runner;
 
 import org.xssfinder.routing.Route;
+import org.xssfinder.xss.XssJournal;
 
 import java.util.List;
 
@@ -13,23 +14,23 @@ public class RoutePageStrategyRunner {
         this.contextFactory = contextFactory;
     }
 
-    public void run(List<Route> routes, List<PageStrategy> pageStrategies) {
+    public void run(List<Route> routes, List<PageStrategy> pageStrategies, XssJournal xssJournal) {
         for (Route route : routes) {
             driverWrapper.visit(route.getUrl());
 
             PageContext pageContext = contextFactory.createContext(driverWrapper, route);
 
             while (pageContext.hasNextContext()) {
-                executePageStrategies(pageStrategies, pageContext);
+                executePageStrategies(pageStrategies, pageContext, xssJournal);
                 pageContext = pageContext.getNextContext();
             }
-            executePageStrategies(pageStrategies, pageContext);
+            executePageStrategies(pageStrategies, pageContext, xssJournal);
         }
     }
 
-    private void executePageStrategies(List<PageStrategy> pageStrategies, PageContext context) {
+    private void executePageStrategies(List<PageStrategy> pageStrategies, PageContext context, XssJournal xssJournal) {
         for (PageStrategy pageStrategy : pageStrategies) {
-            pageStrategy.processPage(context);
+            pageStrategy.processPage(context, xssJournal);
         }
     }
 }

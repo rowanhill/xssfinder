@@ -4,8 +4,8 @@ import org.xssfinder.xss.*;
 
 public class RouteRunnerFactory {
     private final PageTraverser pageTraverser;
-    private final PageAttacker pageAttacker;
-    private final XssDetector xssDetector;
+    private XssDetector xssDetector;
+    private PageAttacker pageAttacker;
 
     public RouteRunnerFactory() {
         pageTraverser = new PageTraverser();
@@ -13,11 +13,11 @@ public class RouteRunnerFactory {
         xssDetector = new XssDetector();
     }
 
-    public RouteRunner createRouteRunner(DriverWrapper driverWrapper, XssJournal xssJournal) {
+    public RouteRunner createRouteRunner(DriverWrapper driverWrapper) {
         return new RouteRunner(
                 createRouteStrategyRunner(driverWrapper),
-                createAttackPageStrategy(xssJournal),
-                createDetectSuccessfulXssPageStrategy(xssJournal)
+                createAttackPageStrategy(),
+                createDetectSuccessfulXssPageStrategy()
         );
     }
 
@@ -35,11 +35,11 @@ public class RouteRunnerFactory {
             );
     }
 
-    private AttackPageStrategy createAttackPageStrategy(XssJournal xssJournal) {
-        return new AttackPageStrategy(pageAttacker, xssJournal);
+    private AttackPageStrategy createAttackPageStrategy() {
+        return new AttackPageStrategy(pageAttacker);
     }
 
-    private DetectSuccessfulXssPageStrategy createDetectSuccessfulXssPageStrategy(XssJournal xssJournal) {
-        return new DetectSuccessfulXssPageStrategy(xssDetector, xssJournal);
+    private DetectSuccessfulXssPageStrategy createDetectSuccessfulXssPageStrategy() {
+        return new DetectSuccessfulXssPageStrategy(xssDetector);
     }
 }

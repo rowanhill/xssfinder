@@ -14,8 +14,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class RouteRunnerFactoryTest {
     @Mock
-    private XssJournal mockXssJournal;
-    @Mock
     private DriverWrapper mockDriverWrapper;
 
     @Test
@@ -24,7 +22,7 @@ public class RouteRunnerFactoryTest {
         RouteRunnerFactory factory = new RouteRunnerFactory();
 
         // when
-        RouteRunner runner = factory.createRouteRunner(mockDriverWrapper, mockXssJournal);
+        RouteRunner runner = factory.createRouteRunner(mockDriverWrapper);
 
         // then
         assertThat(runner, is(notNullValue()));

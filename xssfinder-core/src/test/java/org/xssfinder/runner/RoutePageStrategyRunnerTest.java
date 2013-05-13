@@ -7,6 +7,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.routing.Route;
+import org.xssfinder.xss.XssJournal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,8 @@ public class RoutePageStrategyRunnerTest {
     private PageContext mockPageContext;
     @Mock
     private Route mockRoute;
+    @Mock
+    private XssJournal mockXssJournal;
 
     private final List<Route> routes = new ArrayList<Route>();
     private final List<PageStrategy> pageStrategies = new ArrayList<PageStrategy>();
@@ -43,7 +46,7 @@ public class RoutePageStrategyRunnerTest {
     @Test
     public void runnerOpensDriverWrapperAtStartPointOfRoute() {
         // when
-        runner.run(routes, pageStrategies);
+        runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
         verify(mockDriverWrapper).visit(URL);
@@ -55,7 +58,7 @@ public class RoutePageStrategyRunnerTest {
         when(mockPageContext.hasNextContext()).thenReturn(false);
 
         // when
-        runner.run(routes, pageStrategies);
+        runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
         verify(mockPageContext, never()).getNextContext();
@@ -70,12 +73,12 @@ public class RoutePageStrategyRunnerTest {
         pageStrategies.add(mockStrategy2);
 
         // when
-        runner.run(routes, pageStrategies);
+        runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
         InOrder inOrder = inOrder(mockStrategy1, mockStrategy2);
-        inOrder.verify(mockStrategy1).processPage(mockPageContext);
-        inOrder.verify(mockStrategy2).processPage(mockPageContext);
+        inOrder.verify(mockStrategy1).processPage(mockPageContext, mockXssJournal);
+        inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -91,14 +94,14 @@ public class RoutePageStrategyRunnerTest {
         when(mockPageContext.getNextContext()).thenReturn(mockNextContext);
 
         // when
-        runner.run(routes, pageStrategies);
+        runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
         InOrder inOrder = inOrder(mockStrategy1, mockStrategy2);
-        inOrder.verify(mockStrategy1).processPage(mockPageContext);
-        inOrder.verify(mockStrategy2).processPage(mockPageContext);
-        inOrder.verify(mockStrategy1).processPage(mockNextContext);
-        inOrder.verify(mockStrategy2).processPage(mockNextContext);
+        inOrder.verify(mockStrategy1).processPage(mockPageContext, mockXssJournal);
+        inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
+        inOrder.verify(mockStrategy1).processPage(mockNextContext, mockXssJournal);
+        inOrder.verify(mockStrategy2).processPage(mockNextContext, mockXssJournal);
         inOrder.verifyNoMoreInteractions();
     }
 }

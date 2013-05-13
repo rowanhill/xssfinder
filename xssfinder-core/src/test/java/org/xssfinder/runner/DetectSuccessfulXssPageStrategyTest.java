@@ -35,10 +35,10 @@ public class DetectSuccessfulXssPageStrategyTest {
         when(mockPageContext.getPageTraversal()).thenReturn(mockNextTraversal);
         Set<String> successfulXssIds = ImmutableSet.of("1", "2", "5");
         when(mockXssDetector.getCurrentXssIds(mockDriverWrapper)).thenReturn(successfulXssIds);
-        DetectSuccessfulXssPageStrategy strategy = new DetectSuccessfulXssPageStrategy(mockXssDetector, mockXssJournal);
+        DetectSuccessfulXssPageStrategy strategy = new DetectSuccessfulXssPageStrategy(mockXssDetector);
 
         // when
-        strategy.processPage(mockPageContext);
+        strategy.processPage(mockPageContext, mockXssJournal);
 
         // then
         verify(mockXssJournal).markAsSuccessful(successfulXssIds);

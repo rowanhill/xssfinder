@@ -5,15 +5,13 @@ import org.xssfinder.xss.XssJournal;
 
 public class DetectSuccessfulXssPageStrategy implements PageStrategy {
     private final XssDetector xssDetector;
-    private final XssJournal xssJournal;
 
-    public DetectSuccessfulXssPageStrategy(XssDetector xssDetector, XssJournal xssJournal) {
+    public DetectSuccessfulXssPageStrategy(XssDetector xssDetector) {
         this.xssDetector = xssDetector;
-        this.xssJournal = xssJournal;
     }
 
     @Override
-    public void processPage(PageContext pageContext) {
+    public void processPage(PageContext pageContext, XssJournal xssJournal) {
         xssJournal.markAsSuccessful(xssDetector.getCurrentXssIds(pageContext.getDriverWrapper()));
     }
 }

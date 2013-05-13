@@ -7,15 +7,13 @@ import java.util.Map;
 
 public class AttackPageStrategy implements PageStrategy {
     private final PageAttacker pageAttacker;
-    private final XssJournal xssJournal;
 
-    public AttackPageStrategy(PageAttacker pageAttacker, XssJournal xssJournal) {
+    public AttackPageStrategy(PageAttacker pageAttacker) {
         this.pageAttacker = pageAttacker;
-        this.xssJournal = xssJournal;
     }
 
     @Override
-    public void processPage(PageContext pageContext) {
+    public void processPage(PageContext pageContext, XssJournal xssJournal) {
         Map<String, XssDescriptor> xssIdsToXssDescriptors =
                 pageAttacker.attackIfAboutToSubmit(pageContext);
         for (Map.Entry<String, XssDescriptor> entry : xssIdsToXssDescriptors.entrySet()) {
