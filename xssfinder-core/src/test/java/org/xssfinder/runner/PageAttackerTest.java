@@ -25,6 +25,8 @@ public class PageAttackerTest {
     private XssDescriptorFactory mockXssDescriptorFactory;
 
     @Mock
+    private PageContext mockPageContext;
+    @Mock
     private DriverWrapper mockDriverWrapper;
     @Mock
     private PageTraversal mockPageTraversal;
@@ -37,13 +39,18 @@ public class PageAttackerTest {
 
     @Before
     public void setUp() {
+        when(mockPageContext.getDriverWrapper()).thenReturn(mockDriverWrapper);
+        when(mockPageContext.getPageTraversal()).thenReturn(mockPageTraversal);
+        when(mockPageContext.getPage()).thenReturn(mockPage);
+        when(mockPageContext.hasNextContext()).thenReturn(true, false);
+
         pageAttacker = new PageAttacker(mockXssGenerator, mockXssDescriptorFactory);
     }
 
     @Test
     public void attackingDoesNothingIfNextTraversalIsNotSubmission() {
         // when
-        pageAttacker.attackIfAboutToSubmit(mockPage, mockDriverWrapper, mockPageTraversal);
+        pageAttacker.attackIfAboutToSubmit(mockPageContext);
 
         // then
         verifyZeroInteractions(mockDriverWrapper);
@@ -52,7 +59,7 @@ public class PageAttackerTest {
     @Test
     public void attackingDoesNothingIfNextTraversalIsNull() {
         // when
-        pageAttacker.attackIfAboutToSubmit(mockPage, mockDriverWrapper, null);
+        pageAttacker.attackIfAboutToSubmit(mockPageContext);
 
         // then
         verifyZeroInteractions(mockDriverWrapper);
@@ -64,7 +71,7 @@ public class PageAttackerTest {
         when(mockPageTraversal.isSubmit()).thenReturn(true);
 
         // when
-        pageAttacker.attackIfAboutToSubmit(mockPage, mockDriverWrapper, mockPageTraversal);
+        pageAttacker.attackIfAboutToSubmit(mockPageContext);
 
         // then
         verify(mockDriverWrapper).putXssAttackStringsInInputs(mockXssGenerator);
@@ -81,7 +88,7 @@ public class PageAttackerTest {
 
         // when
         Map<String, XssDescriptor> xssIdsToDescription =
-                pageAttacker.attackIfAboutToSubmit(mockPage, mockDriverWrapper, mockPageTraversal);
+                pageAttacker.attackIfAboutToSubmit(mockPageContext);
 
         // then
         Map<String, XssDescriptor> expectedDescriptions = ImmutableMap.of("1", mockXssDescriptor);

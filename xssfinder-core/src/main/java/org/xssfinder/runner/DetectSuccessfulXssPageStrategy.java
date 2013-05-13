@@ -1,6 +1,5 @@
 package org.xssfinder.runner;
 
-import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.xss.XssDetector;
 import org.xssfinder.xss.XssJournal;
 
@@ -14,7 +13,7 @@ public class DetectSuccessfulXssPageStrategy implements PageStrategy {
     }
 
     @Override
-    public void processPage(Object page, PageTraversal nextTraversal, DriverWrapper driverWrapper) {
-        xssJournal.markAsSuccessful(xssDetector.getCurrentXssIds(driverWrapper));
+    public void processPage(PageContext pageContext) {
+        xssJournal.markAsSuccessful(xssDetector.getCurrentXssIds(pageContext.getDriverWrapper()));
     }
 }

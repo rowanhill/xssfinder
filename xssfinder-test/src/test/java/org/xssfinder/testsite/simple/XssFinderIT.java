@@ -50,7 +50,8 @@ public class XssFinderIT {
         // Create a runner using HtmlUnitDriver
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         XssJournal journal = new XssJournal();
-        RoutePageStrategyRunner strategyRunner = new RoutePageStrategyRunner(driverWrapper, driverWrapper.getPageInstantiator(), new PageTraverser());
+        PageContextFactory contextFactory = new PageContextFactory(new PageTraverser(), driverWrapper.getPageInstantiator());
+        RoutePageStrategyRunner strategyRunner = new RoutePageStrategyRunner(driverWrapper, contextFactory);
         PageAttacker pageAttacker = new PageAttacker(new XssGenerator(new XssAttackFactory()), new XssDescriptorFactory());
         AttackPageStrategy attackStrategy = new AttackPageStrategy(pageAttacker, journal);
         DetectSuccessfulXssPageStrategy detectStrategy = new DetectSuccessfulXssPageStrategy(new XssDetector(), journal);

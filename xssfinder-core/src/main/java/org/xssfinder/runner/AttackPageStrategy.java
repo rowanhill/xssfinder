@@ -1,6 +1,5 @@
 package org.xssfinder.runner;
 
-import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.xss.XssDescriptor;
 import org.xssfinder.xss.XssJournal;
 
@@ -16,9 +15,9 @@ public class AttackPageStrategy implements PageStrategy {
     }
 
     @Override
-    public void processPage(Object page, PageTraversal nextTraversal, DriverWrapper driverWrapper) {
+    public void processPage(PageContext pageContext) {
         Map<String, XssDescriptor> xssIdsToXssDescriptors =
-                pageAttacker.attackIfAboutToSubmit(page, driverWrapper, nextTraversal);
+                pageAttacker.attackIfAboutToSubmit(pageContext);
         for (Map.Entry<String, XssDescriptor> entry : xssIdsToXssDescriptors.entrySet()) {
             xssJournal.addXssDescriptor(entry.getKey(), entry.getValue());
         }

@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.xss.XssDescriptor;
 import org.xssfinder.xss.XssJournal;
 
@@ -22,23 +21,23 @@ public class AttackPageStrategyTest {
     @Mock
     private XssJournal mockXssJournal;
 
+    @Mock
+    private PageContext mockContext;
+
     @Test
     public void processingPageAddsAttackDescriptorsToJournal() {
         // given
-        Object page = new Object();
-        PageTraversal mockNextTraversal = mock(PageTraversal.class);
-        DriverWrapper mockDriverWrapper = mock(DriverWrapper.class);
         XssDescriptor mockXssDescriptor = mock(XssDescriptor.class);
         Map<String, XssDescriptor> descriptorsById = ImmutableMap.of(
                 "1", mockXssDescriptor
         );
-        when(mockPageAttacker.attackIfAboutToSubmit(page, mockDriverWrapper, mockNextTraversal))
+        when(mockPageAttacker.attackIfAboutToSubmit(mockContext))
                 .thenReturn(descriptorsById);
 
         AttackPageStrategy strategy = new AttackPageStrategy(mockPageAttacker, mockXssJournal);
 
         // when
-        strategy.processPage(page, mockNextTraversal, mockDriverWrapper);
+        strategy.processPage(mockContext);
 
         // then
         verify(mockXssJournal).addXssDescriptor("1", mockXssDescriptor);

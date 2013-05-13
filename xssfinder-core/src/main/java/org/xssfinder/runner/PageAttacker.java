@@ -1,6 +1,5 @@
 package org.xssfinder.runner;
 
-import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.xss.XssDescriptor;
 import org.xssfinder.xss.XssDescriptorFactory;
 import org.xssfinder.xss.XssGenerator;
@@ -17,15 +16,14 @@ public class PageAttacker {
         this.xssDescriptorFactory = xssDescriptorFactory;
     }
 
-    public Map<String, XssDescriptor> attackIfAboutToSubmit(Object page, DriverWrapper driverWrapper, PageTraversal pageTraversal) {
+    public Map<String, XssDescriptor> attackIfAboutToSubmit(PageContext pageContext) {
         Map<String, XssDescriptor> xssIdsToDescriptors = new HashMap<String, XssDescriptor>();
-        if (pageTraversal != null && pageTraversal.isSubmit()) {
-            Map<String, String> inputIdsToXssIds = driverWrapper.putXssAttackStringsInInputs(xssGenerator);
+        if (pageContext.hasNextContext() && pageContext.getPageTraversal().isSubmit()) {
+            Map<String, String> inputIdsToXssIds = pageContext.getDriverWrapper().putXssAttackStringsInInputs(xssGenerator);
             for (Map.Entry<String, String> entry : inputIdsToXssIds.entrySet()) {
-                XssDescriptor xssDescriptor = xssDescriptorFactory.createXssDescriptor(page, entry.getKey());
+                XssDescriptor xssDescriptor = xssDescriptorFactory.createXssDescriptor(pageContext.getPage(), entry.getKey());
                 xssIdsToDescriptors.put(entry.getValue(), xssDescriptor);
             }
         }
-        return xssIdsToDescriptors;
-    }
+        return xssIdsToDescriptors;    }
 }

@@ -1,39 +1,35 @@
 package org.xssfinder.runner;
 
-import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.routing.Route;
 
 import java.util.List;
 
 public class RoutePageStrategyRunner {
     private final DriverWrapper driverWrapper;
-    private final PageInstantiator pageInstantiator;
-    private final PageTraverser pageTraverser;
+    private final PageContextFactory contextFactory;
 
-    public RoutePageStrategyRunner(DriverWrapper driverWrapper, PageInstantiator pageInstantiator, PageTraverser pageTraverser) {
+    public RoutePageStrategyRunner(DriverWrapper driverWrapper, PageContextFactory contextFactory) {
         this.driverWrapper = driverWrapper;
-        this.pageInstantiator = pageInstantiator;
-        this.pageTraverser = pageTraverser;
+        this.contextFactory = contextFactory;
     }
 
     public void run(List<Route> routes, List<PageStrategy> pageStrategies) {
         for (Route route : routes) {
             driverWrapper.visit(route.getUrl());
-            Object page = pageInstantiator.instantiatePage(route.getRootPageClass());
 
-            PageTraversal traversal = route.getPageTraversal();
-            while (traversal != null) {
-                executePageStrategies(pageStrategies, page, traversal);
-                page = pageTraverser.traverse(page, traversal);
-                traversal = traversal.getNextTraversal();
+            PageContext pageContext = contextFactory.createContext(driverWrapper, route);
+
+            while (pageContext.hasNextContext()) {
+                executePageStrategies(pageStrategies, pageContext);
+                pageContext = pageContext.getNextContext();
             }
-            executePageStrategies(pageStrategies, page, traversal);
+            executePageStrategies(pageStrategies, pageContext);
         }
     }
 
-    private void executePageStrategies(List<PageStrategy> pageStrategies, Object page, PageTraversal traversal) {
+    private void executePageStrategies(List<PageStrategy> pageStrategies, PageContext context) {
         for (PageStrategy pageStrategy : pageStrategies) {
-            pageStrategy.processPage(page, traversal, driverWrapper);
+            pageStrategy.processPage(context);
         }
     }
 }
