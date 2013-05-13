@@ -2,6 +2,7 @@ package org.xssfinder.testsite.simple;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.xssfinder.reporting.XssJournal;
@@ -13,6 +14,7 @@ import org.xssfinder.scanner.PageFinder;
 import org.xssfinder.testsite.simple.page.HomePage;
 import org.xssfinder.xss.*;
 
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +22,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class XssFinderIT {
+
+    public static final String OUTPUT_FILE = "xssfinder_int_test_report.html";
 
     @Before
     public void setUp() throws Exception {
@@ -39,8 +43,14 @@ public class XssFinderIT {
         server.start();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @After
+    public void tearDown() throws Exception {
+        new File(OUTPUT_FILE).delete();
+    }
+
     @Test
-    public void runXssFinder() {
+    public void runXssFinder() throws Exception {
         // Find all the page classes
         Set<Class<?>> pageClasses = new PageFinder("org.xssfinder.testsite.simple").findAllPages();
 
@@ -52,7 +62,7 @@ public class XssFinderIT {
         RouteRunnerFactory runnerFactory = new RouteRunnerFactory();
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         XssJournal journal = new XssJournal();
-        RouteRunner runner = runnerFactory.createRouteRunner(driverWrapper);
+        RouteRunner runner = runnerFactory.createRouteRunner(driverWrapper, OUTPUT_FILE);
 
         // Run!
         runner.run(routes, journal);
@@ -62,5 +72,6 @@ public class XssFinderIT {
         XssDescriptor descriptor = journal.getSuccessfulXssDescriptors().iterator().next();
         assertThat(descriptor.getPageClass() == HomePage.class, is(true));
         assertThat(descriptor.getInputIdentifier(), is("body/form[1]/input[1]"));
+        assertThat(new File(OUTPUT_FILE).exists(), is(true));
     }
 }

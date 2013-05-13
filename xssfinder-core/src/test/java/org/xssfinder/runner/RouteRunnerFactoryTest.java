@@ -20,7 +20,7 @@ public class RouteRunnerFactoryTest {
         RouteRunnerFactory factory = new RouteRunnerFactory();
 
         // when
-        RouteRunner runner = factory.createRouteRunner(mockDriverWrapper);
+        RouteRunner runner = factory.createRouteRunner(mockDriverWrapper, "somefile.html");
 
         // then
         assertThat(runner, is(notNullValue()));

@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.reporting.HtmlReportWriter;
 import org.xssfinder.routing.Route;
 import org.xssfinder.reporting.XssJournal;
 
@@ -23,14 +24,16 @@ public class RouteRunnerTest {
     @Mock
     private DetectSuccessfulXssPageStrategy mockDetectStrategy;
     @Mock
+    private HtmlReportWriter mockReportWriter;
+    @Mock
     private XssJournal mockXssJournal;
 
     private List<Route> routes = new ArrayList<Route>();
 
     @Test
-    public void runAttacksAllPagesThenVerifiesAllPages() {
+    public void runAttacksAllPagesThenVerifiesAllPagesThenWritesReport() throws Exception {
         // given
-        RouteRunner runner = new RouteRunner(mockStrategyRunner, mockAttackStrategy, mockDetectStrategy);
+        RouteRunner runner = new RouteRunner(mockStrategyRunner, mockAttackStrategy, mockDetectStrategy, mockReportWriter);
 
         // when
         runner.run(routes, mockXssJournal);
@@ -38,9 +41,10 @@ public class RouteRunnerTest {
         // then
         List<PageStrategy> attackPhaseStrategies = ImmutableList.of(mockAttackStrategy, mockDetectStrategy);
         List<PageStrategy> detectPhaseStrategies = ImmutableList.of((PageStrategy)mockDetectStrategy);
-        InOrder inOrder = inOrder(mockStrategyRunner);
+        InOrder inOrder = inOrder(mockStrategyRunner, mockReportWriter);
         inOrder.verify(mockStrategyRunner).run(routes, attackPhaseStrategies, mockXssJournal);
         inOrder.verify(mockStrategyRunner).run(routes, detectPhaseStrategies, mockXssJournal);
+        inOrder.verify(mockReportWriter).write(mockXssJournal);
         inOrder.verifyNoMoreInteractions();
     }
 }
