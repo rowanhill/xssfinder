@@ -90,14 +90,14 @@ public class HtmlReportWriterTest {
 
         public boolean hasEntryForClass(Class<?> pageClass) {
             return webDriver.findElements(By.xpath(
-                    "//div[@class='vulnerability']/div[@class='page'][contains(text()," + pageClass.getCanonicalName() +")]"
+                    "//table[@id='vulnerabilities']//td[1][contains(text()," + pageClass.getCanonicalName() +")]"
             )).size() == 1;
         }
 
         public boolean hasEntryForClassAndInput(Class<?> pageClass, String identifier) {
             return webDriver.findElements(By.xpath(
-                    "//div[@class='vulnerability']/div[@class='page'][contains(text()," + pageClass.getCanonicalName() +")]" +
-                            "/../div[@class='input'][contains(text(),"+identifier+")]"
+                    "//table[@id='vulnerabilities']//td[1][contains(text()," + pageClass.getCanonicalName() +")]" +
+                            "/../td[2][contains(text(),"+identifier+")]"
             )).size() == 1;
         }
     }

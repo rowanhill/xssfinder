@@ -23,18 +23,24 @@ public class HtmlReportWriter {
             output.write("<title>XssFinder Report</title>");
             output.write("</head>");
             output.write("<body>");
+            output.write("<p>The following vulnerabilities were detected:</p>");
+            output.write("<table id='vulnerabilities'>");
+            output.write("<tr>");
+            output.write("<th>Page Object</th><th>Input XPath</th>");
+            output.write("</tr>");
             for (XssDescriptor descriptor : journal.getSuccessfulXssDescriptors()) {
                 output.write(
-                        "<div class='vulnerability'>" +
-                            "<div class='page'>" +
+                        "<tr>" +
+                            "<td>" +
                                 descriptor.getPageClass().getCanonicalName() +
-                            "</div>" +
-                            "<div class='input'>" +
+                            "</td>" +
+                            "<td>" +
                                 descriptor.getInputIdentifier() +
-                            "</div>" +
-                        "</div>"
+                            "</td>" +
+                        "</tr>"
                 );
             }
+            output.write("</table>");
             output.write("</body>");
             output.write("</html>");
         } finally {
