@@ -5,7 +5,6 @@ public class XssDescriptor {
     private final String inputIdentifier;
 
     public XssDescriptor(Class<?> pageClass, String inputIdentifier) {
-        //To change body of created methods use File | Settings | File Templates.
         this.pageClass = pageClass;
         this.inputIdentifier = inputIdentifier;
     }
