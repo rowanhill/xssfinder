@@ -2,24 +2,27 @@ package org.xssfinder.xss;
 
 import org.junit.Test;
 
+import java.lang.reflect.Method;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
 public class XssDescriptorTest {
     @Test
-    public void pageAndInputAreRequiredAndAvailable() {
+    public void submitMethodAndInputAreRequiredAndAvailable() throws Exception {
         // given
-        XssDescriptor descriptor = new XssDescriptor(Page.class, "input identifier");
+        XssDescriptor descriptor = new XssDescriptor(Page.class.getMethod("submit"), "input identifier");
 
         // when
-        Class<?> pageClass = descriptor.getPageClass();
+        Method submitMethod = descriptor.getSubmitMethod();
         String inputIdentifier = descriptor.getInputIdentifier();
 
         // then
-        assertThat(pageClass == Page.class, is(true));
+        assertThat(submitMethod, is(Page.class.getMethod("submit")));
         assertThat(inputIdentifier, is("input identifier"));
     }
 
-    private static class Page {}
+    private static class Page {
+        public Page submit() { return null; }
+    }
 }

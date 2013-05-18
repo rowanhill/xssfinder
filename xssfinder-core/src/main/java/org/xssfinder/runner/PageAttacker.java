@@ -21,7 +21,7 @@ public class PageAttacker {
         if (pageContext.hasNextContext() && pageContext.getPageTraversal().isSubmit()) {
             Map<String, String> inputIdsToXssIds = pageContext.getDriverWrapper().putXssAttackStringsInInputs(xssGenerator);
             for (Map.Entry<String, String> entry : inputIdsToXssIds.entrySet()) {
-                XssDescriptor xssDescriptor = xssDescriptorFactory.createXssDescriptor(pageContext.getPage(), entry.getKey());
+                XssDescriptor xssDescriptor = xssDescriptorFactory.createXssDescriptor(pageContext.getPageTraversal(), entry.getKey());
                 xssIdsToDescriptors.put(entry.getValue(), xssDescriptor);
             }
         }

@@ -70,7 +70,7 @@ public class XssFinderIT {
         assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
         assertThat(journal.getSuccessfulXssDescriptors().size(), is(1));
         XssDescriptor descriptor = journal.getSuccessfulXssDescriptors().iterator().next();
-        assertThat(descriptor.getPageClass() == HomePage.class, is(true));
+        assertThat(descriptor.getSubmitMethod(), is(HomePage.class.getMethod("submit")));
         assertThat(descriptor.getInputIdentifier(), is("body/form[1]/input[1]"));
         assertThat(new File(OUTPUT_FILE).exists(), is(true));
     }

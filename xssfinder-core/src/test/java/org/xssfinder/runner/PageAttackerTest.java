@@ -83,7 +83,7 @@ public class PageAttackerTest {
         when(mockPageTraversal.isSubmit()).thenReturn(true);
         when(mockDriverWrapper.putXssAttackStringsInInputs(mockXssGenerator))
                 .thenReturn(ImmutableMap.of("body/form[1]/input[1]", "1"));
-        when(mockXssDescriptorFactory.createXssDescriptor(mockPage, "body/form[1]/input[1]"))
+        when(mockXssDescriptorFactory.createXssDescriptor(mockPageTraversal, "body/form[1]/input[1]"))
                 .thenReturn(mockXssDescriptor);
 
         // when

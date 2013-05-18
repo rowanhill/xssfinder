@@ -1,16 +1,18 @@
 package org.xssfinder.xss;
 
+import java.lang.reflect.Method;
+
 public class XssDescriptor {
-    private final Class<?> pageClass;
+    private final Method submitMethod;
     private final String inputIdentifier;
 
-    public XssDescriptor(Class<?> pageClass, String inputIdentifier) {
-        this.pageClass = pageClass;
+    public XssDescriptor(Method submitMethod, String inputIdentifier) {
+        this.submitMethod = submitMethod;
         this.inputIdentifier = inputIdentifier;
     }
 
-    public Class<?> getPageClass() {
-        return pageClass;
+    public Method getSubmitMethod() {
+        return submitMethod;
     }
 
     public String getInputIdentifier() {

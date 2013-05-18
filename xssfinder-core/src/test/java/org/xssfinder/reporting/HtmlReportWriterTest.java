@@ -50,7 +50,7 @@ public class HtmlReportWriterTest {
     @Test
     public void reportFileDoesNotContainPageClassNamesWithoutVulnerabilities() throws Exception {
         // given
-        journal.addXssDescriptor("1", new XssDescriptor(SomePage.class, "/some/xpath"));
+        journal.addXssDescriptor("1", new XssDescriptor(SomePage.class.getDeclaredMethod("submitForm"), "/some/xpath"));
 
         // when
         reportWriter.write(journal);
@@ -63,7 +63,7 @@ public class HtmlReportWriterTest {
     @Test
     public void reportFileContainsPageClassNamesWithXssVulnerabilities() throws Exception {
         // given
-        journal.addXssDescriptor("1", new XssDescriptor(SomePage.class, "/some/xpath"));
+        journal.addXssDescriptor("1", new XssDescriptor(SomePage.class.getDeclaredMethod("submitForm"), "/some/xpath"));
         journal.markAsSuccessful(ImmutableSet.of("1"));
 
         // when
@@ -71,7 +71,7 @@ public class HtmlReportWriterTest {
 
         // then
         ReportPage reportPage = new ReportPage(createDriver());
-        assertThat(reportPage.hasEntryForClassAndInput(SomePage.class, "/some/xpath"), is(true));
+        assertThat(reportPage.hasEntryForClassAndMethodAndInput(SomePage.class, "submitForm()", "/some/xpath"), is(true));
     }
 
     private HtmlUnitDriver createDriver() throws Exception {
@@ -94,13 +94,17 @@ public class HtmlReportWriterTest {
             )).size() == 1;
         }
 
-        public boolean hasEntryForClassAndInput(Class<?> pageClass, String identifier) {
+        public boolean hasEntryForClassAndMethodAndInput(Class<?> pageClass, String methodString, String identifier) {
             return webDriver.findElements(By.xpath(
-                    "//table[@id='vulnerabilities']//td[1][contains(text()," + pageClass.getCanonicalName() +")]" +
-                            "/../td[2][contains(text(),"+identifier+")]"
+                    "//table[@id='vulnerabilities']//td[1][contains(text(),'" + pageClass.getCanonicalName() +"')]" +
+                            "/../td[2][contains(text(),'"+methodString+"')]" +
+                            "/../td[3][contains(text(),'"+identifier+"')]"
             )).size() == 1;
         }
     }
 
-    private static class SomePage {}
+    @SuppressWarnings("UnusedDeclaration")
+    private static class SomePage {
+        SomePage submitForm() { return null; }
+    }
 }

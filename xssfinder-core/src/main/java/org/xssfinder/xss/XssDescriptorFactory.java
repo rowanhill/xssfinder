@@ -1,7 +1,9 @@
 package org.xssfinder.xss;
 
+import org.xssfinder.routing.PageTraversal;
+
 public class XssDescriptorFactory {
-    public XssDescriptor createXssDescriptor(Object page, String inputIdentifier) {
-        return new XssDescriptor(page.getClass(), inputIdentifier);
+    public XssDescriptor createXssDescriptor(PageTraversal pageTraversal, String inputIdentifier) {
+        return new XssDescriptor(pageTraversal.getMethod(), inputIdentifier);
     }
 }
