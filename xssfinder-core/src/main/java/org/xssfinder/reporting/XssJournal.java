@@ -1,5 +1,6 @@
 package org.xssfinder.reporting;
 
+import org.xssfinder.runner.PageContext;
 import org.xssfinder.xss.XssDescriptor;
 
 import java.util.HashMap;
@@ -9,7 +10,12 @@ import java.util.Set;
 
 public class XssJournal {
     private final Map<String, XssDescriptor> descriptorsById = new HashMap<String, XssDescriptor>();
-    private final Set<XssDescriptor> successfulDescriptors = new HashSet<XssDescriptor>();
+    private final Map<String, XssSighting> xssSightingsById = new HashMap<String, XssSighting>();
+    private final XssSightingFactory xssSightingFactory;
+
+    public XssJournal(XssSightingFactory xssSightingFactory) {
+        this.xssSightingFactory = xssSightingFactory;
+    }
 
     public void addXssDescriptor(String xssIdentifier, XssDescriptor xssDescriptor) {
         descriptorsById.put(xssIdentifier, xssDescriptor);
@@ -19,13 +25,16 @@ public class XssJournal {
         return descriptorsById.get(xssIdentifier);
     }
 
-    public void markAsSuccessful(Set<String> xssIdentifiers) {
+    public void markAsSuccessful(PageContext pageContext, Set<String> xssIdentifiers) {
         for (String xssIdentifier : xssIdentifiers) {
-            successfulDescriptors.add(descriptorsById.get(xssIdentifier));
+            XssDescriptor descriptor = descriptorsById.get(xssIdentifier);
+            if (!xssSightingsById.containsKey(xssIdentifier)) {
+                xssSightingsById.put(xssIdentifier, xssSightingFactory.createXssSighting(pageContext, descriptor));
+            }
         }
     }
 
-    public Set<XssDescriptor> getSuccessfulXssDescriptors() {
-        return successfulDescriptors;
+    public Set<XssSighting> getXssSightings() {
+        return new HashSet<XssSighting>(xssSightingsById.values());
     }
 }

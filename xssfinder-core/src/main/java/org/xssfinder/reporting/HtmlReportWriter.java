@@ -26,19 +26,22 @@ public class HtmlReportWriter {
             output.write("<p>The following vulnerabilities were detected:</p>");
             output.write("<table id='vulnerabilities'>");
             output.write("<tr>");
-            output.write("<th>Page Object</th><th>Submit Method</th><th>Input XPath</th>");
+            output.write("<th>Input Page Object</th><th>Submit Method</th><th>Input XPath</th><th>Sighting Page Object</th>");
             output.write("</tr>");
-            for (XssDescriptor descriptor : journal.getSuccessfulXssDescriptors()) {
+            for (XssSighting xssSighting : journal.getXssSightings()) {
                 output.write(
                         "<tr>" +
                             "<td>" +
-                                descriptor.getSubmitMethod().getDeclaringClass().getCanonicalName() +
+                                xssSighting.getVulnerableClassName() +
                             "</td>" +
                             "<td>" +
-                                descriptor.getSubmitMethod().getName() + "()" +
+                                xssSighting.getSubmitMethodName() + "()" +
                             "</td>" +
                             "<td>" +
-                                descriptor.getInputIdentifier() +
+                                xssSighting.getInputIdentifier() +
+                            "</td>" +
+                            "<td>" +
+                                xssSighting.getSightingClassName() +
                             "</td>" +
                         "</tr>"
                 );

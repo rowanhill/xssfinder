@@ -6,6 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.xssfinder.reporting.XssJournal;
+import org.xssfinder.reporting.XssSighting;
+import org.xssfinder.reporting.XssSightingFactory;
 import org.xssfinder.routing.GraphsFactory;
 import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
@@ -61,17 +63,17 @@ public class XssFinderIT {
         // Create a runner using HtmlUnitDriver
         RouteRunnerFactory runnerFactory = new RouteRunnerFactory();
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
-        XssJournal journal = new XssJournal();
+        XssJournal journal = new XssJournal(new XssSightingFactory());
         RouteRunner runner = runnerFactory.createRouteRunner(driverWrapper, OUTPUT_FILE);
 
         // Run!
         runner.run(routes, journal);
 
         assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
-        assertThat(journal.getSuccessfulXssDescriptors().size(), is(1));
-        XssDescriptor descriptor = journal.getSuccessfulXssDescriptors().iterator().next();
-        assertThat(descriptor.getSubmitMethod(), is(HomePage.class.getMethod("submit")));
-        assertThat(descriptor.getInputIdentifier(), is("body/form[1]/input[1]"));
+        assertThat(journal.getXssSightings().size(), is(1));
+        XssSighting sighting = journal.getXssSightings().iterator().next();
+        assertThat(sighting.getSubmitMethodName(), is("submit"));
+        assertThat(sighting.getInputIdentifier(), is("body/form[1]/input[1]"));
         assertThat(new File(OUTPUT_FILE).exists(), is(true));
     }
 }

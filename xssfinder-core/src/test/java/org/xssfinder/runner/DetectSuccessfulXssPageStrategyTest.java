@@ -41,6 +41,6 @@ public class DetectSuccessfulXssPageStrategyTest {
         strategy.processPage(mockPageContext, mockXssJournal);
 
         // then
-        verify(mockXssJournal).markAsSuccessful(successfulXssIds);
+        verify(mockXssJournal).markAsSuccessful(mockPageContext, successfulXssIds);
     }
 }
