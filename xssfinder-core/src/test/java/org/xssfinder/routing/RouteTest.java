@@ -6,7 +6,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.Page;
-import org.xssfinder.reflection.Instantiator;
+import org.xssfinder.reflection.*;
+import org.xssfinder.reflection.InstantiationException;
+import org.xssfinder.runner.LifecycleEventException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -175,6 +177,16 @@ public class RouteTest {
 
         // then
         assertThat(handler, is((Object)mockHandler));
+    }
+
+    @Test(expected=LifecycleEventException.class)
+    public void throwsExceptionIfCreatingLifecycleHandlerFails() throws Exception {
+        // given
+        Route route = new Route(RootPage.class, mockPageTraversal, mockInstantiator);
+        when(mockInstantiator.instantiate(LifecycleHandler.class)).thenThrow(new InstantiationException(null));
+
+        // when
+        route.createLifecycleHandler();
     }
 
     @SuppressWarnings("UnusedDeclaration")
