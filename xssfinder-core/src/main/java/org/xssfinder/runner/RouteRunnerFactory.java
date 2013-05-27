@@ -1,5 +1,6 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.reflection.Instantiator;
 import org.xssfinder.reporting.HtmlReportWriter;
 import org.xssfinder.xss.*;
 
@@ -9,7 +10,7 @@ public class RouteRunnerFactory {
     private PageAttacker pageAttacker;
 
     public RouteRunnerFactory() {
-        pageTraverser = new PageTraverser(new CustomTraverserInstantiator());
+        pageTraverser = new PageTraverser(new CustomTraverserInstantiator(new Instantiator()));
         pageAttacker = new PageAttacker(new XssGenerator(new XssAttackFactory()), new XssDescriptorFactory());
         xssDetector = new XssDetector();
     }

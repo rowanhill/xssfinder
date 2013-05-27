@@ -2,12 +2,18 @@ package org.xssfinder.runner;
 
 import org.xssfinder.CustomTraverser;
 import org.xssfinder.TraverseWith;
+import org.xssfinder.reflection.*;
+import org.xssfinder.reflection.InstantiationException;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class CustomTraverserInstantiator {
+    private final Instantiator instantiator;
+
+    public CustomTraverserInstantiator(Instantiator instantiator) {
+        this.instantiator = instantiator;
+    }
+
     public CustomTraverser instantiate(Method method) {
         try {
             TraverseWith annotation = method.getAnnotation(TraverseWith.class);
@@ -15,16 +21,8 @@ public class CustomTraverserInstantiator {
                 return null;
             }
             Class<? extends CustomTraverser> customTraverserClass = annotation.value();
-            Constructor<? extends CustomTraverser> constructor = customTraverserClass.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            return constructor.newInstance();
-        } catch (NoSuchMethodException e) {
-            throw new CustomTraverserInstantiationException(e);
-        } catch (InvocationTargetException e) {
-            throw new CustomTraverserInstantiationException(e);
+            return instantiator.instantiate(customTraverserClass);
         } catch (InstantiationException e) {
-            throw new CustomTraverserInstantiationException(e);
-        } catch (IllegalAccessException e) {
             throw new CustomTraverserInstantiationException(e);
         }
     }
