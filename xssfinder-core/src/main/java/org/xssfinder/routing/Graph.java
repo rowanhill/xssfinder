@@ -3,6 +3,7 @@ package org.xssfinder.routing;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import org.xssfinder.SubmitAction;
+import org.xssfinder.reflection.Instantiator;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -10,10 +11,12 @@ import java.util.*;
 public class Graph {
     private final Set<PageDescriptor> pageDescriptors;
     private final Class<?> rootPageClass;
+    private final Instantiator instantiator;
 
-    public Graph(Set<PageDescriptor> pageDescriptors) {
+    public Graph(Set<PageDescriptor> pageDescriptors, Instantiator instantiator) {
         this.pageDescriptors = pageDescriptors;
         this.rootPageClass = findRootNode(pageDescriptors);
+        this.instantiator = instantiator;
     }
 
     public List<Route> getRoutes() {
@@ -157,7 +160,7 @@ public class Graph {
             LinkedList<GraphNode> routeNodes = new LinkedList<GraphNode>();
             PageTraversal nextTraversal = buildPageTraversalsEndingInNode(node, routeNodes);
             GraphNode firstNode = routeNodes.getFirst();
-            Route route = new Route(firstNode.getPageClass(), nextTraversal);
+            Route route = new Route(firstNode.getPageClass(), nextTraversal, instantiator);
             routes.add(route);
         }
         return routes;

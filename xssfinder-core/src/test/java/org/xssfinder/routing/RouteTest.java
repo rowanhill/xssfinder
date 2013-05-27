@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.Page;
+import org.xssfinder.reflection.Instantiator;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -22,11 +23,13 @@ public class RouteTest {
 
     @Mock
     private PageTraversal mockPageTraversal;
+    @Mock
+    private Instantiator mockInstantiator;
 
     @Test
     public void rootPageClassIsAvailable() {
         // given
-        Route route = new Route(RootPage.class, mockPageTraversal);
+        Route route = new Route(RootPage.class, mockPageTraversal, mockInstantiator);
 
         // when
         Class<?> rootPageClass = route.getRootPageClass();
@@ -38,7 +41,7 @@ public class RouteTest {
     @Test
     public void urlIsTakenFromRootPage() {
         // given
-        Route route = new Route(RootPage.class, mockPageTraversal);
+        Route route = new Route(RootPage.class, mockPageTraversal, mockInstantiator);
 
         // when
         String url = route.getUrl();
@@ -50,7 +53,7 @@ public class RouteTest {
     @Test
     public void pageTraversalIsAvailable() {
         // given
-        Route route = new Route(RootPage.class, mockPageTraversal);
+        Route route = new Route(RootPage.class, mockPageTraversal, mockInstantiator);
 
         // when
         PageTraversal traversal = route.getPageTraversal();
@@ -62,7 +65,7 @@ public class RouteTest {
     @Test
     public void lastPageTraversalIsNullIfFirstPageTraversalIsNull() {
         // given
-        Route route = new Route(RootPage.class, null);
+        Route route = new Route(RootPage.class, null, mockInstantiator);
 
         // when
         PageTraversal traversal = route.getLastPageTraversal();
@@ -74,7 +77,7 @@ public class RouteTest {
     @Test
     public void lastPageTraversalIsFirstPageTraversalIfItHasNoSubsequentTraversal() {
         // given
-        Route route = new Route(RootPage.class, mockPageTraversal);
+        Route route = new Route(RootPage.class, mockPageTraversal, mockInstantiator);
 
         // when
         PageTraversal traversal = route.getLastPageTraversal();
@@ -88,7 +91,7 @@ public class RouteTest {
         // given
         PageTraversal mockPageTraversal2 = mock(PageTraversal.class);
         when(mockPageTraversal.getNextTraversal()).thenReturn(mockPageTraversal2);
-        Route route = new Route(RootPage.class, mockPageTraversal);
+        Route route = new Route(RootPage.class, mockPageTraversal, mockInstantiator);
 
         // when
         PageTraversal traversal = route.getLastPageTraversal();
@@ -100,7 +103,7 @@ public class RouteTest {
     @Test
     public void appendingTraversalToNullTraversalSetsNewTraversalFromRoot() throws Exception {
         // given
-        Route route = new Route(RootPage.class, null);
+        Route route = new Route(RootPage.class, null, mockInstantiator);
 
         // when
         route.appendTraversalByMethod(RootPage.class.getMethod("circularLink"));
@@ -113,7 +116,7 @@ public class RouteTest {
     @Test
     public void appendingTraversalToNonNullTraversalSetsNextTraversal() throws Exception {
         // given
-        Route route = new Route(RootPage.class, mockPageTraversal);
+        Route route = new Route(RootPage.class, mockPageTraversal, mockInstantiator);
 
         // when
         route.appendTraversalByMethod(RootPage.class.getMethod("circularLink"));
@@ -125,7 +128,7 @@ public class RouteTest {
     @Test
     public void cloneHasSameRootClass() {
         // given
-        Route route = new Route(RootPage.class, null);
+        Route route = new Route(RootPage.class, null, mockInstantiator);
 
         // when
         Route clonedRoute = route.clone();
@@ -137,7 +140,7 @@ public class RouteTest {
     @Test
     public void cloneHasNullTraversalIfOriginalDoes() {
         // given
-        Route route = new Route(RootPage.class, null);
+        Route route = new Route(RootPage.class, null, mockInstantiator);
 
         // when
         Route clonedRoute = route.clone();
@@ -151,7 +154,7 @@ public class RouteTest {
         // given
         PageTraversal mockCloneTraversal = mock(PageTraversal.class);
         when(mockPageTraversal.clone()).thenReturn(mockCloneTraversal);
-        Route route = new Route(RootPage.class, mockPageTraversal);
+        Route route = new Route(RootPage.class, mockPageTraversal, mockInstantiator);
 
         // when
         Route clonedRoute = route.clone();
@@ -160,10 +163,26 @@ public class RouteTest {
         assertThat(clonedRoute.getPageTraversal(), is(mockCloneTraversal));
     }
 
+    @Test
+    public void createsLifecycleHandler() throws Exception {
+        // given
+        Route route = new Route(RootPage.class, mockPageTraversal, mockInstantiator);
+        LifecycleHandler mockHandler = mock(LifecycleHandler.class);
+        when(mockInstantiator.instantiate(LifecycleHandler.class)).thenReturn(mockHandler);
+
+        // when
+        Object handler = route.createLifecycleHandler();
+
+        // then
+        assertThat(handler, is((Object)mockHandler));
+    }
+
     @SuppressWarnings("UnusedDeclaration")
     @Page
-    @CrawlStartPoint(url=ROOT_PAGE_URL)
-    private class RootPage {
+    @CrawlStartPoint(url=ROOT_PAGE_URL, lifecycleHandler=LifecycleHandler.class)
+    private static class RootPage {
         public RootPage circularLink() { return null; }
     }
+
+    private static class LifecycleHandler {}
 }

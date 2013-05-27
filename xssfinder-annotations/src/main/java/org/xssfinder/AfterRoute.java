@@ -6,8 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface CrawlStartPoint {
-    public String url();
-    public Class<?> lifecycleHandler() default Object.class; // Object.class must be literal
+@Target(ElementType.METHOD)
+public @interface AfterRoute {
 }

@@ -27,8 +27,8 @@ public class RouteRunnerFactory {
     private RoutePageStrategyRunner createRouteStrategyRunner(DriverWrapper driverWrapper) {
         return new RoutePageStrategyRunner(
                 driverWrapper,
-                createPageContextFactory(driverWrapper)
-        );
+                createPageContextFactory(driverWrapper),
+                new LifecycleEventExecutor());
     }
 
     private PageContextFactory createPageContextFactory(DriverWrapper driverWrapper) {

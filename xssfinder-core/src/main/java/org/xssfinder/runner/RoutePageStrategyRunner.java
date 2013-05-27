@@ -8,15 +8,23 @@ import java.util.List;
 public class RoutePageStrategyRunner {
     private final DriverWrapper driverWrapper;
     private final PageContextFactory contextFactory;
+    private final LifecycleEventExecutor lifecycleEventExecutor;
 
-    public RoutePageStrategyRunner(DriverWrapper driverWrapper, PageContextFactory contextFactory) {
+    public RoutePageStrategyRunner(
+            DriverWrapper driverWrapper,
+            PageContextFactory contextFactory,
+            LifecycleEventExecutor lifecycleEventExecutor
+    ) {
         this.driverWrapper = driverWrapper;
         this.contextFactory = contextFactory;
+        this.lifecycleEventExecutor = lifecycleEventExecutor;
     }
 
     public void run(List<Route> routes, List<PageStrategy> pageStrategies, XssJournal xssJournal) {
         for (Route route : routes) {
             driverWrapper.visit(route.getUrl());
+
+            Object lifecycleHandler = route.createLifecycleHandler();
 
             PageContext pageContext = contextFactory.createContext(driverWrapper, route);
 
@@ -25,6 +33,8 @@ public class RoutePageStrategyRunner {
                 pageContext = pageContext.getNextContext();
             }
             executePageStrategies(pageStrategies, pageContext, xssJournal);
+
+            lifecycleEventExecutor.afterRoute(lifecycleHandler, pageContext);
         }
     }
 

@@ -28,6 +28,10 @@ public class RoutePageStrategyRunnerTest {
     private Route mockRoute;
     @Mock
     private XssJournal mockXssJournal;
+    @Mock
+    private Object mockLifecycleHandler;
+    @Mock
+    private LifecycleEventExecutor mockLifecycleEventExecutor;
 
     private final List<Route> routes = new ArrayList<Route>();
     private final List<PageStrategy> pageStrategies = new ArrayList<PageStrategy>();
@@ -35,12 +39,13 @@ public class RoutePageStrategyRunnerTest {
     private RoutePageStrategyRunner runner;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         when(mockContextFactory.createContext(mockDriverWrapper, mockRoute)).thenReturn(mockPageContext);
         when(mockRoute.getUrl()).thenReturn(URL);
+        when(mockRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
         routes.add(mockRoute);
 
-        runner = new RoutePageStrategyRunner(mockDriverWrapper, mockContextFactory);
+        runner = new RoutePageStrategyRunner(mockDriverWrapper, mockContextFactory, mockLifecycleEventExecutor);
     }
 
     @Test
@@ -65,7 +70,7 @@ public class RoutePageStrategyRunnerTest {
     }
 
     @Test
-    public void firstAndOnlyContextIsProcessedByStrategies() {
+    public void firstAndOnlyContextIsProcessedByStrategiesAndThenAfterRouteIsCalled() {
         // given
         PageStrategy mockStrategy1 = mock(PageStrategy.class);
         PageStrategy mockStrategy2 = mock(PageStrategy.class);
@@ -76,14 +81,15 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2);
+        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockLifecycleEventExecutor);
         inOrder.verify(mockStrategy1).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
+        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPageContext);
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
-    public void secondContextIsProcessedByStrategies() {
+    public void secondContextIsProcessedByStrategiesAndThenAfterRouteIsCalled() {
         // given
         PageStrategy mockStrategy1 = mock(PageStrategy.class);
         PageStrategy mockStrategy2 = mock(PageStrategy.class);
@@ -97,11 +103,12 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2);
+        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockLifecycleEventExecutor);
         inOrder.verify(mockStrategy1).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy1).processPage(mockNextContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockNextContext, mockXssJournal);
+        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockNextContext);
         inOrder.verifyNoMoreInteractions();
     }
 }

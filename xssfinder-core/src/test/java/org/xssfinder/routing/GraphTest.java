@@ -3,10 +3,12 @@ package org.xssfinder.routing;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.Page;
 import org.xssfinder.SubmitAction;
+import org.xssfinder.reflection.Instantiator;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +20,9 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GraphTest {
+    @Mock
+    private Instantiator mockInstantiator;
+
     private PageDescriptor ordinaryPageDescriptor;
     private PageDescriptor startPage1Descriptor;
     private PageDescriptor startPage2Descriptor;
@@ -43,7 +48,7 @@ public class GraphTest {
         pagesDescriptors.add(ordinaryPageDescriptor);
 
         // when
-        new Graph(pagesDescriptors);
+        new Graph(pagesDescriptors, mockInstantiator);
     }
 
     @Test(expected=MultipleRootPagesFoundException.class)
@@ -53,7 +58,7 @@ public class GraphTest {
         pagesDescriptors.add(startPage2Descriptor);
 
         // when
-        new Graph(pagesDescriptors);
+        new Graph(pagesDescriptors, mockInstantiator);
     }
 
     @Test
@@ -61,7 +66,7 @@ public class GraphTest {
         // given
         pagesDescriptors.add(startPage1Descriptor);
         pagesDescriptors.add(ordinaryPageDescriptor);
-        Graph graph = new Graph(pagesDescriptors);
+        Graph graph = new Graph(pagesDescriptors, mockInstantiator);
 
         // when
         List<Route> routes = graph.getRoutes();
@@ -75,7 +80,7 @@ public class GraphTest {
         // given
         pagesDescriptors.add(startPage1Descriptor);
         pagesDescriptors.add(ordinaryPageDescriptor);
-        Graph graph = new Graph(pagesDescriptors);
+        Graph graph = new Graph(pagesDescriptors, mockInstantiator);
 
         // when
         List<Route> routes = graph.getRoutes();
@@ -100,7 +105,7 @@ public class GraphTest {
         pagesDescriptors.add(forkStartPageDescriptor);
         pagesDescriptors.add(forkChildPageOneDescriptor);
         pagesDescriptors.add(forkChildPageTwoDescriptor);
-        Graph graph = new Graph(pagesDescriptors);
+        Graph graph = new Graph(pagesDescriptors, mockInstantiator);
 
         // when
         List<Route> routes = graph.getRoutes();
@@ -114,7 +119,7 @@ public class GraphTest {
         // given
         pagesDescriptors.add(new PageDescriptor(LoginPage.class));
         pagesDescriptors.add(new PageDescriptor(SignUpPage.class));
-        Graph graph = new Graph(pagesDescriptors);
+        Graph graph = new Graph(pagesDescriptors, mockInstantiator);
 
         // when
         List<Route> routes = graph.getRoutes();
@@ -141,7 +146,7 @@ public class GraphTest {
     public void singleCircularPageProducesSingleRouteTraversingToSamePage() {
         // given
         pagesDescriptors.add(new PageDescriptor(CircularHomePage.class));
-        Graph graph = new Graph(pagesDescriptors);
+        Graph graph = new Graph(pagesDescriptors, mockInstantiator);
 
         // when
         List<Route> routes = graph.getRoutes();
