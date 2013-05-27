@@ -7,7 +7,6 @@ import org.xssfinder.Page;
 import org.xssfinder.SubmitAction;
 
 @Page
-@CrawlStartPoint(url="http://localhost:8085/simple/")
 public class HomePage {
     private final WebDriver driver;
 
@@ -19,5 +18,10 @@ public class HomePage {
     public HomePage submit() {
         driver.findElement(By.id("submit")).click();
         return this;
+    }
+
+    public LoginPage logout() {
+        driver.findElement(By.linkText("log out")).click();
+        return new LoginPage(driver);
     }
 }
