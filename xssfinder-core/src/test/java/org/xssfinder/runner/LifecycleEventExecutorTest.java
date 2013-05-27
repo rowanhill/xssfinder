@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public class LifecycleEventExecutorTest {
     @Mock
-    private PageContext mockPageContext;
+    private SomePage mockPage;
 
     @Test(expected=LifecycleEventException.class)
     public void throwsExceptionIfMultipleAfterRouteMethodsDefined() {
@@ -21,7 +21,7 @@ public class LifecycleEventExecutorTest {
         Object handler = new MultipleAfterRouteHandler();
 
         // when
-        eventExecutor.afterRoute(handler, mockPageContext);
+        eventExecutor.afterRoute(handler, mockPage);
     }
 
     @Test(expected=LifecycleEventException.class)
@@ -31,7 +31,17 @@ public class LifecycleEventExecutorTest {
         BadSignatureHandler handler = new BadSignatureHandler();
 
         // when
-        eventExecutor.afterRoute(handler, mockPageContext);
+        eventExecutor.afterRoute(handler, mockPage);
+    }
+
+    @Test(expected=LifecycleEventException.class)
+    public void throwsExceptionIfWrongPageIsInSignature() {
+        // given
+        LifecycleEventExecutor eventExecutor = new LifecycleEventExecutor();
+        WrongClassSignatureHandler handler = new WrongClassSignatureHandler();
+
+        // when
+        eventExecutor.afterRoute(handler, mockPage);
     }
 
     @Test
@@ -43,17 +53,20 @@ public class LifecycleEventExecutorTest {
         LifecycleHandler handler = new LifecycleHandler();
 
         // when
-        eventExecutor.afterRoute(handler, mockPageContext);
+        eventExecutor.afterRoute(handler, mockPage);
 
         // then
         assertThat(handler.afterRouteInvoked, is(true));
     }
 
+    private static class SomePage {}
+    private static class SomeOtherPage {}
+
     private static class MultipleAfterRouteHandler {
         @AfterRoute
-        public void afterRoute1(PageContext context) {}
+        public void afterRoute1(SomePage page) {}
         @AfterRoute
-        public void afterRoute2(PageContext context) {}
+        public void afterRoute2(SomePage page) {}
     }
 
     private static class BadSignatureHandler {
@@ -61,11 +74,18 @@ public class LifecycleEventExecutorTest {
         public void afterRoute() {}
     }
 
-    private static class LifecycleHandler {
+    private static class WrongClassSignatureHandler {
+        @AfterRoute
+        public void afterRoute(SomeOtherPage page) {}
+    }
+
+    private class LifecycleHandler {
         private boolean afterRouteInvoked = false;
         @AfterRoute
-        public void afterRoute(PageContext context) {
-            afterRouteInvoked = true;
+        public void afterRoute(SomePage page) {
+            if (page == mockPage) {
+                afterRouteInvoked = true;
+            }
         }
     }
 }

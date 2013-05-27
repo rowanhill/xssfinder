@@ -32,6 +32,8 @@ public class RoutePageStrategyRunnerTest {
     private Object mockLifecycleHandler;
     @Mock
     private LifecycleEventExecutor mockLifecycleEventExecutor;
+    @Mock
+    private Object mockPage;
 
     private final List<Route> routes = new ArrayList<Route>();
     private final List<PageStrategy> pageStrategies = new ArrayList<PageStrategy>();
@@ -41,6 +43,7 @@ public class RoutePageStrategyRunnerTest {
     @Before
     public void setUp() throws Exception {
         when(mockContextFactory.createContext(mockDriverWrapper, mockRoute)).thenReturn(mockPageContext);
+        when(mockPageContext.getPage()).thenReturn(mockPage);
         when(mockRoute.getUrl()).thenReturn(URL);
         when(mockRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
         routes.add(mockRoute);
@@ -84,7 +87,7 @@ public class RoutePageStrategyRunnerTest {
         InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockLifecycleEventExecutor);
         inOrder.verify(mockStrategy1).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
-        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPageContext);
+        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPage);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -98,6 +101,8 @@ public class RoutePageStrategyRunnerTest {
         PageContext mockNextContext = mock(PageContext.class);
         when(mockPageContext.hasNextContext()).thenReturn(true);
         when(mockPageContext.getNextContext()).thenReturn(mockNextContext);
+        Object mockNextPage = new Object();
+        when(mockNextContext.getPage()).thenReturn(mockNextPage);
 
         // when
         runner.run(routes, pageStrategies, mockXssJournal);
@@ -108,7 +113,7 @@ public class RoutePageStrategyRunnerTest {
         inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy1).processPage(mockNextContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockNextContext, mockXssJournal);
-        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockNextContext);
+        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockNextPage);
         inOrder.verifyNoMoreInteractions();
     }
 }

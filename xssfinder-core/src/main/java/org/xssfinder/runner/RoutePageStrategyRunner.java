@@ -34,7 +34,7 @@ public class RoutePageStrategyRunner {
             }
             executePageStrategies(pageStrategies, pageContext, xssJournal);
 
-            lifecycleEventExecutor.afterRoute(lifecycleHandler, pageContext);
+            lifecycleEventExecutor.afterRoute(lifecycleHandler, pageContext.getPage());
         }
     }
 

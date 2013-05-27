@@ -5,11 +5,11 @@ import org.xssfinder.AfterRoute;
 import java.lang.reflect.Method;
 
 public class LifecycleEventExecutor {
-    public void afterRoute(Object lifecycleHandler, PageContext pageContext) {
+    public void afterRoute(Object lifecycleHandler, Object page) {
         Class<?> handlerClass = lifecycleHandler.getClass();
         Method afterRouteMethod = getAfterRouteMethod(handlerClass);
         try {
-            afterRouteMethod.invoke(lifecycleHandler, pageContext);
+            afterRouteMethod.invoke(lifecycleHandler, page);
         } catch (Exception e) {
             throw new LifecycleEventException(e);
         }
