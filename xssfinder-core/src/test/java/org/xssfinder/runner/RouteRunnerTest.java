@@ -24,6 +24,8 @@ public class RouteRunnerTest {
     @Mock
     private DetectSuccessfulXssPageStrategy mockDetectStrategy;
     @Mock
+    private DetectUntestedInputsPageStrategy mockWarnStrategy;
+    @Mock
     private HtmlReportWriter mockReportWriter;
     @Mock
     private XssJournal mockXssJournal;
@@ -33,13 +35,13 @@ public class RouteRunnerTest {
     @Test
     public void runAttacksAllPagesThenVerifiesAllPagesThenWritesReport() throws Exception {
         // given
-        RouteRunner runner = new RouteRunner(mockStrategyRunner, mockAttackStrategy, mockDetectStrategy, mockReportWriter);
+        RouteRunner runner = new RouteRunner(mockStrategyRunner, mockAttackStrategy, mockDetectStrategy, mockWarnStrategy, mockReportWriter);
 
         // when
         runner.run(routes, mockXssJournal);
 
         // then
-        List<PageStrategy> attackPhaseStrategies = ImmutableList.of(mockAttackStrategy, mockDetectStrategy);
+        List<PageStrategy> attackPhaseStrategies = ImmutableList.of(mockAttackStrategy, mockDetectStrategy, mockWarnStrategy);
         List<PageStrategy> detectPhaseStrategies = ImmutableList.of((PageStrategy)mockDetectStrategy);
         InOrder inOrder = inOrder(mockStrategyRunner, mockReportWriter);
         inOrder.verify(mockStrategyRunner).run(routes, attackPhaseStrategies, mockXssJournal);

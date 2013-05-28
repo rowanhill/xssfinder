@@ -20,6 +20,7 @@ public class RouteRunnerFactory {
                 createRouteStrategyRunner(driverWrapper),
                 createAttackPageStrategy(),
                 createDetectSuccessfulXssPageStrategy(),
+                new DetectUntestedInputsPageStrategy(),
                 new HtmlReportWriter(outputFile)
         );
     }
