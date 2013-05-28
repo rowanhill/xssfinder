@@ -27,6 +27,8 @@ public class RouteTest {
     private PageTraversal mockPageTraversal;
     @Mock
     private Instantiator mockInstantiator;
+    @Mock
+    private PageDescriptor mockPageDescriptor;
 
     @Test
     public void rootPageClassIsAvailable() {
@@ -108,11 +110,12 @@ public class RouteTest {
         Route route = new Route(RootPage.class, null, mockInstantiator);
 
         // when
-        route.appendTraversalByMethod(RootPage.class.getMethod("circularLink"));
+        route.appendTraversalByMethodToPageDescriptor(RootPage.class.getMethod("circularLink"), mockPageDescriptor);
 
         // then
         assertThat(route.getPageTraversal(), is(not(nullValue())));
         assertThat(route.getPageTraversal().getMethod(), is(RootPage.class.getMethod("circularLink")));
+        assertThat(route.getPageTraversal().getResultingPageDescriptor(), is(mockPageDescriptor));
     }
 
     @Test
@@ -121,7 +124,7 @@ public class RouteTest {
         Route route = new Route(RootPage.class, mockPageTraversal, mockInstantiator);
 
         // when
-        route.appendTraversalByMethod(RootPage.class.getMethod("circularLink"));
+        route.appendTraversalByMethodToPageDescriptor(RootPage.class.getMethod("circularLink"), mockPageDescriptor);
 
         // then
         verify(mockPageTraversal).setNextTraversal(any(PageTraversal.class));

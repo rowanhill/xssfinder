@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-class PageDescriptor {
+public class PageDescriptor {
     private final boolean isRoot;
     private final Set<Method> traversalMethods;
     private final Set<Method> submitMethods;

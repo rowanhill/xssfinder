@@ -40,8 +40,8 @@ public class Route {
         return traversal;
     }
 
-    public void appendTraversalByMethod(Method traversalMethod) {
-        PageTraversal newTraversal = new PageTraversal(traversalMethod);
+    public void appendTraversalByMethodToPageDescriptor(Method traversalMethod, PageDescriptor pageDescriptor) {
+        PageTraversal newTraversal = new PageTraversal(traversalMethod, pageDescriptor);
         PageTraversal lastTraversal = getLastPageTraversal();
         if (lastTraversal == null) {
             pageTraversal = newTraversal;

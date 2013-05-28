@@ -1,6 +1,9 @@
 package org.xssfinder.routing;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.SubmitAction;
 
 import java.lang.reflect.Method;
@@ -11,12 +14,16 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PageTraversalTest {
+    @Mock
+    private PageDescriptor mockPageDescriptor;
+
     @Test
     public void methodIsAvailable() throws Exception {
         // given
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal pageTraversal = new PageTraversal(mockMethod);
+        PageTraversal pageTraversal = new PageTraversal(mockMethod, mockPageDescriptor);
 
         // when
         Method method = pageTraversal.getMethod();
@@ -29,7 +36,7 @@ public class PageTraversalTest {
     public void nextPageTraversalDefaultsToNull() throws Exception {
         // given
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal pageTraversal = new PageTraversal(mockMethod);
+        PageTraversal pageTraversal = new PageTraversal(mockMethod, mockPageDescriptor);
 
         // when
         PageTraversal nextTraversal = pageTraversal.getNextTraversal();
@@ -42,7 +49,7 @@ public class PageTraversalTest {
     public void nextPageTraversalCanBeSet() throws Exception {
         // given
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal pageTraversal = new PageTraversal(mockMethod);
+        PageTraversal pageTraversal = new PageTraversal(mockMethod, mockPageDescriptor);
         PageTraversal mockPageTraversal = mock(PageTraversal.class);
 
         // when
@@ -57,7 +64,7 @@ public class PageTraversalTest {
     public void cloningCreatesTraversalWithSameMethod() throws Exception {
         // given
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal traversal = new PageTraversal(mockMethod);
+        PageTraversal traversal = new PageTraversal(mockMethod, mockPageDescriptor);
 
         // when
         PageTraversal clonedTraversal = traversal.clone();
@@ -70,7 +77,7 @@ public class PageTraversalTest {
     public void cloneHasNoNextTraversalIfOriginalDoesNot() throws Exception {
         // given
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal traversal = new PageTraversal(mockMethod);
+        PageTraversal traversal = new PageTraversal(mockMethod, mockPageDescriptor);
 
         // when
         PageTraversal cloneTraversal = traversal.clone();
@@ -86,7 +93,7 @@ public class PageTraversalTest {
         PageTraversal mockCloneNextTraversal = mock(PageTraversal.class);
         when(mockNextTraversal.clone()).thenReturn(mockCloneNextTraversal);
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal traversal = new PageTraversal(mockMethod);
+        PageTraversal traversal = new PageTraversal(mockMethod, mockPageDescriptor);
         traversal.setNextTraversal(mockNextTraversal);
 
         // when
@@ -100,7 +107,7 @@ public class PageTraversalTest {
     public void annotatedMethodsAreSubmitTraversals() throws Exception {
         // given
         Method submitMethod = Page.class.getDeclaredMethod("submitToPage");
-        PageTraversal traversal = new PageTraversal(submitMethod);
+        PageTraversal traversal = new PageTraversal(submitMethod, mockPageDescriptor);
 
         // when
         boolean isSubmit = traversal.isSubmit();
@@ -113,7 +120,7 @@ public class PageTraversalTest {
     public void unannotatedMethodsAreNotSubmitTraversals() throws Exception {
         // given
         Method submitMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal traversal = new PageTraversal(submitMethod);
+        PageTraversal traversal = new PageTraversal(submitMethod, mockPageDescriptor);
 
         // when
         boolean isSubmit = traversal.isSubmit();

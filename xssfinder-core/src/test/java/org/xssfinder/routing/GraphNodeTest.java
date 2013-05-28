@@ -98,6 +98,18 @@ public class GraphNodeTest {
         assertThat(pageClass == ordinaryPageClass, is(true));
     }
 
+    @Test
+    public void pageDescriptorIsAvailable() {
+        // given
+        GraphNode node = new GraphNode(mockPageDescriptor);
+
+        // when
+        PageDescriptor pageDescriptor = node.getPageDescriptor();
+
+        // then
+        assertThat(pageDescriptor, is(mockPageDescriptor));
+    }
+
     @Page
     private class OrdinaryPage {}
 

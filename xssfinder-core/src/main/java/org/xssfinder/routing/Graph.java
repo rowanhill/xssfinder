@@ -86,7 +86,8 @@ class Graph {
             } else {
                 for (Method unusedMethod : unusedMethods) {
                     Route augmentedRoute = route.clone();
-                    augmentedRoute.appendTraversalByMethod(unusedMethod);
+                    PageDescriptor resultingPageDescriptor = getPageDescriptorForClass(unusedMethod.getReturnType());
+                    augmentedRoute.appendTraversalByMethodToPageDescriptor(unusedMethod, resultingPageDescriptor);
                     newRoutes.add(augmentedRoute);
                 }
             }
@@ -101,6 +102,15 @@ class Graph {
             }
         }
         return Collections.emptySet();
+    }
+
+    private PageDescriptor getPageDescriptorForClass(Class<?> pageClass) {
+        for (PageDescriptor pageDescriptor : pageDescriptors) {
+            if (pageDescriptor.getPageClass() == pageClass) {
+                return pageDescriptor;
+            }
+        }
+        return null;
     }
 
     private Class<?> findRootNode(Set<PageDescriptor> pageDescriptors) {
@@ -171,7 +181,10 @@ class Graph {
         while (node != null) {
             routeNodes.addFirst(node);
             if (node.getPredecessorTraversalMethod() != null) {
-                PageTraversal traversal = new PageTraversal(node.getPredecessorTraversalMethod());
+                PageTraversal traversal = new PageTraversal(
+                        node.getPredecessorTraversalMethod(),
+                        node.getPageDescriptor()
+                );
                 traversal.setNextTraversal(nextTraversal);
                 nextTraversal = traversal;
             }

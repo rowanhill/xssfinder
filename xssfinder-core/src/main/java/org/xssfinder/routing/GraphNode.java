@@ -49,4 +49,8 @@ public class GraphNode {
     public Class<?> getPageClass() {
         return pageDescriptor.getPageClass();
     }
+
+    public PageDescriptor getPageDescriptor() {
+        return pageDescriptor;
+    }
 }
