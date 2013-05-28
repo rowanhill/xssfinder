@@ -23,5 +23,10 @@
      <input type="text" name="textinput" />
      <input id="safeSubmit" type="submit" value="Submit" />
   </form>
+
+  <form action="." method="POST" id="untraversedForm">
+     <input type="text" name="textinput" />
+     <input id="safeSubmit" type="submit" value="Submit" />
+  </form>
 </body>
 </html>

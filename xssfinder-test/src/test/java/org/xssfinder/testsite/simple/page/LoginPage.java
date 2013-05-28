@@ -17,6 +17,7 @@ public class LoginPage {
         this.driver = driver;
     }
 
+    //TODO: Should also be a @SubmitAction, but we need a way of gracefully coping with exceptions
     @TraverseWith(LoginPageTraverser.class)
     public HomePage logInAs(String username, String password) {
         driver.findElement(By.name("j_username")).sendKeys(username);

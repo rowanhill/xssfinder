@@ -13,6 +13,7 @@ import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
 import org.xssfinder.runner.*;
 import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.testsite.simple.page.HomePage;
 
 import java.io.File;
 import java.util.List;
@@ -72,6 +73,7 @@ public class XssFinderIT {
         XssSighting sighting = journal.getXssSightings().iterator().next();
         assertThat(sighting.getSubmitMethodName(), is("unsafeSubmit"));
         assertThat(sighting.getInputIdentifier(), is("//form[@id=\"unsafeForm\"]/input[1]"));
+        assertThat(journal.getPagesClassWithUntestedInputs().size(), is(2));
         assertThat(new File(OUTPUT_FILE).exists(), is(true));
     }
 }

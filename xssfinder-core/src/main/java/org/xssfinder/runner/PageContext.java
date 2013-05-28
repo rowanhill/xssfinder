@@ -33,7 +33,7 @@ public class PageContext {
             throw new IllegalStateException();
         }
         Object nextPage = pageTraverser.traverse(page, pageTraversal);
-        return new PageContext(pageTraverser, nextPage, driverWrapper, pageTraversal.getNextTraversal(), pageDescriptor);
+        return new PageContext(pageTraverser, nextPage, driverWrapper, pageTraversal.getNextTraversal(), pageTraversal.getResultingPageDescriptor());
     }
 
     public Object getPage() {
