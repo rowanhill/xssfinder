@@ -15,8 +15,14 @@ public class HomePage {
     }
 
     @SubmitAction
-    public HomePage submit() {
-        driver.findElement(By.id("submit")).click();
+    public HomePage unsafeSubmit() {
+        driver.findElement(By.id("unsafeSubmit")).click();
+        return this;
+    }
+
+    @SubmitAction
+    public HomePage safeSubmit() {
+        driver.findElement(By.id("safeSubmit")).click();
         return this;
     }
 

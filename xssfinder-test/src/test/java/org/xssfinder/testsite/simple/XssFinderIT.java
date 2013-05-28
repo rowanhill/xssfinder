@@ -70,8 +70,8 @@ public class XssFinderIT {
         assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
         assertThat(journal.getXssSightings().size(), is(1));
         XssSighting sighting = journal.getXssSightings().iterator().next();
-        assertThat(sighting.getSubmitMethodName(), is("submit"));
-        assertThat(sighting.getInputIdentifier(), is("body/form[1]/input[1]"));
+        assertThat(sighting.getSubmitMethodName(), is("unsafeSubmit"));
+        assertThat(sighting.getInputIdentifier(), is("//form[@id=\"unsafeForm\"]/input[1]"));
         assertThat(new File(OUTPUT_FILE).exists(), is(true));
     }
 }

@@ -11,18 +11,26 @@ import java.util.List;
 
 @Controller
 public class HomeController {
-    private static final List<String> strings = new ArrayList<String>();
+    private static final List<String> unsafeStrings = new ArrayList<String>();
+    private static final List<String> safeStrings = new ArrayList<String>();
 
     @RequestMapping(value="/", method=RequestMethod.GET)
     public ModelAndView handleGet() {
         ModelAndView modelAndView = new ModelAndView("index");
-        modelAndView.addObject("strings", strings);
+        modelAndView.addObject("unsafeStrings", unsafeStrings);
+        modelAndView.addObject("safeStrings", safeStrings);
         return modelAndView;
     }
 
-    @RequestMapping(value="/", method=RequestMethod.POST)
+    @RequestMapping(value="/unsafe", method=RequestMethod.POST)
     public String handlePost(HttpServletRequest request) {
-        strings.add(request.getParameter("textinput"));
+        unsafeStrings.add(request.getParameter("textinput"));
+        return "redirect:/simple/";
+    }
+
+    @RequestMapping(value="/safe", method=RequestMethod.POST)
+    public String handleSafePost(HttpServletRequest request) {
+        safeStrings.add(request.getParameter("textinput"));
         return "redirect:/simple/";
     }
 }
