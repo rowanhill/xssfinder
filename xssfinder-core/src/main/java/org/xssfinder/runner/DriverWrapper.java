@@ -13,4 +13,6 @@ public interface DriverWrapper {
     Map<String, String> putXssAttackStringsInInputs(XssGenerator xssGenerator);
 
     Set<String> getCurrentXssIds();
+
+    int getFormCount();
 }

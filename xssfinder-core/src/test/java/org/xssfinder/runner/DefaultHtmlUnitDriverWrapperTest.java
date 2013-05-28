@@ -40,6 +40,15 @@ public class DefaultHtmlUnitDriverWrapperTest {
             "        </script>\n" +
             "    </body>\n" +
             "</html>";
+    private static final String TWO_FORM_PAGE =
+            "<html>\n" +
+                    "    <body>\n" +
+                    "        <form action=\"/submit\" method=\"post\">\n" +
+                    "        </form>\n" +
+                    "        <form action=\"/submit\" method=\"post\">\n" +
+                    "        </form>\n" +
+                    "    </body>\n" +
+                    "</html>";
     private static final String JSLESS_PAGE = "<html><body></body></html>";
 
     @Rule
@@ -157,6 +166,34 @@ public class DefaultHtmlUnitDriverWrapperTest {
         // then
         Set<String> expectedIds = ImmutableSet.of();
         assertThat(xssIds, is(expectedIds));
+    }
+
+    @Test
+    public void countsNumberOfFormsOnPage() {
+        // given
+        DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
+        stubFor(get(urlEqualTo("/zero"))
+                .willReturn(aResponse().withBody(JSLESS_PAGE))
+        );
+        stubFor(get(urlEqualTo("/one"))
+                .willReturn(aResponse().withBody(INDEX_PAGE))
+        );
+        stubFor(get(urlEqualTo("/two"))
+                .willReturn(aResponse().withBody(TWO_FORM_PAGE))
+        );
+
+        // when
+        driverWrapper.visit("http://localhost:8089/zero");
+        int numFormsOnFormlessPage = driverWrapper.getFormCount();
+        driverWrapper.visit("http://localhost:8089/one");
+        int numFormsOnIndexPage = driverWrapper.getFormCount();
+        driverWrapper.visit("http://localhost:8089/two");
+        int numFormsOnTwoFormPage = driverWrapper.getFormCount();
+
+        // then
+        assertThat(numFormsOnFormlessPage, is(0));
+        assertThat(numFormsOnIndexPage, is(1));
+        assertThat(numFormsOnTwoFormPage, is(2));
     }
 
     private void clickSubmit(DefaultHtmlUnitDriverWrapper driverWrapper) throws Exception {

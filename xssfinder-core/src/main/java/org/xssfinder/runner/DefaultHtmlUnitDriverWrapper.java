@@ -33,6 +33,11 @@ public class DefaultHtmlUnitDriverWrapper implements DriverWrapper {
     }
 
     @Override
+    public int getFormCount() {
+        return driver.findElements(By.xpath("//form")).size();
+    }
+
+    @Override
     public Map<String, String> putXssAttackStringsInInputs(XssGenerator xssGenerator) {
         List<WebElement> elements = driver.findElements(
                 By.cssSelector("input[type=text],input[type=search],input[type=password],textarea"));
