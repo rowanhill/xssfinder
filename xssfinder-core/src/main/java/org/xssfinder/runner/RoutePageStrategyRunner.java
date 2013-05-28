@@ -5,7 +5,7 @@ import org.xssfinder.reporting.XssJournal;
 
 import java.util.List;
 
-public class RoutePageStrategyRunner {
+class RoutePageStrategyRunner {
     private final DriverWrapper driverWrapper;
     private final PageContextFactory contextFactory;
     private final LifecycleEventExecutor lifecycleEventExecutor;

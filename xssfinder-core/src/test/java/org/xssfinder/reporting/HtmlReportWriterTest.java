@@ -32,8 +32,8 @@ public class HtmlReportWriterTest {
     @Mock
     private XssSightingFactory mockXssSightingFactory;
 
-    private HtmlReportWriter reportWriter = new HtmlReportWriter(OUT_FILE);
-    private XssJournal journal = new XssJournal(mockXssSightingFactory);
+    private final HtmlReportWriter reportWriter = new HtmlReportWriter(OUT_FILE);
+    private final XssJournal journal = new XssJournal(mockXssSightingFactory);
 
     @Before
     public void setUp() {

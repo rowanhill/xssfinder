@@ -7,7 +7,7 @@ import org.xssfinder.reflection.InstantiationException;
 
 import java.lang.reflect.Method;
 
-public class CustomTraverserInstantiator {
+class CustomTraverserInstantiator {
     private final Instantiator instantiator;
 
     public CustomTraverserInstantiator(Instantiator instantiator) {

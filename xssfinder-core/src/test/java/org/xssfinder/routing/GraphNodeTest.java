@@ -87,6 +87,7 @@ public class GraphNodeTest {
     public void pageClassIsDelegatedToPageDescriptor() {
         // given
         Class ordinaryPageClass = OrdinaryPage.class;
+        //noinspection unchecked
         when(mockPageDescriptor.getPageClass()).thenReturn(ordinaryPageClass);
         GraphNode node = new GraphNode(mockPageDescriptor);
 

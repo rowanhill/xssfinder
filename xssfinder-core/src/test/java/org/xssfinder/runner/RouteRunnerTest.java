@@ -28,7 +28,7 @@ public class RouteRunnerTest {
     @Mock
     private XssJournal mockXssJournal;
 
-    private List<Route> routes = new ArrayList<Route>();
+    private final List<Route> routes = new ArrayList<Route>();
 
     @Test
     public void runAttacksAllPagesThenVerifiesAllPagesThenWritesReport() throws Exception {

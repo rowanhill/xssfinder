@@ -30,7 +30,7 @@ public class GraphTest {
     private PageDescriptor forkChildPageOneDescriptor;
     private PageDescriptor forkChildPageTwoDescriptor;
 
-    private Set<PageDescriptor> pagesDescriptors = new HashSet<PageDescriptor>();
+    private final Set<PageDescriptor> pagesDescriptors = new HashSet<PageDescriptor>();
 
     @Before
     public void setup() {

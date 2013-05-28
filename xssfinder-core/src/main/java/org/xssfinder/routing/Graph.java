@@ -8,7 +8,7 @@ import org.xssfinder.reflection.Instantiator;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class Graph {
+class Graph {
     private final Set<PageDescriptor> pageDescriptors;
     private final Class<?> rootPageClass;
     private final Instantiator instantiator;

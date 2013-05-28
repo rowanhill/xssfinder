@@ -4,7 +4,7 @@ import org.xssfinder.AfterRoute;
 
 import java.lang.reflect.Method;
 
-public class LifecycleEventExecutor {
+class LifecycleEventExecutor {
     public void afterRoute(Object lifecycleHandler, Object page) {
         Class<?> handlerClass = lifecycleHandler.getClass();
         Method afterRouteMethod = getAfterRouteMethod(handlerClass);

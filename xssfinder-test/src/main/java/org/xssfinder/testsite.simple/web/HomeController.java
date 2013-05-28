@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-public class HomeController {
+class HomeController {
     private static final List<String> unsafeStrings = new ArrayList<String>();
     private static final List<String> safeStrings = new ArrayList<String>();
 

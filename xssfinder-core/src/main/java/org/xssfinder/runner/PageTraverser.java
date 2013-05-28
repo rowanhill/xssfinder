@@ -6,7 +6,7 @@ import org.xssfinder.routing.PageTraversal;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class PageTraverser {
+class PageTraverser {
     private final CustomTraverserInstantiator traverserInstantiator;
 
     public PageTraverser(CustomTraverserInstantiator traverserInstantiator) {

@@ -1,4 +1,4 @@
 package org.xssfinder.routing;
 
-public class NoRootPageFoundException extends RuntimeException {
+class NoRootPageFoundException extends RuntimeException {
 }

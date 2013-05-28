@@ -6,8 +6,8 @@ import org.xssfinder.xss.*;
 
 public class RouteRunnerFactory {
     private final PageTraverser pageTraverser;
-    private XssDetector xssDetector;
-    private PageAttacker pageAttacker;
+    private final XssDetector xssDetector;
+    private final PageAttacker pageAttacker;
 
     public RouteRunnerFactory() {
         pageTraverser = new PageTraverser(new CustomTraverserInstantiator(new Instantiator()));

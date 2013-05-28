@@ -1,4 +1,4 @@
 package org.xssfinder.routing;
 
-public class MultipleRootPagesFoundException extends RuntimeException {
+class MultipleRootPagesFoundException extends RuntimeException {
 }

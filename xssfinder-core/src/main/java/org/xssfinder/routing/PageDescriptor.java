@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PageDescriptor {
+class PageDescriptor {
     private final boolean isRoot;
     private final Set<Method> traversalMethods;
     private final Set<Method> submitMethods;
@@ -32,7 +32,7 @@ public class PageDescriptor {
         return traversalMethods;
     }
 
-    public Set<Method> findSubmitMethods(Set<Method> traversalMethods) {
+    Set<Method> findSubmitMethods(Set<Method> traversalMethods) {
         Set<Method> submitMethods = new HashSet<Method>();
         for (Method traversalMethod : traversalMethods) {
             if (traversalMethod.isAnnotationPresent(SubmitAction.class)) {

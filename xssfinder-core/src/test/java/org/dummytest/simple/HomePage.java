@@ -6,7 +6,7 @@ import org.xssfinder.Page;
 @Page
 @CrawlStartPoint(url=HomePage.URL)
 public class HomePage {
-    public static final String URL = "http://localhost:8080/";
+    static final String URL = "http://localhost:8080/";
 
     public SecondPage goToSecondPage() {
         return null;

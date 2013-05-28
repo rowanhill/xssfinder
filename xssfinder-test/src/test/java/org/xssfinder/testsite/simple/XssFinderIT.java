@@ -23,7 +23,7 @@ import static org.junit.Assert.assertThat;
 
 public class XssFinderIT {
 
-    public static final String OUTPUT_FILE = "xssfinder_int_test_report.html";
+    private static final String OUTPUT_FILE = "xssfinder_int_test_report.html";
 
     @Before
     public void setUp() throws Exception {
@@ -45,7 +45,7 @@ public class XssFinderIT {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         new File(OUTPUT_FILE).delete();
     }
 

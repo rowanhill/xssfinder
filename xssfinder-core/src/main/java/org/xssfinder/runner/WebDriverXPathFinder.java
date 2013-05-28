@@ -5,7 +5,7 @@ import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
-public class WebDriverXPathFinder {
+class WebDriverXPathFinder {
     public String getXPath(WebElement element) {
         if (element.getAttribute("id") != null) {
             return "//" + element.getTagName().toLowerCase() + "[@id=\"" + element.getAttribute("id") + "\"]";

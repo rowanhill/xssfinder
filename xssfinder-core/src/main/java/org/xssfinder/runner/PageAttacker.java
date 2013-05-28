@@ -7,7 +7,7 @@ import org.xssfinder.xss.XssGenerator;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PageAttacker {
+class PageAttacker {
     private final XssGenerator xssGenerator;
     private final XssDescriptorFactory xssDescriptorFactory;
 

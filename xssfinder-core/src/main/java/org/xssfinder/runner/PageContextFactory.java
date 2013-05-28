@@ -2,7 +2,7 @@ package org.xssfinder.runner;
 
 import org.xssfinder.routing.Route;
 
-public class PageContextFactory {
+class PageContextFactory {
     private final PageTraverser pageTraverser;
     private final PageInstantiator pageInstantiator;
 

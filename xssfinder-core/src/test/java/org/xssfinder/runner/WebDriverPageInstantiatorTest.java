@@ -37,7 +37,7 @@ public class WebDriverPageInstantiatorTest {
     }
 
     private static class WebDriverPage {
-        public WebDriver driver;
+        public final WebDriver driver;
         public WebDriverPage(WebDriver driver) {
             this.driver = driver;
         }
