@@ -8,20 +8,20 @@ import org.xssfinder.runner.LifecycleEventException;
 import java.lang.reflect.Method;
 
 public class Route {
-    private final Class<?> rootPageClass;
+    private final PageDescriptor rootPageDescriptor;
     private final String url;
     private final Instantiator instantiator;
     private PageTraversal pageTraversal;
 
-    public Route(Class<?> rootPageClass, PageTraversal pageTraversal, Instantiator instantiator) {
-        this.rootPageClass = rootPageClass;
-        this.url = rootPageClass.getAnnotation(CrawlStartPoint.class).url();
+    public Route(PageDescriptor rootPageDescriptor, PageTraversal pageTraversal, Instantiator instantiator) {
+        this.rootPageDescriptor = rootPageDescriptor;
+        this.url = rootPageDescriptor.getPageClass().getAnnotation(CrawlStartPoint.class).url();
         this.instantiator = instantiator;
         this.pageTraversal = pageTraversal;
     }
 
     public Class<?> getRootPageClass() {
-        return rootPageClass;
+        return rootPageDescriptor.getPageClass();
     }
 
     public String getUrl() {
@@ -65,6 +65,6 @@ public class Route {
     @Override
     public Route clone() {
         PageTraversal traversal = pageTraversal == null ? null : pageTraversal.clone();
-        return new Route(rootPageClass, traversal, instantiator);
+        return new Route(rootPageDescriptor, traversal, instantiator);
     }
 }

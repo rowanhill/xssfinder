@@ -170,7 +170,7 @@ class Graph {
             LinkedList<GraphNode> routeNodes = new LinkedList<GraphNode>();
             PageTraversal nextTraversal = buildPageTraversalsEndingInNode(node, routeNodes);
             GraphNode firstNode = routeNodes.getFirst();
-            Route route = new Route(firstNode.getPageClass(), nextTraversal, instantiator);
+            Route route = new Route(firstNode.getPageDescriptor(), nextTraversal, instantiator);
             routes.add(route);
         }
         return routes;
