@@ -13,8 +13,6 @@ import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
 import org.xssfinder.runner.*;
 import org.xssfinder.scanner.PageFinder;
-import org.xssfinder.testsite.simple.page.HomePage;
-import org.xssfinder.xss.*;
 
 import java.io.File;
 import java.util.List;
