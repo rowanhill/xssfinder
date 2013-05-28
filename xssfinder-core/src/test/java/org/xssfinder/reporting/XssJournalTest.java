@@ -89,4 +89,37 @@ public class XssJournalTest {
         XssSighting sighting = successfulSightings.iterator().next();
         assertThat(sighting, is(mockSighting));
     }
+
+    @Test
+    public void canGetUntestedInputWarnings() {
+        // given
+        XssJournal journal = new XssJournal(mockXssSightingFactory);
+
+        // when
+        journal.addPageClassWithUntestedInputs(SomePage.class);
+        journal.addPageClassWithUntestedInputs(OtherPage.class);
+        Set<Class<?>> pagesWithUntestedInputs = journal.getPagesClassWithUntestedInputs();
+
+        // then
+        Set<Class<?>> expectedPageClasses = ImmutableSet.of(SomePage.class, OtherPage.class);
+        assertThat(pagesWithUntestedInputs, is(expectedPageClasses));
+    }
+
+    @Test
+    public void addingWarningMultipleTimesResultsInJustOneWarning() {
+        // given
+        XssJournal journal = new XssJournal(mockXssSightingFactory);
+
+        // when
+        journal.addPageClassWithUntestedInputs(SomePage.class);
+        journal.addPageClassWithUntestedInputs(SomePage.class);
+        Set<Class<?>> pagesWithUntestedInputs = journal.getPagesClassWithUntestedInputs();
+
+        // then
+        assertThat(pagesWithUntestedInputs.size(), is(1));
+        assertThat(pagesWithUntestedInputs.iterator().next() == SomePage.class, is(true));
+    }
+
+    private static class SomePage {}
+    private static class OtherPage {}
 }

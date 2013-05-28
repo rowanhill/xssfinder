@@ -11,6 +11,7 @@ import java.util.Set;
 public class XssJournal {
     private final Map<String, XssDescriptor> descriptorsById = new HashMap<String, XssDescriptor>();
     private final Map<String, XssSighting> xssSightingsById = new HashMap<String, XssSighting>();
+    private final Set<Class<?>> pagesClassesWithUntestedInputs = new HashSet<Class<?>>();
     private final XssSightingFactory xssSightingFactory;
 
     public XssJournal(XssSightingFactory xssSightingFactory) {
@@ -36,5 +37,13 @@ public class XssJournal {
 
     public Set<XssSighting> getXssSightings() {
         return new HashSet<XssSighting>(xssSightingsById.values());
+    }
+
+    public void addPageClassWithUntestedInputs(Class<?> pageClass) {
+        pagesClassesWithUntestedInputs.add(pageClass);
+    }
+
+    public Set<Class<?>> getPagesClassWithUntestedInputs() {
+        return pagesClassesWithUntestedInputs;
     }
 }

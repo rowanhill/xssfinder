@@ -50,6 +50,18 @@ public class RouteTest {
     }
 
     @Test
+    public void rootPageDescriptorIsAvailable() {
+        // given
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator);
+
+        // when
+        PageDescriptor descriptor = route.getRootPageDescriptor();
+
+        // then
+        assertThat(descriptor, is(mockPageDescriptor));
+    }
+
+    @Test
     public void urlIsTakenFromRootPage() {
         // given
         Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator);

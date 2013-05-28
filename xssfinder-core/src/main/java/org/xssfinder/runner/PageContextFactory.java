@@ -13,6 +13,6 @@ class PageContextFactory {
 
     public PageContext createContext(DriverWrapper driverWrapper, Route route) {
         Object page = pageInstantiator.instantiatePage(route.getRootPageClass());
-        return new PageContext(pageTraverser, page, driverWrapper, route.getPageTraversal());
+        return new PageContext(pageTraverser, page, driverWrapper, route.getPageTraversal(), route.getRootPageDescriptor());
     }
 }

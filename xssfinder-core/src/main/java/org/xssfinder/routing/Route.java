@@ -32,6 +32,10 @@ public class Route {
         return pageTraversal;
     }
 
+    public PageDescriptor getRootPageDescriptor() {
+        return rootPageDescriptor;
+    }
+
     public PageTraversal getLastPageTraversal() {
         PageTraversal traversal = getPageTraversal();
         while (traversal != null && traversal.getNextTraversal() != null) {
