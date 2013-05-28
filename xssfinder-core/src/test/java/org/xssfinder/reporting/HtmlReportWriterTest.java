@@ -99,6 +99,33 @@ public class HtmlReportWriterTest {
                 "/some/xpath"), is(true));
     }
 
+    @Test
+    public void reportFileContainsWarningsSectionWhichIsEmptyByDefault() throws Exception {
+        // when
+        reportWriter.write(mockJournal);
+
+        // then
+        ReportPage reportPage = new ReportPage(createDriver());
+        assertThat(reportPage.getWarningsCount(), is(0));
+        assertThat(reportPage.hasWarningForClass(SomePage.class), is(false));
+    }
+
+    @Test
+    public void reportFileContainsWarningsSectionWithRowForEachPageWithUntestedInputs() throws Exception {
+        // given
+        Set<Class<?>> pageClassesWithUntestedInputs = ImmutableSet.of(SomePage.class, OtherPage.class);
+        when(mockJournal.getPagesClassWithUntestedInputs()).thenReturn(pageClassesWithUntestedInputs);
+
+        // when
+        reportWriter.write(mockJournal);
+
+        // then
+        ReportPage reportPage = new ReportPage(createDriver());
+        assertThat(reportPage.getWarningsCount(), is(2));
+        assertThat(reportPage.hasWarningForClass(SomePage.class), is(true));
+        assertThat(reportPage.hasWarningForClass(OtherPage.class), is(true));
+    }
+
     private HtmlUnitDriver createDriver() throws Exception {
         File file = new File(OUT_FILE);
         HtmlUnitDriver webDriver = new HtmlUnitDriver();
@@ -132,10 +159,26 @@ public class HtmlReportWriterTest {
                             "/../td[4][contains(text(),'"+sightingClassName+"')]"
             )).size() == 1;
         }
+
+        public int getWarningsCount() {
+            // The first <tr> is the header, so subtract one
+            return webDriver.findElements(By.xpath(
+                    "//table[@id='warnings']//tr"
+            )).size() - 1;
+        }
+
+        public boolean hasWarningForClass(Class<?> pageClass) {
+            return webDriver.findElements(By.xpath(
+                    "//table[@id='warnings']//tr//td[1][contains(text(),'"+pageClass.getCanonicalName()+"')]"
+            )).size() == 1;
+        }
     }
 
     @SuppressWarnings("UnusedDeclaration")
     private static class SomePage {
         SomePage submitForm() { return null; }
     }
+
+    @SuppressWarnings("UnusedDeclaration")
+    private static class OtherPage {}
 }

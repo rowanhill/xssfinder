@@ -47,6 +47,23 @@ public class HtmlReportWriter {
                 );
             }
             output.write("</table>");
+
+            output.write("<p>Potentially untested inputs were found on the following pages:</p>");
+            output.write("<table id='warnings'>");
+            output.write("<tr>");
+            output.write("<th>Page Object</th>");
+            output.write("</tr>");
+            for (Class<?> pageClass : journal.getPagesClassWithUntestedInputs()) {
+                output.write(
+                        "<tr>" +
+                            "<td>" +
+                                pageClass.getCanonicalName() +
+                            "</td>" +
+                        "</tr>"
+                );
+            }
+            output.write("</table>");
+
             output.write("</body>");
             output.write("</html>");
         } finally {
