@@ -8,6 +8,9 @@ import org.xssfinder.xss.XssGenerator;
 
 import java.util.*;
 
+/**
+ * A DriverWrapper backed by an HtmlUnitDriver
+ */
 public class DefaultHtmlUnitDriverWrapper implements DriverWrapper {
     private final HtmlUnitDriver driver;
 

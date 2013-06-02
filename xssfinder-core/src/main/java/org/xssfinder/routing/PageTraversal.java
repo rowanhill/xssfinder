@@ -4,11 +4,18 @@ import org.xssfinder.SubmitAction;
 
 import java.lang.reflect.Method;
 
+/**
+ * A traversal from one page to another as part of a route
+ */
 public class PageTraversal {
     private final Method method;
     private final PageDescriptor resultingPageDescriptor;
     private PageTraversal nextTraversal = null;
 
+    /**
+     * @param method The traversal message on a page object
+     * @param resultingPageDescriptor The page that results from undertaking this traversal
+     */
     public PageTraversal(Method method, PageDescriptor resultingPageDescriptor) {
         this.method = method;
         this.resultingPageDescriptor = resultingPageDescriptor;
@@ -22,6 +29,9 @@ public class PageTraversal {
         return resultingPageDescriptor;
     }
 
+    /**
+     * @return The next traversal in the route
+     */
     public PageTraversal getNextTraversal() {
         return nextTraversal;
     }

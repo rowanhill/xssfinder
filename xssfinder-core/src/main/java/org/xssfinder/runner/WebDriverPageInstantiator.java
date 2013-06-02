@@ -4,6 +4,9 @@ import org.openqa.selenium.WebDriver;
 
 import java.lang.reflect.Constructor;
 
+/**
+ * Creates page objects backed by WebDriver implementations
+ */
 public class WebDriverPageInstantiator implements PageInstantiator {
     private final WebDriver driver;
 

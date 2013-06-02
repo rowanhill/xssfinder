@@ -13,6 +13,14 @@ class PageTraverser {
         this.traverserInstantiator = traverserInstantiator;
     }
 
+    /**
+     * Traverse from the given page via the method described by the given traversal, either by the standard traverser
+     * if possible or via a custom traverser if instructed.
+     *
+     * @param page The current page object
+     * @param traversal The traversal from the current page object to the next
+     * @return The page object resulting from the traversal
+     */
     public Object traverse(Object page, PageTraversal traversal) {
         Method method = traversal.getMethod();
         CustomTraverser customTraverser = traverserInstantiator.instantiate(method);

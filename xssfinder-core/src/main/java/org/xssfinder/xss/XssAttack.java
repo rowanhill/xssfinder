@@ -1,5 +1,8 @@
 package org.xssfinder.xss;
 
+/**
+ * A uniquely identifiable XSS attack. Simple script to add the ID to window.xssfinder.
+ */
 public class XssAttack {
     private static final String ATTACK_TEMPLATE =
             "<script type=\"text/javascript\">" +

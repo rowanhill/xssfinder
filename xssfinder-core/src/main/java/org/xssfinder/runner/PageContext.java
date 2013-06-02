@@ -3,6 +3,9 @@ package org.xssfinder.runner;
 import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.routing.PageTraversal;
 
+/**
+ * Describes the current page and associated context whilst traversing through a route
+ */
 public class PageContext {
     private final PageTraverser pageTraverser;
     private final Object page;
@@ -24,10 +27,18 @@ public class PageContext {
         this.pageDescriptor = pageDescriptor;
     }
 
+    /**
+     * @return True if it is possible to traverse to the next context
+     * @see org.xssfinder.runner.PageContext#getNextContext()
+     */
     public boolean hasNextContext() {
         return pageTraversal != null;
     }
 
+    /**
+     * @return A PageContext created by traversing to the next page in the route
+     * @see org.xssfinder.runner.PageContext#hasNextContext()
+     */
     public PageContext getNextContext() {
         if (!hasNextContext()) {
             throw new IllegalStateException();
@@ -36,18 +47,30 @@ public class PageContext {
         return new PageContext(pageTraverser, nextPage, driverWrapper, pageTraversal.getNextTraversal(), pageTraversal.getResultingPageDescriptor());
     }
 
+    /**
+     * @return The current page object
+     */
     public Object getPage() {
         return page;
     }
 
+    /**
+     * @return The DriverWrapper used by the page objects to interact with the web site under test
+     */
     public DriverWrapper getDriverWrapper() {
         return driverWrapper;
     }
 
+    /**
+     * @return The next page traversal to be taken, or null if none
+     */
     public PageTraversal getPageTraversal() {
         return pageTraversal;
     }
 
+    /**
+     * @return The page descriptor of the current page
+     */
     public PageDescriptor getPageDescriptor() {
         return pageDescriptor;
     }

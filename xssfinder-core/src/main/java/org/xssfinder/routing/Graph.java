@@ -8,6 +8,9 @@ import org.xssfinder.reflection.Instantiator;
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * A graph of pages in the web site under test
+ */
 class Graph {
     private final Set<PageDescriptor> pageDescriptors;
     private final Class<?> rootPageClass;
@@ -19,6 +22,9 @@ class Graph {
         this.instantiator = instantiator;
     }
 
+    /**
+     * @return A list of routes which visit all pages of the graph at least once
+     */
     public List<Route> getRoutes() {
         Map<Class<?>, GraphNode> nodes = createNodes(pageDescriptors);
         Set<GraphNode> leafNodes = findShortestPathsAndReturnLeafNodes(nodes);

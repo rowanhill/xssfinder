@@ -7,6 +7,9 @@ import org.xssfinder.runner.LifecycleEventException;
 
 import java.lang.reflect.Method;
 
+/**
+ * A series of traversals through the page object graph
+ */
 public class Route {
     private final PageDescriptor rootPageDescriptor;
     private final String url;

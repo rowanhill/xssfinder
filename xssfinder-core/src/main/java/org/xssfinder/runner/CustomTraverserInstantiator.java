@@ -7,6 +7,9 @@ import org.xssfinder.reflection.InstantiationException;
 
 import java.lang.reflect.Method;
 
+/**
+ * Creates custom traversers from @TraverseWith annotations
+ */
 class CustomTraverserInstantiator {
     private final Instantiator instantiator;
 

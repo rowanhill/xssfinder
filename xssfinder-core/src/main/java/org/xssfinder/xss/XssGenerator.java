@@ -1,5 +1,8 @@
 package org.xssfinder.xss;
 
+/**
+ * Generates uniquely identifiable XSS attacks
+ */
 public class XssGenerator {
     private final XssAttackFactory xssAttackFactory;
     private int nextXssId = 1;

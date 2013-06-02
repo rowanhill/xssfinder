@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A journal of the XSS attacks performed, which have been successful, and which pages may need more @SubmitActions
+ */
 public class XssJournal {
     private final Map<String, XssDescriptor> descriptorsById = new HashMap<String, XssDescriptor>();
     private final Map<String, XssSighting> xssSightingsById = new HashMap<String, XssSighting>();

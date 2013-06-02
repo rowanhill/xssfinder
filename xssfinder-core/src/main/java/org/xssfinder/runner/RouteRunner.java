@@ -30,6 +30,14 @@ public class RouteRunner {
         this.reportWriter = reportWriter;
     }
 
+    /**
+     * Run through the given routes, first attacking them, and then just checking for successful attacks. Writes out
+     * the results report when complete.
+     *
+     * @param routes A list of routes to run through
+     * @param xssJournal A journal to record results in
+     * @throws IOException
+     */
     public void run(List<Route> routes, XssJournal xssJournal) throws IOException {
         strategyRunner.run(routes, ImmutableList.of(attackStrategy, detectStrategy, warnStrategy), xssJournal);
         strategyRunner.run(routes, ImmutableList.of((PageStrategy)detectStrategy), xssJournal);

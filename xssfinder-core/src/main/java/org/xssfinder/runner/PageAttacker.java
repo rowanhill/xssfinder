@@ -16,6 +16,12 @@ class PageAttacker {
         this.xssDescriptorFactory = xssDescriptorFactory;
     }
 
+    /**
+     * Attack the inputs in the current page if the next traversal is a submit action
+     *
+     * @param pageContext The current page context
+     * @return A map of XSS attack identifiers to XssDescriptors
+     */
     public Map<String, XssDescriptor> attackIfAboutToSubmit(PageContext pageContext) {
         Map<String, XssDescriptor> xssIdsToDescriptors = new HashMap<String, XssDescriptor>();
         if (pageContext.hasNextContext() && pageContext.getPageTraversal().isSubmit()) {
@@ -25,5 +31,6 @@ class PageAttacker {
                 xssIdsToDescriptors.put(entry.getValue(), xssDescriptor);
             }
         }
-        return xssIdsToDescriptors;    }
+        return xssIdsToDescriptors;
+    }
 }

@@ -1,19 +1,29 @@
 package org.xssfinder.reporting;
 
-import org.xssfinder.xss.XssDescriptor;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Writes HTML reports of the results of a run.
+ */
 public class HtmlReportWriter {
     private final String outFilePath;
 
+    /**
+     * @param outFilePath The path to write the report to
+     */
     public HtmlReportWriter(String outFilePath) {
         this.outFilePath = outFilePath;
     }
 
+    /**
+     * Write the given XssJournal out to the writer's out file path
+     *
+     * @param journal An XssJournal detailing the results of a run
+     * @throws IOException Thrown if there
+     */
     public void write(XssJournal journal) throws IOException {
         File outFile = createOutfile();
         BufferedWriter output = new BufferedWriter(new FileWriter(outFile));

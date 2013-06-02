@@ -2,6 +2,9 @@ package org.xssfinder.reporting;
 
 import org.xssfinder.xss.XssDescriptor;
 
+/**
+ * A sighting of a successful a particular XSS attack on a particular page
+ */
 public class XssSighting {
     private final Object sightingPageObject;
     private final XssDescriptor xssDescriptor;

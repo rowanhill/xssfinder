@@ -5,6 +5,9 @@ import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
+/**
+ * Creates uniquely identifying XPath expressions for WebDriver WebElements
+ */
 class WebDriverXPathFinder {
     public String getXPath(WebElement element) {
         if (element.getAttribute("id") != null) {

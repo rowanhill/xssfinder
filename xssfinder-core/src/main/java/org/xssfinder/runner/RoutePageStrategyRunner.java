@@ -20,6 +20,13 @@ class RoutePageStrategyRunner {
         this.lifecycleEventExecutor = lifecycleEventExecutor;
     }
 
+    /**
+     * Run through the given routes, executing the given strategies on them, recording results in the given journal
+     *
+     * @param routes A list of routes to run through
+     * @param pageStrategies A list of strategies to execute against each page
+     * @param xssJournal A journal to record results in
+     */
     public void run(List<Route> routes, List<PageStrategy> pageStrategies, XssJournal xssJournal) {
         for (Route route : routes) {
             driverWrapper.visit(route.getUrl());

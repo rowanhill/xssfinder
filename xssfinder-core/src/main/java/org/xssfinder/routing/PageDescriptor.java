@@ -8,12 +8,18 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Description of a page and its corresponding page object
+ */
 public class PageDescriptor {
     private final boolean isRoot;
     private final Set<Method> traversalMethods;
     private final Set<Method> submitMethods;
     private final Class<?> pageClass;
 
+    /**
+     * @param pageClass The class of the page object representing this page
+     */
     public PageDescriptor(Class<?> pageClass) {
         isRoot = pageClass.isAnnotationPresent(CrawlStartPoint.class);
         traversalMethods = findTraversalMethods(pageClass);
@@ -32,6 +38,10 @@ public class PageDescriptor {
         return traversalMethods;
     }
 
+    /**
+     * @param traversalMethods A set of all methods on the page object that traverse to another page
+     * @return The subset of traversalMethods which are @SubmitActions
+     */
     Set<Method> findSubmitMethods(Set<Method> traversalMethods) {
         Set<Method> submitMethods = new HashSet<Method>();
         for (Method traversalMethod : traversalMethods) {
@@ -42,18 +52,30 @@ public class PageDescriptor {
         return submitMethods;
     }
 
+    /**
+     * @return True if this page is the root of a route
+     */
     public boolean isRoot() {
         return isRoot;
     }
 
+    /**
+     * @return A set of methods which traverse from one page to another
+     */
     public Set<Method> getTraversalMethods() {
         return traversalMethods;
     }
 
+    /**
+     * @return A set of traversal methods which submit the page
+     */
     public Set<Method> getSubmitMethods() {
         return submitMethods;
     }
 
+    /**
+     * @return The page object described by this object
+     */
     public Class<?> getPageClass() {
         return pageClass;
     }

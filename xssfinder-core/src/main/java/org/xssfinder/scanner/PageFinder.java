@@ -5,6 +5,9 @@ import org.xssfinder.Page;
 
 import java.util.Set;
 
+/**
+ * Finds all @Page annotated classes on the classpath within a package
+ */
 public class PageFinder {
     private final String packageName;
 
