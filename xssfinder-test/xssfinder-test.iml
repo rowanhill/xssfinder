@@ -31,8 +31,8 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:3.0.6.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: xssfinder:xssfinder-core:1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: xssfinder:xssfinder-annotations:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="xssfinder-core" scope="TEST" />
+    <orderEntry type="module" module-name="xssfinder-annotations" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="Maven: org.seleniumhq.selenium:selenium-java:2.32.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.seleniumhq.selenium:selenium-android-driver:2.32.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.seleniumhq.selenium:selenium-remote-driver:2.32.0" level="project" />

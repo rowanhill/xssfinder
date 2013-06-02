@@ -16,7 +16,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>xssfinder</groupId>
+            <groupId>org.xssfinder</groupId>
             <artifactId>xssfinder-annotations</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
