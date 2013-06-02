@@ -6,7 +6,7 @@ to automatically traverse your web application searching for XSS vulnerabilities
 According to [OWASP](https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project),
 cross site scripting (XSS) is one of the top three security
 vulnerabilities affecting web applications.
-[Preventing](https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet)
+[Preventing](https://www.owasp.org/index.php/XSS_%28Cross_Site_Scripting%29_Prevention_Cheat_Sheet)
 it is largely a case of correct escaping. Although this is easy
 to do, it's also easy to forget. Finding XSS vulnerabilities
 through manual inspection is laborious, difficult, and error
