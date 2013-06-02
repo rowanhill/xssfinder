@@ -12,7 +12,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="xssfinder-annotations" />
+    <orderEntry type="library" name="Maven: xssfinder:xssfinder-annotations:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-java:2.32.0" level="project" />
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-android-driver:2.32.0" level="project" />
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-remote-driver:2.32.0" level="project" />
