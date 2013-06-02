@@ -83,7 +83,7 @@ public class HtmlReportWriter {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private File createOutfile() throws IOException {
-        File outFile = new File(outFilePath);
+        File outFile = new File(outFilePath).getAbsoluteFile();
         outFile.createNewFile();
         return outFile;
     }

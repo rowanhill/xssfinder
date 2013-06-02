@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import org.xssfinder.runner.PageContext;
 import org.xssfinder.xss.XssDescriptor;
 
 import java.io.File;
@@ -17,8 +16,6 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +34,7 @@ public class HtmlReportWriterTest {
 
     @Before
     public void setUp() {
-        File file = new File(OUT_FILE);
+        File file = new File(OUT_FILE).getAbsoluteFile();
         boolean didDelete = file.delete();
         if (didDelete) {
             System.err.println("Warning: Had to delete " + OUT_FILE);
@@ -46,7 +43,7 @@ public class HtmlReportWriterTest {
 
     @After
     public void tearDown() {
-        File file = new File(OUT_FILE);
+        File file = new File(OUT_FILE).getAbsoluteFile();
         boolean didDelete = file.delete();
         if (!didDelete) {
             System.err.println("Warning: Could not find expected file " + OUT_FILE);
@@ -59,7 +56,7 @@ public class HtmlReportWriterTest {
         reportWriter.write(journal);
 
         // then
-        File file = new File(OUT_FILE);
+        File file = new File(OUT_FILE).getAbsoluteFile();
         assertThat(file.exists(), is(true));
     }
 

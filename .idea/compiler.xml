@@ -27,6 +27,12 @@
         <module name="xssfinder-test" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="xssfinder" target="1.6" />
+      <module name="xssfinder-annotations" target="1.6" />
+      <module name="xssfinder-core" target="1.6" />
+      <module name="xssfinder-test" target="1.6" />
+    </bytecodeTargetLevel>
   </component>
 </project>
 
