@@ -132,3 +132,6 @@ only submissions that don't change page).
 5. Add DriverWrappers beyond just HtmlUnitDriver.
 6. Add more lifecycle events (before route, before/after traversal).
 7. Refactor Graph.java - it's a bit too big and complex.s
+8. Consider annotation inheritance - at a minimum, `@Page` probably 
+wants to be marked as 
+[`@Inherited`](http://docs.oracle.com/javase/6/docs/api/java/lang/annotation/Inherited.html)
