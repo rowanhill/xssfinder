@@ -29,25 +29,45 @@ class RoutePageStrategyRunner {
      */
     public void run(List<Route> routes, List<PageStrategy> pageStrategies, XssJournal xssJournal) {
         for (Route route : routes) {
+            runRoute(route, xssJournal, pageStrategies);
+        }
+    }
+
+    private void runRoute(Route route, XssJournal xssJournal, List<PageStrategy> pageStrategies) {
+        Object lifecycleHandler = null;
+        PageContext pageContext = null;
+        try {
             driverWrapper.visit(route.getUrl());
 
-            Object lifecycleHandler = route.createLifecycleHandler();
+            lifecycleHandler = route.createLifecycleHandler();
 
-            PageContext pageContext = contextFactory.createContext(driverWrapper, route);
-
+            pageContext = contextFactory.createContext(driverWrapper, route);
             while (pageContext.hasNextContext()) {
                 executePageStrategies(pageStrategies, pageContext, xssJournal);
                 pageContext = pageContext.getNextContext();
             }
             executePageStrategies(pageStrategies, pageContext, xssJournal);
-
-            lifecycleEventExecutor.afterRoute(lifecycleHandler, pageContext.getPage());
+        } catch (Exception e) {
+            // Do nothing... for now
+        } finally {
+            handleRouteError(lifecycleHandler, pageContext);
         }
     }
 
     private void executePageStrategies(List<PageStrategy> pageStrategies, PageContext context, XssJournal xssJournal) {
         for (PageStrategy pageStrategy : pageStrategies) {
             pageStrategy.processPage(context, xssJournal);
+        }
+    }
+
+    private void handleRouteError(Object lifecycleHandler, PageContext pageContext) {
+        if (pageContext == null) {
+            return;
+        }
+        try {
+            lifecycleEventExecutor.afterRoute(lifecycleHandler, pageContext.getPage());
+        } catch (Exception e) {
+            // Do nothing... for now
         }
     }
 }
