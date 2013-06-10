@@ -122,16 +122,15 @@ once the route has finished with `@AfterRoute`.
 
 TODOs
 -----
-1. Gracefully handle errors encountered traversing a route. (Perhaps
-also adding new routes to reach any pages not visited as a result
-of the error).
-2. Handle submit actions that return void (e.g. for client-side
+1. Record errors encountered traversing a route / in afterRoute.
+1. Make all submit traversals terminal, and in addition to normal traversal
+1. Handle submit actions that return void (e.g. for client-side
 only submissions that don't change page).
-3. Implement as a Maven plugin.
-4. Make the reports (lots) prettier.
-5. Add DriverWrappers beyond just HtmlUnitDriver.
-6. Add more lifecycle events (before route, before/after traversal).
-7. Refactor Graph.java - it's a bit too big and complex.s
-8. Consider annotation inheritance - at a minimum, `@Page` probably 
+1. Implement as a Maven plugin.
+1. Make the reports (lots) prettier.
+1. Add DriverWrappers beyond just HtmlUnitDriver.
+1. Add more lifecycle events (before route, before/after traversal).
+1. Tidy up GraphTest following Graph refactor (it's a bit of a integration test now)
+1. Consider annotation inheritance - at a minimum, `@Page` probably
 wants to be marked as 
 [`@Inherited`](http://docs.oracle.com/javase/6/docs/api/java/lang/annotation/Inherited.html)
