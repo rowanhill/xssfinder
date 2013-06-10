@@ -1,5 +1,6 @@
 package org.xssfinder.routing;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,9 +8,13 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.Page;
+import org.xssfinder.SubmitAction;
 import org.xssfinder.reflection.*;
 import org.xssfinder.reflection.InstantiationException;
 import org.xssfinder.runner.LifecycleEventException;
+
+import java.lang.reflect.Method;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -211,11 +216,32 @@ public class RouteTest {
         route.createLifecycleHandler();
     }
 
+    @Test
+    public void returnsTraversedSubmitMethods() throws Exception {
+        // given
+        PageTraversal traversal = new PageTraversal(
+                RootPage.class.getMethod("submit"),
+                mockPageDescriptor
+        );
+        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator);
+
+        // when
+        Set<Method> submitMethods = route.getTraversedSubmitMethods();
+
+        // then
+        Set<Method> expectedMethods = ImmutableSet.of(
+                RootPage.class.getMethod("submit")
+        );
+        assertThat(submitMethods, is(expectedMethods));
+    }
+
     @SuppressWarnings("UnusedDeclaration")
     @Page
     @CrawlStartPoint(url=ROOT_PAGE_URL, lifecycleHandler=LifecycleHandler.class)
     private static class RootPage {
         public RootPage circularLink() { return null; }
+        @SubmitAction
+        public RootPage submit() { return null; }
     }
 
     private static class LifecycleHandler {}

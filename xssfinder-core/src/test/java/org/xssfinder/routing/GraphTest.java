@@ -162,6 +162,7 @@ public class GraphTest {
         assertThat(pageClass == CircularHomePage.class, is(true));
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     @Page
     @CrawlStartPoint(url="")
     private static class CircularHomePage {
@@ -172,6 +173,7 @@ public class GraphTest {
     @Page
     private class OrdinaryPage {}
 
+    @SuppressWarnings("UnusedDeclaration")
     @Page
     @CrawlStartPoint(url="")
     private class StartPageOne {
@@ -182,6 +184,7 @@ public class GraphTest {
     @CrawlStartPoint(url="")
     private class StartPageTwo {}
 
+    @SuppressWarnings("UnusedDeclaration")
     @Page
     @CrawlStartPoint(url="")
     private class ForkStartPage {
@@ -195,12 +198,14 @@ public class GraphTest {
     @Page
     private class ForkChildPageTwo {}
 
+    @SuppressWarnings("UnusedDeclaration")
     @Page
     @CrawlStartPoint(url="")
     private class LoginPage {
         public SignUpPage register() { return null; }
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     @Page
     private class SignUpPage {
         @SubmitAction

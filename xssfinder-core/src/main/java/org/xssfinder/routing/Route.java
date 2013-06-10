@@ -1,11 +1,14 @@
 package org.xssfinder.routing;
 
 import org.xssfinder.CrawlStartPoint;
+import org.xssfinder.SubmitAction;
 import org.xssfinder.reflection.*;
 import org.xssfinder.reflection.InstantiationException;
 import org.xssfinder.runner.LifecycleEventException;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A series of traversals through the page object graph
@@ -66,6 +69,18 @@ public class Route {
         } catch (InstantiationException ex) {
             throw new LifecycleEventException(ex);
         }
+    }
+
+    public Set<Method> getTraversedSubmitMethods() {
+        Set<Method> usedMethods = new HashSet<Method>();
+        PageTraversal traversal = getPageTraversal();
+        while (traversal != null && traversal.getMethod() != null) {
+            if (traversal.getMethod().isAnnotationPresent(SubmitAction.class)) {
+                usedMethods.add(traversal.getMethod());
+            }
+            traversal = traversal.getNextTraversal();
+        }
+        return usedMethods;
     }
 
     @SuppressWarnings({"CloneDoesntCallSuperClone", "CloneDoesntDeclareCloneNotSupportedException"})
