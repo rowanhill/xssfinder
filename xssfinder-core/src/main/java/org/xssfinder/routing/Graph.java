@@ -25,9 +25,8 @@ class Graph {
      */
     public List<Route> getRoutes() {
         GraphNodesFactory nodesFactory = new GraphNodesFactory();
-        Map<Class<?>, GraphNode> nodes = nodesFactory.createNodes(pageDescriptors);
-        DjikstraRunner djikstraRunner = new DjikstraRunner();
-        Set<GraphNode> leafNodes = djikstraRunner.findShortestPathsAndReturnLeafNodes(rootPageClass, nodes);
+        DjikstraRunner djikstraRunner = new DjikstraRunner(pageDescriptors, nodesFactory);
+        Set<GraphNode> leafNodes = djikstraRunner.findShortestPathsAndReturnLeafNodes(rootPageClass);
         RouteComposer routeComposer  = new RouteComposer();
         List<Route> routes = routeComposer.getRoutesFromLeafNodes(leafNodes, instantiator);
         return appendUntraversedRequiredTraversalsToRoutes(routes, pageDescriptors);

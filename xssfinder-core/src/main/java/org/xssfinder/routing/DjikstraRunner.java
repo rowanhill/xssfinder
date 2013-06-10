@@ -4,7 +4,17 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 class DjikstraRunner {
-    Set<GraphNode> findShortestPathsAndReturnLeafNodes(Class<?> rootPageClass, Map<Class<?>, GraphNode> nodes) {
+    private final Set<PageDescriptor> pageDescriptors;
+    private final GraphNodesFactory graphNodesFactory;
+
+    DjikstraRunner(Set<PageDescriptor> pageDescriptors, GraphNodesFactory graphNodesFactory) {
+        this.pageDescriptors = pageDescriptors;
+        this.graphNodesFactory = graphNodesFactory;
+    }
+
+    Set<GraphNode> findShortestPathsAndReturnLeafNodes(Class<?> rootPageClass) {
+        Map<Class<?>, GraphNode> nodes = graphNodesFactory.createNodes(pageDescriptors);
+
         nodes.get(rootPageClass).setDistance(0);
         PriorityQueue<GraphNode> nodeQueue = new PriorityQueue<GraphNode>(nodes.size(), new NodeDistanceComparator());
         nodeQueue.addAll(nodes.values());
