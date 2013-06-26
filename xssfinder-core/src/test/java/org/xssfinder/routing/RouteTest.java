@@ -69,6 +69,7 @@ public class RouteTest {
     @Test
     public void urlIsTakenFromRootPage() {
         // given
+        when(mockPageDescriptor.getCrawlStartPointUrl()).thenReturn(ROOT_PAGE_URL);
         Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator);
 
         // when

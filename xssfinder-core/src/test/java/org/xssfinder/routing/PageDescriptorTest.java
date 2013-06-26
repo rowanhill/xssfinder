@@ -106,17 +106,38 @@ public class PageDescriptorTest {
         assertThat(submitMethods, is(expectedPages));
     }
 
-    @Page
-    private class OrdinaryPage {}
+    @Test
+    public void crawlStartPointUrlIsAvailable() {
+        // given
+        PageDescriptor descriptor = new PageDescriptor(StartPage.class);
+
+        // when
+        String url = descriptor.getCrawlStartPointUrl();
+
+        // then
+        assertThat(url, is("http://somehost/someurl"));
+    }
+
+    @Test(expected=NotAStartPointException.class)
+    public void gettingCrawlStartPointUrlOfNonStartPointThrowsException() throws Exception {
+        // given
+        PageDescriptor descriptor = new PageDescriptor(OrdinaryPage.class);
+
+        // when
+        String url = descriptor.getCrawlStartPointUrl();
+    }
 
     @Page
-    @CrawlStartPoint(url="")
-    private class StartPage {
+    private static class OrdinaryPage {}
+
+    @Page
+    @CrawlStartPoint(url="http://somehost/someurl")
+    private static class StartPage {
         public OrdinaryPage goToOrdinaryPage() { return null; }
     }
 
     @Page
-    private class SubmittablePage {
+    private static class SubmittablePage {
         public OrdinaryPage goToOrdinaryPage() { return null; }
 
         @SubmitAction

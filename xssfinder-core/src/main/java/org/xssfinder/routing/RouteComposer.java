@@ -8,8 +8,15 @@ import java.util.List;
 import java.util.Set;
 
 public class RouteComposer {
+    private final Instantiator instantiator;
+    private final PageTraversalFactory pageTraversalFactory;
 
-    List<Route> getRoutesFromLeafNodes(Set<GraphNode> leafNodes, Instantiator instantiator) {
+    public RouteComposer(Instantiator instantiator, PageTraversalFactory pageTraversalFactory) {
+        this.instantiator = instantiator;
+        this.pageTraversalFactory = pageTraversalFactory;
+    }
+
+    List<Route> getRoutesFromLeafNodes(Set<GraphNode> leafNodes) {
         List<Route> routes = new ArrayList<Route>();
         for (GraphNode node : leafNodes) {
             LinkedList<GraphNode> routeNodes = new LinkedList<GraphNode>();
@@ -25,11 +32,8 @@ public class RouteComposer {
         PageTraversal nextTraversal = null;
         while (node != null) {
             routeNodes.addFirst(node);
-            if (node.getPredecessorTraversalMethod() != null) {
-                PageTraversal traversal = new PageTraversal(
-                        node.getPredecessorTraversalMethod(),
-                        node.getPageDescriptor()
-                );
+            if (node.hasPredecessor()) {
+                PageTraversal traversal = pageTraversalFactory.createTraversalToNode(node);
                 traversal.setNextTraversal(nextTraversal);
                 nextTraversal = traversal;
             }

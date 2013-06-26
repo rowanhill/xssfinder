@@ -79,4 +79,12 @@ public class PageDescriptor {
     public Class<?> getPageClass() {
         return pageClass;
     }
+
+    public String getCrawlStartPointUrl() {
+        CrawlStartPoint annotation = getPageClass().getAnnotation(CrawlStartPoint.class);
+        if (annotation == null) {
+            throw new NotAStartPointException();
+        }
+        return annotation.url();
+    }
 }

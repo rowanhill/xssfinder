@@ -7,6 +7,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.Page;
 
+import java.lang.reflect.Method;
+
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -71,16 +73,45 @@ public class GraphNodeTest {
     }
 
     @Test
-    public void predecessorCanBeSet() {
+    public void predecessorAndMethodCanBeSet() throws Exception {
         // given
         GraphNode node = new GraphNode(mockPageDescriptor);
         GraphNode otherNode = mock(GraphNode.class);
+        Method method = StartPointPage.class.getMethod("getOrdinaryPage");
 
         // when
-        node.setPredecessor(otherNode);
+        node.setPredecessor(otherNode, method);
 
         // then
         assertThat(node.getPredecessor(), is(otherNode));
+        assertThat(node.getPredecessorTraversalMethod(), is(method));
+    }
+
+    @Test
+    public void hasNoPredecessorIfSetToNull() {
+        // given
+        GraphNode node = new GraphNode(mockPageDescriptor);
+
+        // when
+        boolean hasPredecessor = node.hasPredecessor();
+
+        // then
+        assertThat(hasPredecessor, is(false));
+    }
+
+    @Test
+    public void hasPredecessorIfSet() throws Exception {
+        // given
+        GraphNode node = new GraphNode(mockPageDescriptor);
+        GraphNode otherNode = mock(GraphNode.class);
+        Method method = StartPointPage.class.getMethod("getOrdinaryPage");
+        node.setPredecessor(otherNode, method);
+
+        // when
+        boolean hasPredecessor = node.hasPredecessor();
+
+        // then
+        assertThat(hasPredecessor, is(true));
     }
 
     @Test
@@ -111,10 +142,12 @@ public class GraphNodeTest {
     }
 
     @Page
-    private class OrdinaryPage {}
+    private static class OrdinaryPage {}
 
     @Page
     @CrawlStartPoint(url="")
-    private class StartPointPage {}
+    private static class StartPointPage {
+        public OrdinaryPage getOrdinaryPage() { return null; }
+    }
 
 }

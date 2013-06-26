@@ -21,7 +21,7 @@ public class Route {
 
     public Route(PageDescriptor rootPageDescriptor, PageTraversal pageTraversal, Instantiator instantiator) {
         this.rootPageDescriptor = rootPageDescriptor;
-        this.url = rootPageDescriptor.getPageClass().getAnnotation(CrawlStartPoint.class).url();
+        this.url = rootPageDescriptor.getCrawlStartPointUrl();
         this.instantiator = instantiator;
         this.pageTraversal = pageTraversal;
     }

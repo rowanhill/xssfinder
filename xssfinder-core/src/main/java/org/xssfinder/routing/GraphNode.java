@@ -34,15 +34,12 @@ public class GraphNode {
         return predecessor;
     }
 
-    public void setPredecessor(GraphNode predecessor) {
-        this.predecessor = predecessor;
-    }
-
     public Method getPredecessorTraversalMethod() {
         return predecessorTraversalMethod;
     }
 
-    public void setPredecessorTraversalMethod(Method predecessorTraversalMethod) {
+    public void setPredecessor(GraphNode predecessor, Method predecessorTraversalMethod) {
+        this.predecessor = predecessor;
         this.predecessorTraversalMethod = predecessorTraversalMethod;
     }
 
@@ -52,5 +49,9 @@ public class GraphNode {
 
     public PageDescriptor getPageDescriptor() {
         return pageDescriptor;
+    }
+
+    public boolean hasPredecessor() {
+        return this.predecessor != null && this.predecessorTraversalMethod != null;
     }
 }

@@ -31,8 +31,7 @@ class DjikstraRunner {
                 if (neighbour.getDistance() > nextDistance) {
                     leafNodes.remove(nearestNode);
                     neighbour.setDistance(nextDistance);
-                    neighbour.setPredecessor(nearestNode);
-                    neighbour.setPredecessorTraversalMethod(traversalMethod);
+                    neighbour.setPredecessor(nearestNode, traversalMethod);
                     nodeQueue.remove(neighbour);
                     nodeQueue.add(neighbour);
                 }

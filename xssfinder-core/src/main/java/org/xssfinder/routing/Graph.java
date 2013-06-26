@@ -25,8 +25,9 @@ class Graph {
         GraphNodesFactory nodesFactory = new GraphNodesFactory();
         DjikstraRunner djikstraRunner = new DjikstraRunner(pageDescriptors, nodesFactory);
         Set<GraphNode> leafNodes = djikstraRunner.findShortestPathsAndReturnLeafNodes(rootPageClass);
-        RouteComposer routeComposer  = new RouteComposer();
-        List<Route> routes = routeComposer.getRoutesFromLeafNodes(leafNodes, instantiator);
+        PageTraversalFactory pageTraversalFactory = new PageTraversalFactory();
+        RouteComposer routeComposer  = new RouteComposer(instantiator, pageTraversalFactory);
+        List<Route> routes = routeComposer.getRoutesFromLeafNodes(leafNodes);
         RequiredTraversalAppender requiredTraversalAppender = new RequiredTraversalAppender(
                 new UntraversedSubmitMethodsFinder()
         );
