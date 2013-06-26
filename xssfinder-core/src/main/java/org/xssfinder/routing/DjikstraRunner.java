@@ -10,7 +10,7 @@ class DjikstraRunner {
         this.graphNodesFactory = graphNodesFactory;
     }
 
-    Set<GraphNode> findShortestPathsAndReturnLeafNodes(Class<?> rootPageClass, Set<PageDescriptor> pageDescriptors) {
+    DjikstraResult computeShortestPaths(Class<?> rootPageClass, Set<PageDescriptor> pageDescriptors) {
         Map<Class<?>, GraphNode> nodes = graphNodesFactory.createNodes(pageDescriptors);
 
         nodes.get(rootPageClass).setDistance(0);
@@ -35,7 +35,7 @@ class DjikstraRunner {
                 }
             }
         }
-        return leafNodes;
+        return new DjikstraResult(nodes, leafNodes);
     }
 
     private static class NodeDistanceComparator implements Comparator<GraphNode> {

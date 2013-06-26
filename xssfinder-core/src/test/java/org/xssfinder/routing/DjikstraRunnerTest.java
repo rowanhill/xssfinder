@@ -25,7 +25,8 @@ public class DjikstraRunnerTest {
         DjikstraRunner runner = new DjikstraRunner(nodesFactory);
 
         // when
-        Set<GraphNode> leafNodes = runner.findShortestPathsAndReturnLeafNodes(RootPage.class, descriptors);
+        DjikstraResult djikstraResult = runner.computeShortestPaths(RootPage.class, descriptors);
+        Set<GraphNode> leafNodes = djikstraResult.getLeafNodes();
 
         // then
         assertThat(leafNodes.size(), is(4));

@@ -29,7 +29,8 @@ class Graph {
      * @return A list of routes which visit all pages of the graph at least once
      */
     public List<Route> getRoutes() {
-        Set<GraphNode> leafNodes = djikstraRunner.findShortestPathsAndReturnLeafNodes(rootPageClass, pageDescriptors);
+        DjikstraResult djikstraResult = djikstraRunner.computeShortestPaths(rootPageClass, pageDescriptors);
+        Set<GraphNode> leafNodes = djikstraResult.getLeafNodes();
         List<Route> routes = leafNodeRouteFactory.getRoutesFromLeafNodes(leafNodes);
         return requiredTraversalAppender.appendTraversalsToRoutes(routes, pageDescriptors);
     }

@@ -15,6 +15,7 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -63,9 +64,11 @@ public class GraphTest {
         // given
         pagesDescriptors.add(startPage1Descriptor);
         Class<?> rootClass = startPage1Descriptor.getPageClass();
+        DjikstraResult mockDjikstraResult = mock(DjikstraResult.class);
         Set<GraphNode> leafNodes = new HashSet<GraphNode>();
-        when(mockDjikstraRunner.findShortestPathsAndReturnLeafNodes(rootClass, pagesDescriptors))
-                .thenReturn(leafNodes);
+        when(mockDjikstraResult.getLeafNodes()).thenReturn(leafNodes);
+        when(mockDjikstraRunner.computeShortestPaths(rootClass, pagesDescriptors))
+                .thenReturn(mockDjikstraResult);
         List<Route> leafNodeRoutes = new ArrayList<Route>();
         when(mockLeafNodeRouteFactory.getRoutesFromLeafNodes(leafNodes)).thenReturn(leafNodeRoutes);
         List<Route> appendedRoutes = new ArrayList<Route>();
