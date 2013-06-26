@@ -1,7 +1,5 @@
 package org.xssfinder.routing;
 
-import org.xssfinder.reflection.Instantiator;
-
 import java.util.*;
 
 /**
@@ -10,27 +8,29 @@ import java.util.*;
 class Graph {
     private final Set<PageDescriptor> pageDescriptors;
     private final Class<?> rootPageClass;
-    private final Instantiator instantiator;
+    private final DjikstraRunner djikstraRunner;
+    private final RequiredTraversalAppender requiredTraversalAppender;
+    private final RouteComposer routeComposer;
 
-    public Graph(Set<PageDescriptor> pageDescriptors, Instantiator instantiator) {
+    public Graph(
+            Set<PageDescriptor> pageDescriptors,
+            DjikstraRunner djikstraRunner,
+            RouteComposer routeComposer,
+            RequiredTraversalAppender requiredTraversalAppender
+    ) {
         this.pageDescriptors = pageDescriptors;
         this.rootPageClass = findRootNode(pageDescriptors);
-        this.instantiator = instantiator;
+        this.djikstraRunner = djikstraRunner;
+        this.routeComposer = routeComposer;
+        this.requiredTraversalAppender = requiredTraversalAppender;
     }
 
     /**
      * @return A list of routes which visit all pages of the graph at least once
      */
     public List<Route> getRoutes() {
-        GraphNodesFactory nodesFactory = new GraphNodesFactory();
-        DjikstraRunner djikstraRunner = new DjikstraRunner(pageDescriptors, nodesFactory);
-        Set<GraphNode> leafNodes = djikstraRunner.findShortestPathsAndReturnLeafNodes(rootPageClass);
-        PageTraversalFactory pageTraversalFactory = new PageTraversalFactory();
-        RouteComposer routeComposer  = new RouteComposer(instantiator, pageTraversalFactory);
+        Set<GraphNode> leafNodes = djikstraRunner.findShortestPathsAndReturnLeafNodes(rootPageClass, pageDescriptors);
         List<Route> routes = routeComposer.getRoutesFromLeafNodes(leafNodes);
-        RequiredTraversalAppender requiredTraversalAppender = new RequiredTraversalAppender(
-                new UntraversedSubmitMethodsFinder()
-        );
         return requiredTraversalAppender.appendTraversalsToRoutes(routes, pageDescriptors);
     }
 

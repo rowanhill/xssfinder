@@ -11,9 +11,9 @@ import org.xssfinder.reporting.XssSightingFactory;
 import org.xssfinder.routing.GraphsFactory;
 import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
+import org.xssfinder.routing.RouteGeneratorFactory;
 import org.xssfinder.runner.*;
 import org.xssfinder.scanner.PageFinder;
-import org.xssfinder.testsite.simple.page.HomePage;
 
 import java.io.File;
 import java.util.List;
@@ -56,7 +56,8 @@ public class XssFinderIT {
         Set<Class<?>> pageClasses = new PageFinder("org.xssfinder.testsite.simple").findAllPages();
 
         // Generate routes from the page object network
-        RouteGenerator routeGenerator = new RouteGenerator(new GraphsFactory());
+        RouteGeneratorFactory routeGeneratorFactory = new RouteGeneratorFactory();
+        RouteGenerator routeGenerator = routeGeneratorFactory.createRouteGenerator();
         List<Route> routes = routeGenerator.generateRoutes(pageClasses);
 
         // Create a runner using HtmlUnitDriver

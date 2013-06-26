@@ -1,7 +1,5 @@
 package org.xssfinder.routing;
 
-import org.xssfinder.reflection.Instantiator;
-
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,10 +7,18 @@ import java.util.Map;
 import java.util.Set;
 
 public class GraphsFactory {
-    private final Instantiator instantiator;
+    private final DjikstraRunner djikstraRunner;
+    private final RequiredTraversalAppender requiredTraversalAppender;
+    private final RouteComposer routeComposer;
 
-    public GraphsFactory() {
-        instantiator = new Instantiator();
+    public GraphsFactory(
+            DjikstraRunner djikstraRunner,
+            RouteComposer routeComposer,
+            RequiredTraversalAppender requiredTraversalAppender
+    ) {
+        this.djikstraRunner = djikstraRunner;
+        this.routeComposer = routeComposer;
+        this.requiredTraversalAppender = requiredTraversalAppender;
     }
 
     public Set<Graph> createGraphs(Set<Class<?>> pageClasses) {
@@ -43,7 +49,7 @@ public class GraphsFactory {
         Set<Graph> graphs = new HashSet<Graph>();
         Set<Set<PageDescriptor>> setOfLinkedPageClassSets = new HashSet<Set<PageDescriptor>>(setMembership.values());
         for (Set<PageDescriptor> set : setOfLinkedPageClassSets) {
-            Graph graph = new Graph(set, instantiator);
+            Graph graph = new Graph(set, djikstraRunner, routeComposer, requiredTraversalAppender);
             graphs.add(graph);
         }
         return graphs;

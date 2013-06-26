@@ -4,17 +4,31 @@ import com.google.common.collect.ImmutableSet;
 import org.dummytest.simple.HomePage;
 import org.dummytest.simple.SecondPage;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+@RunWith(MockitoJUnitRunner.class)
 public class GraphsFactoryTest {
+    @Mock
+    private DjikstraRunner mockDjikstraRunner;
+    @Mock
+    private RequiredTraversalAppender mockRequiredTraversalAppender;
+    @Mock
+    private RouteComposer mockRouteComposer;
+
+    @InjectMocks
+    GraphsFactory factory;
+
     @Test
     public void noGraphsCreatedFromEmptySetOfPages() {
         // given
-        GraphsFactory factory = new GraphsFactory();
         Set<Class<?>> pages = ImmutableSet.of();
 
         // when
@@ -28,7 +42,6 @@ public class GraphsFactoryTest {
     @Test
     public void singleGraphReturnedFromSimpleSetOfPages() {
         // given
-        GraphsFactory factory = new GraphsFactory();
         Set<Class<?>> pages = ImmutableSet.of(HomePage.class, SecondPage.class);
 
         // when

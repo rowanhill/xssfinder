@@ -4,15 +4,13 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 class DjikstraRunner {
-    private final Set<PageDescriptor> pageDescriptors;
     private final GraphNodesFactory graphNodesFactory;
 
-    DjikstraRunner(Set<PageDescriptor> pageDescriptors, GraphNodesFactory graphNodesFactory) {
-        this.pageDescriptors = pageDescriptors;
+    DjikstraRunner(GraphNodesFactory graphNodesFactory) {
         this.graphNodesFactory = graphNodesFactory;
     }
 
-    Set<GraphNode> findShortestPathsAndReturnLeafNodes(Class<?> rootPageClass) {
+    Set<GraphNode> findShortestPathsAndReturnLeafNodes(Class<?> rootPageClass, Set<PageDescriptor> pageDescriptors) {
         Map<Class<?>, GraphNode> nodes = graphNodesFactory.createNodes(pageDescriptors);
 
         nodes.get(rootPageClass).setDistance(0);

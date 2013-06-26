@@ -22,10 +22,10 @@ public class DjikstraRunnerTest {
                 new PageDescriptor(LeafPageTwo.class)
         );
         GraphNodesFactory nodesFactory = new GraphNodesFactory();
-        DjikstraRunner runner = new DjikstraRunner(descriptors, nodesFactory);
+        DjikstraRunner runner = new DjikstraRunner(nodesFactory);
 
         // when
-        Set<GraphNode> leafNodes = runner.findShortestPathsAndReturnLeafNodes(RootPage.class);
+        Set<GraphNode> leafNodes = runner.findShortestPathsAndReturnLeafNodes(RootPage.class, descriptors);
 
         // then
         assertThat(leafNodes.size(), is(4));
