@@ -20,14 +20,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RouteComposerTest {
+public class LeafNodeRouteFactoryTest {
     @Mock
     private Instantiator instantiator;
     @Mock
     private PageTraversalFactory mockPageTraversalFactory;
 
     @InjectMocks
-    private RouteComposer routeComposer;
+    private LeafNodeRouteFactory leafNodeRouteFactory;
 
     @Test
     public void noRoutesCreatedFromEmptySetOfLeafNodes() {
@@ -35,7 +35,7 @@ public class RouteComposerTest {
         Set<GraphNode> graphNodes = new HashSet<GraphNode>();
 
         // when
-        List<Route> routes = routeComposer.getRoutesFromLeafNodes(graphNodes);
+        List<Route> routes = leafNodeRouteFactory.getRoutesFromLeafNodes(graphNodes);
 
         // then
         assertThat(routes, is(empty()));
@@ -49,7 +49,7 @@ public class RouteComposerTest {
         PageDescriptor mockPageDescriptor = addMockPageDescriptor(mockNode);
 
         // when
-        List<Route> routes = routeComposer.getRoutesFromLeafNodes(graphNodes);
+        List<Route> routes = leafNodeRouteFactory.getRoutesFromLeafNodes(graphNodes);
 
         // then
         assertThat(routes.size(), is(1));
@@ -67,7 +67,7 @@ public class RouteComposerTest {
         PageTraversal mockTraversal = mockTraversalForNode(mockNode);
 
         // when
-        List<Route> routes = routeComposer.getRoutesFromLeafNodes(graphNodes);
+        List<Route> routes = leafNodeRouteFactory.getRoutesFromLeafNodes(graphNodes);
 
         // then
         verify(mockTraversal).setNextTraversal(null);
@@ -86,7 +86,7 @@ public class RouteComposerTest {
         addMockGraphNodeWithPageDescriptor(graphNodes);
 
         // when
-        List<Route> routes = routeComposer.getRoutesFromLeafNodes(graphNodes);
+        List<Route> routes = leafNodeRouteFactory.getRoutesFromLeafNodes(graphNodes);
 
         // then
         assertThat(routes.size(), is(3));

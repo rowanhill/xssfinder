@@ -24,7 +24,7 @@ public class GraphTest {
     @Mock
     private RequiredTraversalAppender mockRequiredTraversalAppender;
     @Mock
-    private RouteComposer mockRouteComposer;
+    private LeafNodeRouteFactory mockLeafNodeRouteFactory;
 
     private PageDescriptor ordinaryPageDescriptor;
     private PageDescriptor startPage1Descriptor;
@@ -67,7 +67,7 @@ public class GraphTest {
         when(mockDjikstraRunner.findShortestPathsAndReturnLeafNodes(rootClass, pagesDescriptors))
                 .thenReturn(leafNodes);
         List<Route> leafNodeRoutes = new ArrayList<Route>();
-        when(mockRouteComposer.getRoutesFromLeafNodes(leafNodes)).thenReturn(leafNodeRoutes);
+        when(mockLeafNodeRouteFactory.getRoutesFromLeafNodes(leafNodes)).thenReturn(leafNodeRoutes);
         List<Route> appendedRoutes = new ArrayList<Route>();
         when(mockRequiredTraversalAppender.appendTraversalsToRoutes(leafNodeRoutes, pagesDescriptors))
                 .thenReturn(appendedRoutes);
@@ -81,7 +81,7 @@ public class GraphTest {
     }
 
     private Graph constructGraph() {
-        return new Graph(pagesDescriptors, mockDjikstraRunner, mockRouteComposer, mockRequiredTraversalAppender);
+        return new Graph(pagesDescriptors, mockDjikstraRunner, mockLeafNodeRouteFactory, mockRequiredTraversalAppender);
     }
 
     @Page

@@ -10,18 +10,18 @@ class Graph {
     private final Class<?> rootPageClass;
     private final DjikstraRunner djikstraRunner;
     private final RequiredTraversalAppender requiredTraversalAppender;
-    private final RouteComposer routeComposer;
+    private final LeafNodeRouteFactory leafNodeRouteFactory;
 
     public Graph(
             Set<PageDescriptor> pageDescriptors,
             DjikstraRunner djikstraRunner,
-            RouteComposer routeComposer,
+            LeafNodeRouteFactory leafNodeRouteFactory,
             RequiredTraversalAppender requiredTraversalAppender
     ) {
         this.pageDescriptors = pageDescriptors;
         this.rootPageClass = findRootNode(pageDescriptors);
         this.djikstraRunner = djikstraRunner;
-        this.routeComposer = routeComposer;
+        this.leafNodeRouteFactory = leafNodeRouteFactory;
         this.requiredTraversalAppender = requiredTraversalAppender;
     }
 
@@ -30,7 +30,7 @@ class Graph {
      */
     public List<Route> getRoutes() {
         Set<GraphNode> leafNodes = djikstraRunner.findShortestPathsAndReturnLeafNodes(rootPageClass, pageDescriptors);
-        List<Route> routes = routeComposer.getRoutesFromLeafNodes(leafNodes);
+        List<Route> routes = leafNodeRouteFactory.getRoutesFromLeafNodes(leafNodes);
         return requiredTraversalAppender.appendTraversalsToRoutes(routes, pageDescriptors);
     }
 

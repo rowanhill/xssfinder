@@ -7,11 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class RouteComposer {
+public class LeafNodeRouteFactory {
     private final Instantiator instantiator;
     private final PageTraversalFactory pageTraversalFactory;
 
-    public RouteComposer(Instantiator instantiator, PageTraversalFactory pageTraversalFactory) {
+    public LeafNodeRouteFactory(Instantiator instantiator, PageTraversalFactory pageTraversalFactory) {
         this.instantiator = instantiator;
         this.pageTraversalFactory = pageTraversalFactory;
     }

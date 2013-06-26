@@ -21,7 +21,7 @@ public class GraphsFactoryTest {
     @Mock
     private RequiredTraversalAppender mockRequiredTraversalAppender;
     @Mock
-    private RouteComposer mockRouteComposer;
+    private LeafNodeRouteFactory mockLeafNodeRouteFactory;
 
     @InjectMocks
     GraphsFactory factory;

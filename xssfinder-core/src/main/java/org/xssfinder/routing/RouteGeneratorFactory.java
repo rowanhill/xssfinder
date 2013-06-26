@@ -9,7 +9,7 @@ public class RouteGeneratorFactory {
     public RouteGenerator createRouteGenerator() {
         GraphsFactory graphsFactory = new GraphsFactory(
                 new DjikstraRunner(new GraphNodesFactory()),
-                new RouteComposer(new Instantiator(), new PageTraversalFactory()),
+                new LeafNodeRouteFactory(new Instantiator(), new PageTraversalFactory()),
                 new RequiredTraversalAppender(new UntraversedSubmitMethodsFinder())
         );
         return new RouteGenerator(graphsFactory);
