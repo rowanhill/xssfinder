@@ -20,8 +20,6 @@ public class GraphsFactoryTest {
     private DjikstraRunner mockDjikstraRunner;
     @Mock
     private RequiredTraversalAppender mockRequiredTraversalAppender;
-    @Mock
-    private LeafNodeRouteFactory mockLeafNodeRouteFactory;
 
     @InjectMocks
     GraphsFactory factory;

@@ -9,15 +9,12 @@ import java.util.Set;
 public class GraphsFactory {
     private final DjikstraRunner djikstraRunner;
     private final RequiredTraversalAppender requiredTraversalAppender;
-    private final LeafNodeRouteFactory leafNodeRouteFactory;
 
     public GraphsFactory(
             DjikstraRunner djikstraRunner,
-            LeafNodeRouteFactory leafNodeRouteFactory,
             RequiredTraversalAppender requiredTraversalAppender
     ) {
         this.djikstraRunner = djikstraRunner;
-        this.leafNodeRouteFactory = leafNodeRouteFactory;
         this.requiredTraversalAppender = requiredTraversalAppender;
     }
 
@@ -49,7 +46,7 @@ public class GraphsFactory {
         Set<Graph> graphs = new HashSet<Graph>();
         Set<Set<PageDescriptor>> setOfLinkedPageClassSets = new HashSet<Set<PageDescriptor>>(setMembership.values());
         for (Set<PageDescriptor> set : setOfLinkedPageClassSets) {
-            Graph graph = new Graph(set, djikstraRunner, leafNodeRouteFactory, requiredTraversalAppender);
+            Graph graph = new Graph(set, djikstraRunner, requiredTraversalAppender);
             graphs.add(graph);
         }
         return graphs;

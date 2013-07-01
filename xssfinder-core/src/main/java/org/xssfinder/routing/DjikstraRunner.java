@@ -1,5 +1,7 @@
 package org.xssfinder.routing;
 
+import org.xssfinder.reflection.Instantiator;
+
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -35,7 +37,13 @@ class DjikstraRunner {
                 }
             }
         }
-        return new DjikstraResult(nodes, leafNodes);
+
+        //TODO pull this out into a DjikstraResultFactory
+        RouteFactory routeFactory = new RouteFactory(
+                new Instantiator(),
+                new PageTraversalFactory()
+        );
+        return new DjikstraResult(routeFactory, nodes, leafNodes);
     }
 
     private static class NodeDistanceComparator implements Comparator<GraphNode> {

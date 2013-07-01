@@ -9,23 +9,27 @@ import java.util.List;
 import java.util.Set;
 
 public class RequiredTraversalAppender {
-
     private final UntraversedSubmitMethodsFinder untraversedSubmitMethodsFinder;
 
     public RequiredTraversalAppender(UntraversedSubmitMethodsFinder untraversedSubmitMethodsFinder) {
         this.untraversedSubmitMethodsFinder = untraversedSubmitMethodsFinder;
     }
 
-    public List<Route> appendTraversalsToRoutes(List<Route> routes, Set<PageDescriptor> pageDescriptors) {
+    public List<Route> appendTraversalsToRoutes(
+            List<Route> routes,
+            Set<PageDescriptor> pageDescriptors,
+            DjikstraResult djikstraResult
+    ) {
         SetMultimap<PageDescriptor, Method> submitMethodsByPage =
                 untraversedSubmitMethodsFinder.getUntraversedSubmitMethods(routes, pageDescriptors);
-        return getRoutesAppendedWithUnusedSubmitMethods(routes, submitMethodsByPage, pageDescriptors);
+        return getRoutesAppendedWithUnusedSubmitMethods(routes, submitMethodsByPage, pageDescriptors, djikstraResult);
     }
 
     private List<Route> getRoutesAppendedWithUnusedSubmitMethods(
             List<Route> routes,
             SetMultimap<PageDescriptor, Method> methodsByPage,
-            Set<PageDescriptor> pageDescriptors
+            Set<PageDescriptor> pageDescriptors,
+            DjikstraResult djikstraResult
     ) {
         List<Route> newRoutes = new ArrayList<Route>();
         for (Route route : routes) {
@@ -36,7 +40,12 @@ public class RequiredTraversalAppender {
                 newRoutes.add(route);
             } else {
                 for (Method unusedMethod : unusedMethods) {
-                    Route augmentedRoute = route.clone();
+                    Route augmentedRoute;
+                    if (djikstraResult.isClassLeafNode(endClass)) {
+                        augmentedRoute = route.clone();
+                    } else {
+                        augmentedRoute = djikstraResult.createRouteEndingAtClass(unusedMethod.getDeclaringClass());
+                    }
                     PageDescriptor resultingPageDescriptor = getPageDescriptorForClass(unusedMethod.getReturnType(), pageDescriptors);
                     augmentedRoute.appendTraversalByMethodToPageDescriptor(unusedMethod, resultingPageDescriptor);
                     newRoutes.add(augmentedRoute);

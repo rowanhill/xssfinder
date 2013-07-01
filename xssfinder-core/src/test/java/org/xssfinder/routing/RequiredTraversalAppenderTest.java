@@ -10,11 +10,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -24,11 +23,16 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class RequiredTraversalAppenderTest {
     @Mock
+    private DjikstraResult mockDjikstraResult;
+    @Mock
     private UntraversedSubmitMethodsFinder mockUntraversedSubmitMethodFinder;
+    @Mock
+    private DjikstraRunner mockDjikstraRunner;
+
     @Mock
     private Route mockRoute;
     @Mock
-    private PageDescriptor mockPageDescriptor;
+    private PageDescriptor mockSomePageDescriptor;
     @Mock
     private PageDescriptor mockOtherPageDescriptor;
     @Mock
@@ -36,7 +40,7 @@ public class RequiredTraversalAppenderTest {
 
     private List<Route> routes;
     private Set<PageDescriptor> pageDescriptors;
-    private SetMultimap<PageDescriptor, Method> descriptorsToMethods;
+    private SetMultimap<PageDescriptor, Method> untraversedSubmitMethodsByDescriptor;
 
     @InjectMocks
     private RequiredTraversalAppender traversalAppender;
@@ -48,71 +52,91 @@ public class RequiredTraversalAppenderTest {
         routes.add(mockRoute);
 
         pageDescriptors = new HashSet<PageDescriptor>();
-        pageDescriptors.add(mockPageDescriptor);
+        pageDescriptors.add(mockSomePageDescriptor);
         pageDescriptors.add(mockOtherPageDescriptor);
         pageDescriptors.add(mockAnotherPageDescriptor);
 
-        when(mockPageDescriptor.getPageClass()).thenReturn((Class)SomePage.class);
+        when(mockSomePageDescriptor.getPageClass()).thenReturn((Class) SomePage.class);
         when(mockOtherPageDescriptor.getPageClass()).thenReturn((Class)SomeOtherPage.class);
         when(mockAnotherPageDescriptor.getPageClass()).thenReturn((Class) YetAnotherPage.class);
 
-        descriptorsToMethods = LinkedHashMultimap.create();
+        untraversedSubmitMethodsByDescriptor = LinkedHashMultimap.create();
         when(mockUntraversedSubmitMethodFinder.getUntraversedSubmitMethods(routes, pageDescriptors))
-                .thenReturn(descriptorsToMethods);
+                .thenReturn(untraversedSubmitMethodsByDescriptor);
+
+        when(mockRoute.getRootPageClass()).thenReturn((Class)SomePage.class);
     }
 
     @Test
     public void appendingRequiredTraversalsLeavesRoutesUnmodifiedIfNoSuchTraversals() {
         // when
-        List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors);
+        List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors, mockDjikstraResult);
 
         // then
         assertThat(appendedRoutes, is(routes));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void untraversedSubmitMethodOnLeafPageIsAppendedToRoute() throws Exception {
+    public void untraversedMethodOnLeafNodeAppendsTraversalToRouteEndingInLeafNode() throws Exception {
         // given
+        Route mockCloneRoute = mock(Route.class);
+        when(mockRoute.clone()).thenReturn(mockCloneRoute);
         Method method = SomePage.class.getMethod("goToSomeOtherPage");
-        descriptorsToMethods.put(mockPageDescriptor, method);
-        when(mockRoute.getRootPageClass()).thenReturn((Class)SomePage.class);
-        Route mockRouteClone = mock(Route.class);
-        when(mockRoute.clone()).thenReturn(mockRouteClone);
-        List<Route> expectedRoutes = new ArrayList<Route>();
-        expectedRoutes.add(mockRouteClone);
+        untraversedSubmitMethodsByDescriptor.put(mockSomePageDescriptor, method);
+        when(mockDjikstraResult.isClassLeafNode(SomePage.class)).thenReturn(true);
 
         // when
-        List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors);
+        List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors, mockDjikstraResult);
 
         // then
-        verify(mockRouteClone).appendTraversalByMethodToPageDescriptor(method, mockOtherPageDescriptor);
-        assertThat(appendedRoutes, is(expectedRoutes));
+        verify(mockCloneRoute).appendTraversalByMethodToPageDescriptor(method, mockOtherPageDescriptor);
+        assertThat(appendedRoutes.size(), is(1));
+        assertThat(appendedRoutes, hasItem(mockCloneRoute));
+        //TODO final traversal of route has custom traverser suppressed
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void multipleUntraversedSubmitMethodsOnLeafPageResultsInMultipleAppendedRoutes() throws Exception {
+    public void multipleUntraversedMethodsOnLeafNodesProduceMultipleAppendedRoutes() throws Exception {
         // given
+        when(mockDjikstraResult.isClassLeafNode(SomePage.class)).thenReturn(true);
         Method method = SomePage.class.getMethod("goToSomeOtherPage");
         Method anotherMethod = SomePage.class.getMethod("goToYetAnotherPage");
-        descriptorsToMethods.put(mockPageDescriptor, method);
-        descriptorsToMethods.put(mockPageDescriptor, anotherMethod);
-        when(mockRoute.getRootPageClass()).thenReturn((Class)SomePage.class);
+        untraversedSubmitMethodsByDescriptor.put(mockSomePageDescriptor, method);
+        untraversedSubmitMethodsByDescriptor.put(mockSomePageDescriptor, anotherMethod);
         Route mockRouteClone = mock(Route.class);
         Route mockAnotherRouteClone = mock(Route.class);
         when(mockRoute.clone()).thenReturn(mockRouteClone, mockAnotherRouteClone);
-        List<Route> expectedRoutes = new ArrayList<Route>();
-        expectedRoutes.add(mockRouteClone);
-        expectedRoutes.add(mockAnotherRouteClone);
 
         // when
-        List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors);
+        List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors, mockDjikstraResult);
 
         // then
         verify(mockRouteClone).appendTraversalByMethodToPageDescriptor(method, mockOtherPageDescriptor);
         verify(mockAnotherRouteClone).appendTraversalByMethodToPageDescriptor(anotherMethod, mockAnotherPageDescriptor);
-        assertThat(appendedRoutes, is(expectedRoutes));
+        assertThat(appendedRoutes.size(), is(2));
+        assertThat(appendedRoutes, hasItems(mockRouteClone, mockAnotherRouteClone));
+        //TODO final traversal of routes have custom traverser suppressed
+    }
+
+    @Test
+    public void untraversedMethodOnNonLeafNodeAddsNewShortestRouteWithAppendedTraversal() throws Exception {
+        // given
+        DjikstraResult mockDjikstraResult = mock(DjikstraResult.class);
+        Method method = SomePage.class.getMethod("goToSomeOtherPage");
+        untraversedSubmitMethodsByDescriptor.put(mockSomePageDescriptor, method);
+        when(mockDjikstraResult.isClassLeafNode(SomePage.class)).thenReturn(false);
+        Route mockNewRoute = mock(Route.class);
+        when(mockDjikstraResult.createRouteEndingAtClass(SomePage.class))
+                .thenReturn(mockNewRoute);
+
+        // when
+        List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors, mockDjikstraResult);
+
+        // then
+        verify(mockNewRoute).appendTraversalByMethodToPageDescriptor(method, mockOtherPageDescriptor);
+        assertThat(appendedRoutes.size(), is(1));
+        assertThat(appendedRoutes, hasItem(mockNewRoute));
+        //TODO final traversal of route has custom traverser suppressed
     }
 
     @SuppressWarnings("UnusedDeclaration")

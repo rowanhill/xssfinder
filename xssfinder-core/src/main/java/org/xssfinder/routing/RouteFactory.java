@@ -2,30 +2,22 @@ package org.xssfinder.routing;
 
 import org.xssfinder.reflection.Instantiator;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
-public class LeafNodeRouteFactory {
+public class RouteFactory {
     private final Instantiator instantiator;
     private final PageTraversalFactory pageTraversalFactory;
 
-    public LeafNodeRouteFactory(Instantiator instantiator, PageTraversalFactory pageTraversalFactory) {
+    public RouteFactory(Instantiator instantiator, PageTraversalFactory pageTraversalFactory) {
         this.instantiator = instantiator;
         this.pageTraversalFactory = pageTraversalFactory;
     }
 
-    List<Route> getRoutesFromLeafNodes(Set<GraphNode> leafNodes) {
-        List<Route> routes = new ArrayList<Route>();
-        for (GraphNode node : leafNodes) {
-            LinkedList<GraphNode> routeNodes = new LinkedList<GraphNode>();
-            PageTraversal nextTraversal = buildPageTraversalsEndingInNode(node, routeNodes);
-            GraphNode firstNode = routeNodes.getFirst();
-            Route route = new Route(firstNode.getPageDescriptor(), nextTraversal, instantiator);
-            routes.add(route);
-        }
-        return routes;
+    public Route createRouteEndingAtNode(GraphNode graphNode) {
+        LinkedList<GraphNode> routeNodes = new LinkedList<GraphNode>();
+        PageTraversal nextTraversal = buildPageTraversalsEndingInNode(graphNode, routeNodes);
+        GraphNode firstNode = routeNodes.getFirst();
+        return new Route(firstNode.getPageDescriptor(), nextTraversal, instantiator);
     }
 
     private PageTraversal buildPageTraversalsEndingInNode(GraphNode node, LinkedList<GraphNode> routeNodes) {
