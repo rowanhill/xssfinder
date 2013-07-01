@@ -1,15 +1,15 @@
 package org.xssfinder.routing;
 
-import org.xssfinder.reflection.Instantiator;
-
 import java.lang.reflect.Method;
 import java.util.*;
 
 class DjikstraRunner {
     private final GraphNodesFactory graphNodesFactory;
+    private final DjikstraResultFactory djikstraResultFactory;
 
-    DjikstraRunner(GraphNodesFactory graphNodesFactory) {
+    DjikstraRunner(GraphNodesFactory graphNodesFactory, DjikstraResultFactory djikstraResultFactory) {
         this.graphNodesFactory = graphNodesFactory;
+        this.djikstraResultFactory = djikstraResultFactory;
     }
 
     DjikstraResult computeShortestPaths(Class<?> rootPageClass, Set<PageDescriptor> pageDescriptors) {
@@ -38,12 +38,7 @@ class DjikstraRunner {
             }
         }
 
-        //TODO pull this out into a DjikstraResultFactory
-        RouteFactory routeFactory = new RouteFactory(
-                new Instantiator(),
-                new PageTraversalFactory()
-        );
-        return new DjikstraResult(routeFactory, nodes, leafNodes);
+        return djikstraResultFactory.createResult(nodes, leafNodes);
     }
 
     private static class NodeDistanceComparator implements Comparator<GraphNode> {

@@ -6,7 +6,7 @@ package org.xssfinder.routing;
 public class RouteGeneratorFactory {
     public RouteGenerator createRouteGenerator() {
         GraphsFactory graphsFactory = new GraphsFactory(
-                new DjikstraRunner(new GraphNodesFactory()),
+                new DjikstraRunner(new GraphNodesFactory(), new DjikstraResultFactory()),
                 new RequiredTraversalAppender(new UntraversedSubmitMethodsFinder())
         );
         return new RouteGenerator(graphsFactory);

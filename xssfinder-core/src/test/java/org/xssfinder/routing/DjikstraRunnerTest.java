@@ -22,7 +22,8 @@ public class DjikstraRunnerTest {
                 new PageDescriptor(LeafPageTwo.class)
         );
         GraphNodesFactory nodesFactory = new GraphNodesFactory();
-        DjikstraRunner runner = new DjikstraRunner(nodesFactory);
+        DjikstraResultFactory djikstraResultFactory = new DjikstraResultFactory();
+        DjikstraRunner runner = new DjikstraRunner(nodesFactory, djikstraResultFactory);
 
         // when
         DjikstraResult djikstraResult = runner.computeShortestPaths(RootPage.class, descriptors);
