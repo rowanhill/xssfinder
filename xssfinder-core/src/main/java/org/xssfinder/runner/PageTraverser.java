@@ -1,6 +1,8 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.CustomSubmitter;
 import org.xssfinder.CustomTraverser;
+import org.xssfinder.LabelledXssGenerator;
 import org.xssfinder.routing.PageTraversal;
 
 import java.lang.reflect.InvocationTargetException;
@@ -8,9 +10,17 @@ import java.lang.reflect.Method;
 
 class PageTraverser {
     private final CustomTraverserInstantiator traverserInstantiator;
+    private final CustomSubmitterInstantiator submitterInstantiator;
+    private final LabelledXssGeneratorFactory labelledXssGeneratorFactory;
 
-    public PageTraverser(CustomTraverserInstantiator traverserInstantiator) {
+    public PageTraverser(
+            CustomTraverserInstantiator traverserInstantiator,
+            CustomSubmitterInstantiator submitterInstantiator,
+            LabelledXssGeneratorFactory labelledXssGeneratorFactory
+    ) {
         this.traverserInstantiator = traverserInstantiator;
+        this.submitterInstantiator = submitterInstantiator;
+        this.labelledXssGeneratorFactory = labelledXssGeneratorFactory;
     }
 
     /**
@@ -23,15 +33,37 @@ class PageTraverser {
      */
     public Object traverse(Object page, PageTraversal traversal) {
         Method method = traversal.getMethod();
-        CustomTraverser customTraverser = traverserInstantiator.instantiate(method);
-        if (method.getParameterTypes().length > 0 && customTraverser == null) {
+
+        CustomTraverser customTraverser = null;
+        CustomSubmitter customSubmitter = null;
+        boolean methodMustHaveNoArgs;
+        if (traversal.getTraversalMode() == PageTraversal.TraversalMode.NORMAL) {
+            customTraverser = traverserInstantiator.instantiate(method);
+            methodMustHaveNoArgs = customTraverser == null;
+        } else {
+            customSubmitter = submitterInstantiator.instantiate(method);
+            methodMustHaveNoArgs = customSubmitter == null;
+        }
+
+        if (method.getParameterTypes().length > 0 && methodMustHaveNoArgs) {
             throw new UntraversableException("Cannot traverse methods that take parameters");
         }
+
         try {
-            if (customTraverser != null) {
-                return customTraverser.traverse(page);
+            if (traversal.getTraversalMode() == PageTraversal.TraversalMode.NORMAL) {
+                if (customTraverser != null) {
+                    return customTraverser.traverse(page);
+                } else {
+                    return invokeNoArgsMethod(page, method);
+                }
             } else {
-                return invokeNoArgsMethod(page, method);
+                if (customSubmitter != null) {
+                    LabelledXssGenerator generator =
+                            labelledXssGeneratorFactory.createLabelledXssGenerator(traversal);
+                    return customSubmitter.submit(page, generator);
+                } else {
+                    return invokeNoArgsMethod(page, method);
+                }
             }
         } catch (Exception e) {
             throw new UntraversableException(e);

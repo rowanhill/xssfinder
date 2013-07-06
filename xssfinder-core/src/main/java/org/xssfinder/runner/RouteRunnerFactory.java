@@ -10,7 +10,11 @@ public class RouteRunnerFactory {
     private final PageAttacker pageAttacker;
 
     public RouteRunnerFactory() {
-        pageTraverser = new PageTraverser(new CustomTraverserInstantiator(new Instantiator()));
+        Instantiator instantiator = new Instantiator();
+        pageTraverser = new PageTraverser(
+                new CustomTraverserInstantiator(instantiator),
+                new CustomSubmitterInstantiator(instantiator),
+                new LabelledXssGeneratorFactory());
         pageAttacker = new PageAttacker(new XssGenerator(new XssAttackFactory()), new XssDescriptorFactory());
         xssDetector = new XssDetector();
     }
