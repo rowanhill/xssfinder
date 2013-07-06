@@ -38,14 +38,14 @@ public class PageTraversalTest {
         // given
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
         PageTraversal nonSuppressingPageTraversal = new PageTraversal(mockMethod, mockPageDescriptor, PageTraversal.TraversalMode.NORMAL);
-        PageTraversal suppressingPageTraversal = new PageTraversal(mockMethod, mockPageDescriptor, PageTraversal.TraversalMode.SUPPRESS_CUSTOM_TRAVERSERS);
+        PageTraversal suppressingPageTraversal = new PageTraversal(mockMethod, mockPageDescriptor, PageTraversal.TraversalMode.SUBMIT);
 
         // when
         PageTraversal.TraversalMode suppressingTraversalsMode = suppressingPageTraversal.getTraversalMode();
         PageTraversal.TraversalMode nonSuppressingTraversalsMode = nonSuppressingPageTraversal.getTraversalMode();
 
         // then
-        assertThat(suppressingTraversalsMode, is(PageTraversal.TraversalMode.SUPPRESS_CUSTOM_TRAVERSERS));
+        assertThat(suppressingTraversalsMode, is(PageTraversal.TraversalMode.SUBMIT));
         assertThat(nonSuppressingTraversalsMode, is(PageTraversal.TraversalMode.NORMAL));
     }
 

@@ -11,7 +11,7 @@ public class PageTraversal {
 
     public enum TraversalMode {
         NORMAL,
-        SUPPRESS_CUSTOM_TRAVERSERS
+        SUBMIT
     }
 
     private final Method method;
