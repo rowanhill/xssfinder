@@ -8,4 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface SubmitAction {
+    public Class<? extends CustomSubmitter> value() default CustomSubmitter.class; // The interface is used as a 'null' value
 }
