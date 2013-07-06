@@ -1,5 +1,6 @@
 package org.xssfinder.runner;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -24,17 +25,25 @@ public class PageTraverserTest {
     private CustomTraverserInstantiator mockTraverserInstantiator;
     @Mock
     private PageDescriptor mockPageDescriptor;
-    private PageTraversal.TraversalMode traversalMode = PageTraversal.TraversalMode.NORMAL;
+    @Mock
+    private PageTraversal mockTraversal;
+
+    private PageTraverser traverser;
+
+    @Before
+    public void setUp() throws Exception {
+        when(mockTraversal.getMethod()).thenReturn(RootPage.class.getMethod("goToSecondPage"));
+
+        traverser = new PageTraverser(mockTraverserInstantiator);
+    }
 
     @Test
     public void invokesNoArgTraversalMethodAndReturnsResult() throws Exception {
         // given
-        PageTraverser traverser = new PageTraverser(mockTraverserInstantiator);
-        PageTraversal traversal = new PageTraversal(RootPage.class.getMethod("goToSecondPage"), mockPageDescriptor, traversalMode);
         RootPage page = new RootPage();
 
         // when
-        Object nextPage = traverser.traverse(page, traversal);
+        Object nextPage = traverser.traverse(page, mockTraversal);
 
         // then
         assertThat(nextPage, is(instanceOf(SecondPage.class)));
@@ -43,31 +52,28 @@ public class PageTraverserTest {
     @Test(expected=UntraversableException.class)
     public void exceptionInvokingTraversalMethodGeneratesUntraversableException() throws Exception {
         // given
-        PageTraverser traverser = new PageTraverser(mockTraverserInstantiator);
-        PageTraversal traversal = new PageTraversal(RootPage.class.getMethod("raiseException"), mockPageDescriptor, traversalMode);
+        when(mockTraversal.getMethod()).thenReturn(RootPage.class.getMethod("raiseException"));
         RootPage page = new RootPage();
 
         // when
-        traverser.traverse(page, traversal);
+        traverser.traverse(page, mockTraversal);
     }
 
     @Test(expected=UntraversableException.class)
     public void tryingToTraverseMethodWithArgsGeneratesUntraversableException() throws Exception {
         // given
-        PageTraverser traverser = new PageTraverser(mockTraverserInstantiator);
-        PageTraversal traversal = new PageTraversal(RootPage.class.getMethod("withParameter", String.class), mockPageDescriptor, traversalMode);
+        when(mockTraversal.getMethod()).thenReturn(RootPage.class.getMethod("withParameter", String.class));
         RootPage page = new RootPage();
 
         // when
-        traverser.traverse(page, traversal);
+        traverser.traverse(page, mockTraversal);
     }
 
     @Test
     public void customTraverserIsCreateToTraverseAnnotatedMethod() throws Exception {
         // given
-        PageTraverser traverser = new PageTraverser(mockTraverserInstantiator);
         Method method = RootPage.class.getMethod("annotatedWithParameter", String.class);
-        PageTraversal traversal = new PageTraversal(method, mockPageDescriptor, traversalMode);
+        when(mockTraversal.getMethod()).thenReturn(method);
         RootPage page = new RootPage();
         CustomTraverser mockCustomTraverser = mock(CustomTraverser.class);
         when(mockTraverserInstantiator.instantiate(method)).thenReturn(mockCustomTraverser);
@@ -75,7 +81,7 @@ public class PageTraverserTest {
         when(mockCustomTraverser.traverse(page)).thenReturn(mockSecondPage);
 
         // when
-        Object nextPage = traverser.traverse(page, traversal);
+        Object nextPage = traverser.traverse(page, mockTraversal);
 
         // then
         assertThat(nextPage, is((Object)mockSecondPage));
