@@ -53,7 +53,8 @@ public class RouteFactoryTest {
         when(mockNode.getPredecessor()).thenReturn(mockPredecessorNode);
         when(mockNode.hasPredecessor()).thenReturn(true);
         PageTraversal mockTraversal = mock(PageTraversal.class);
-        when(mockPageTraversalFactory.createTraversalToNode(mockNode)).thenReturn(mockTraversal);
+        when(mockPageTraversalFactory.createTraversalToNode(mockNode, PageTraversal.TraversalMode.NORMAL))
+                .thenReturn(mockTraversal);
 
         // when
         Route route = routeFactory.createRouteEndingAtNode(mockNode);

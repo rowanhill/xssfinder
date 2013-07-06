@@ -222,8 +222,8 @@ public class RouteTest {
         // given
         PageTraversal traversal = new PageTraversal(
                 RootPage.class.getMethod("submit"),
-                mockPageDescriptor
-        );
+                mockPageDescriptor,
+                PageTraversal.TraversalMode.NORMAL);
         Route route = new Route(mockPageDescriptor, traversal, mockInstantiator);
 
         // when

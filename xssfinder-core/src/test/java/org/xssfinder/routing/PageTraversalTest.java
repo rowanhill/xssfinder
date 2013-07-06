@@ -18,12 +18,13 @@ import static org.mockito.Mockito.when;
 public class PageTraversalTest {
     @Mock
     private PageDescriptor mockPageDescriptor;
+    private PageTraversal.TraversalMode traversalMode = PageTraversal.TraversalMode.NORMAL;
 
     @Test
     public void methodIsAvailable() throws Exception {
         // given
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal pageTraversal = new PageTraversal(mockMethod, mockPageDescriptor);
+        PageTraversal pageTraversal = new PageTraversal(mockMethod, mockPageDescriptor, traversalMode);
 
         // when
         Method method = pageTraversal.getMethod();
@@ -33,10 +34,26 @@ public class PageTraversalTest {
     }
 
     @Test
+    public void suppressCustomTraverserIsAvailable() throws Exception {
+        // given
+        Method mockMethod = Page.class.getDeclaredMethod("goToPage");
+        PageTraversal nonSuppressingPageTraversal = new PageTraversal(mockMethod, mockPageDescriptor, PageTraversal.TraversalMode.NORMAL);
+        PageTraversal suppressingPageTraversal = new PageTraversal(mockMethod, mockPageDescriptor, PageTraversal.TraversalMode.SUPPRESS_CUSTOM_TRAVERSERS);
+
+        // when
+        PageTraversal.TraversalMode suppressingTraversalsMode = suppressingPageTraversal.getTraversalMode();
+        PageTraversal.TraversalMode nonSuppressingTraversalsMode = nonSuppressingPageTraversal.getTraversalMode();
+
+        // then
+        assertThat(suppressingTraversalsMode, is(PageTraversal.TraversalMode.SUPPRESS_CUSTOM_TRAVERSERS));
+        assertThat(nonSuppressingTraversalsMode, is(PageTraversal.TraversalMode.NORMAL));
+    }
+
+    @Test
     public void nextPageTraversalDefaultsToNull() throws Exception {
         // given
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal pageTraversal = new PageTraversal(mockMethod, mockPageDescriptor);
+        PageTraversal pageTraversal = new PageTraversal(mockMethod, mockPageDescriptor, traversalMode);
 
         // when
         PageTraversal nextTraversal = pageTraversal.getNextTraversal();
@@ -49,7 +66,7 @@ public class PageTraversalTest {
     public void nextPageTraversalCanBeSet() throws Exception {
         // given
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal pageTraversal = new PageTraversal(mockMethod, mockPageDescriptor);
+        PageTraversal pageTraversal = new PageTraversal(mockMethod, mockPageDescriptor, traversalMode);
         PageTraversal mockPageTraversal = mock(PageTraversal.class);
 
         // when
@@ -64,7 +81,7 @@ public class PageTraversalTest {
     public void cloningCreatesTraversalWithSameMethod() throws Exception {
         // given
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal traversal = new PageTraversal(mockMethod, mockPageDescriptor);
+        PageTraversal traversal = new PageTraversal(mockMethod, mockPageDescriptor, traversalMode);
 
         // when
         PageTraversal clonedTraversal = traversal.clone();
@@ -77,7 +94,7 @@ public class PageTraversalTest {
     public void cloneHasNoNextTraversalIfOriginalDoesNot() throws Exception {
         // given
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal traversal = new PageTraversal(mockMethod, mockPageDescriptor);
+        PageTraversal traversal = new PageTraversal(mockMethod, mockPageDescriptor, traversalMode);
 
         // when
         PageTraversal cloneTraversal = traversal.clone();
@@ -93,7 +110,7 @@ public class PageTraversalTest {
         PageTraversal mockCloneNextTraversal = mock(PageTraversal.class);
         when(mockNextTraversal.clone()).thenReturn(mockCloneNextTraversal);
         Method mockMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal traversal = new PageTraversal(mockMethod, mockPageDescriptor);
+        PageTraversal traversal = new PageTraversal(mockMethod, mockPageDescriptor, traversalMode);
         traversal.setNextTraversal(mockNextTraversal);
 
         // when
@@ -107,7 +124,7 @@ public class PageTraversalTest {
     public void annotatedMethodsAreSubmitTraversals() throws Exception {
         // given
         Method submitMethod = Page.class.getDeclaredMethod("submitToPage");
-        PageTraversal traversal = new PageTraversal(submitMethod, mockPageDescriptor);
+        PageTraversal traversal = new PageTraversal(submitMethod, mockPageDescriptor, traversalMode);
 
         // when
         boolean isSubmit = traversal.isSubmit();
@@ -120,7 +137,7 @@ public class PageTraversalTest {
     public void unannotatedMethodsAreNotSubmitTraversals() throws Exception {
         // given
         Method submitMethod = Page.class.getDeclaredMethod("goToPage");
-        PageTraversal traversal = new PageTraversal(submitMethod, mockPageDescriptor);
+        PageTraversal traversal = new PageTraversal(submitMethod, mockPageDescriptor, traversalMode);
 
         // when
         boolean isSubmit = traversal.isSubmit();

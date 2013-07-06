@@ -21,13 +21,14 @@ public class PageTraversalFactoryTest {
         when(mockNode.getPageDescriptor()).thenReturn(mockPageDescriptor);
 
         // when
-        PageTraversal traversal = factory.createTraversalToNode(mockNode);
+        PageTraversal traversal = factory.createTraversalToNode(mockNode, PageTraversal.TraversalMode.NORMAL);
 
         // then
         assertThat(traversal.getMethod(), is(method));
         assertThat(traversal.getResultingPageDescriptor(), is(mockPageDescriptor));
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     private static class SomePage {
         public SomePage someLink() { return null; }
     }

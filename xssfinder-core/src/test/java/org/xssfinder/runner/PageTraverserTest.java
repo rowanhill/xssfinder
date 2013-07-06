@@ -24,12 +24,13 @@ public class PageTraverserTest {
     private CustomTraverserInstantiator mockTraverserInstantiator;
     @Mock
     private PageDescriptor mockPageDescriptor;
+    private PageTraversal.TraversalMode traversalMode = PageTraversal.TraversalMode.NORMAL;
 
     @Test
     public void invokesNoArgTraversalMethodAndReturnsResult() throws Exception {
         // given
         PageTraverser traverser = new PageTraverser(mockTraverserInstantiator);
-        PageTraversal traversal = new PageTraversal(RootPage.class.getMethod("goToSecondPage"), mockPageDescriptor);
+        PageTraversal traversal = new PageTraversal(RootPage.class.getMethod("goToSecondPage"), mockPageDescriptor, traversalMode);
         RootPage page = new RootPage();
 
         // when
@@ -43,7 +44,7 @@ public class PageTraverserTest {
     public void exceptionInvokingTraversalMethodGeneratesUntraversableException() throws Exception {
         // given
         PageTraverser traverser = new PageTraverser(mockTraverserInstantiator);
-        PageTraversal traversal = new PageTraversal(RootPage.class.getMethod("raiseException"), mockPageDescriptor);
+        PageTraversal traversal = new PageTraversal(RootPage.class.getMethod("raiseException"), mockPageDescriptor, traversalMode);
         RootPage page = new RootPage();
 
         // when
@@ -54,7 +55,7 @@ public class PageTraverserTest {
     public void tryingToTraverseMethodWithArgsGeneratesUntraversableException() throws Exception {
         // given
         PageTraverser traverser = new PageTraverser(mockTraverserInstantiator);
-        PageTraversal traversal = new PageTraversal(RootPage.class.getMethod("withParameter", String.class), mockPageDescriptor);
+        PageTraversal traversal = new PageTraversal(RootPage.class.getMethod("withParameter", String.class), mockPageDescriptor, traversalMode);
         RootPage page = new RootPage();
 
         // when
@@ -66,7 +67,7 @@ public class PageTraverserTest {
         // given
         PageTraverser traverser = new PageTraverser(mockTraverserInstantiator);
         Method method = RootPage.class.getMethod("annotatedWithParameter", String.class);
-        PageTraversal traversal = new PageTraversal(method, mockPageDescriptor);
+        PageTraversal traversal = new PageTraversal(method, mockPageDescriptor, traversalMode);
         RootPage page = new RootPage();
         CustomTraverser mockCustomTraverser = mock(CustomTraverser.class);
         when(mockTraverserInstantiator.instantiate(method)).thenReturn(mockCustomTraverser);

@@ -25,7 +25,10 @@ public class RouteFactory {
         while (node != null) {
             routeNodes.addFirst(node);
             if (node.hasPredecessor()) {
-                PageTraversal traversal = pageTraversalFactory.createTraversalToNode(node);
+                PageTraversal traversal = pageTraversalFactory.createTraversalToNode(
+                        node,
+                        PageTraversal.TraversalMode.NORMAL
+                );
                 traversal.setNextTraversal(nextTraversal);
                 nextTraversal = traversal;
             }
