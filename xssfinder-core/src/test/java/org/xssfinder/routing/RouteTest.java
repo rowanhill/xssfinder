@@ -136,11 +136,12 @@ public class RouteTest {
         // given
         Route route = new Route(mockPageDescriptor, null, mockInstantiator, mockPageTraversalFactory);
         Method method = RootPage.class.getMethod("circularLink");
-        when(mockPageTraversalFactory.createTraversal(method, mockPageDescriptor, PageTraversal.TraversalMode.NORMAL))
+        PageTraversal.TraversalMode traversalMode = PageTraversal.TraversalMode.NORMAL;
+        when(mockPageTraversalFactory.createTraversal(method, mockPageDescriptor, traversalMode))
                 .thenReturn(mockNextPageTraversal);
 
         // when
-        route.appendTraversal(method, mockPageDescriptor);
+        route.appendTraversal(method, mockPageDescriptor, traversalMode);
 
         // then
         assertThat(route.getPageTraversal(), is(mockNextPageTraversal));
@@ -151,11 +152,12 @@ public class RouteTest {
         // given
         Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
         Method method = RootPage.class.getMethod("circularLink");
-        when(mockPageTraversalFactory.createTraversal(method, mockPageDescriptor, PageTraversal.TraversalMode.NORMAL))
+        PageTraversal.TraversalMode traversalMode = PageTraversal.TraversalMode.NORMAL;
+        when(mockPageTraversalFactory.createTraversal(method, mockPageDescriptor, traversalMode))
                 .thenReturn(mockNextPageTraversal);
 
         // when
-        route.appendTraversal(method, mockPageDescriptor);
+        route.appendTraversal(method, mockPageDescriptor, traversalMode);
 
         // then
         verify(mockPageTraversal).setNextTraversal(mockNextPageTraversal);

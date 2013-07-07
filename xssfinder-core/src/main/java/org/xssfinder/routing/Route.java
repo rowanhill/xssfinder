@@ -57,9 +57,13 @@ public class Route {
         return traversal;
     }
 
-    public void appendTraversal(Method traversalMethod, PageDescriptor pageDescriptor) {
+    public void appendTraversal(
+            Method traversalMethod,
+            PageDescriptor pageDescriptor,
+            PageTraversal.TraversalMode traversalMode
+    ) {
         PageTraversal newTraversal = pageTraversalFactory.createTraversal(
-                traversalMethod, pageDescriptor, PageTraversal.TraversalMode.NORMAL);
+                traversalMethod, pageDescriptor, traversalMode);
         PageTraversal lastTraversal = getLastPageTraversal();
         if (lastTraversal == null) {
             pageTraversal = newTraversal;
