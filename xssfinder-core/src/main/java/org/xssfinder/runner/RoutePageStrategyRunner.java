@@ -1,5 +1,7 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.reporting.RouteRunErrorContext;
+import org.xssfinder.reporting.RouteRunErrorContextFactory;
 import org.xssfinder.routing.Route;
 import org.xssfinder.reporting.XssJournal;
 
@@ -9,15 +11,18 @@ class RoutePageStrategyRunner {
     private final DriverWrapper driverWrapper;
     private final PageContextFactory contextFactory;
     private final LifecycleEventExecutor lifecycleEventExecutor;
+    private final RouteRunErrorContextFactory errorContextFactory;
 
     public RoutePageStrategyRunner(
             DriverWrapper driverWrapper,
             PageContextFactory contextFactory,
-            LifecycleEventExecutor lifecycleEventExecutor
+            LifecycleEventExecutor lifecycleEventExecutor,
+            RouteRunErrorContextFactory errorContextFactory
     ) {
         this.driverWrapper = driverWrapper;
         this.contextFactory = contextFactory;
         this.lifecycleEventExecutor = lifecycleEventExecutor;
+        this.errorContextFactory = errorContextFactory;
     }
 
     /**
@@ -48,7 +53,8 @@ class RoutePageStrategyRunner {
             }
             executePageStrategies(pageStrategies, pageContext, xssJournal);
         } catch (Exception e) {
-            // Do nothing... for now
+            RouteRunErrorContext errorContext = errorContextFactory.createErrorContext(e, pageContext);
+            xssJournal.addErrorContext(errorContext);
         } finally {
             handleRouteError(lifecycleHandler, pageContext);
         }

@@ -10,8 +10,16 @@ import java.lang.reflect.Method;
 public class PageTraversal {
 
     public enum TraversalMode {
-        NORMAL,
-        SUBMIT
+        NORMAL("Normal"),
+        SUBMIT("Submit");
+
+        private final String description;
+
+        private TraversalMode(String description) {
+            this.description = description;
+        }
+
+        public String getDescription() { return description; }
     }
 
     private final Method method;

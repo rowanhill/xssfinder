@@ -3,10 +3,7 @@ package org.xssfinder.reporting;
 import org.xssfinder.runner.PageContext;
 import org.xssfinder.xss.XssDescriptor;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A journal of the XSS attacks performed, which have been successful, and which pages may need more @SubmitActions
@@ -15,6 +12,7 @@ public class XssJournal {
     private final Map<String, XssDescriptor> descriptorsById = new HashMap<String, XssDescriptor>();
     private final Map<String, XssSighting> xssSightingsById = new HashMap<String, XssSighting>();
     private final Set<Class<?>> pagesClassesWithUntestedInputs = new HashSet<Class<?>>();
+    private final List<RouteRunErrorContext> errorContexts = new ArrayList<RouteRunErrorContext>();
     private final XssSightingFactory xssSightingFactory;
 
     public XssJournal(XssSightingFactory xssSightingFactory) {
@@ -48,5 +46,13 @@ public class XssJournal {
 
     public Set<Class<?>> getPagesClassWithUntestedInputs() {
         return pagesClassesWithUntestedInputs;
+    }
+
+    public void addErrorContext(RouteRunErrorContext errorContext) {
+        errorContexts.add(errorContext);
+    }
+
+    public List<RouteRunErrorContext> getErrorContexts() {
+        return errorContexts;
     }
 }

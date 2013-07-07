@@ -68,9 +68,10 @@ public class XssFinderIT {
         // Run!
         runner.run(routes, journal);
 
-        assertThat(routes.size(), is(3));
+        assertThat(routes.size(), is(4));
         assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
         assertThat(journal.getXssSightings().size(), is(1));
+        assertThat(journal.getErrorContexts().size(), is(2)); // throwException is called on both runs (attack / observe)
         XssSighting sighting = journal.getXssSightings().iterator().next();
         assertThat(sighting.getSubmitMethodName(), is("unsafeSubmit"));
         assertThat(sighting.getInputIdentifier(), is("//form[@id=\"unsafeForm\"]/input[1]"));

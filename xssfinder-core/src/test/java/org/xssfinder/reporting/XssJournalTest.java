@@ -1,5 +1,6 @@
 package org.xssfinder.reporting;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,8 +9,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.runner.PageContext;
 import org.xssfinder.xss.XssDescriptor;
 
+import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -118,6 +121,35 @@ public class XssJournalTest {
         // then
         assertThat(pagesWithUntestedInputs.size(), is(1));
         assertThat(pagesWithUntestedInputs.iterator().next() == SomePage.class, is(true));
+    }
+
+    @Test
+    public void errorContextsStartsEmpty() {
+        // given
+        XssJournal journal = new XssJournal(mockXssSightingFactory);
+
+        // when
+        List<RouteRunErrorContext> errorContexts = journal.getErrorContexts();
+
+        // then
+        assertThat(errorContexts, is(empty()));
+    }
+
+    @Test
+    public void addedErrorContextIsLogged() {
+        // given
+        XssJournal journal = new XssJournal(mockXssSightingFactory);
+        RouteRunErrorContext mockErrorContext = mock(RouteRunErrorContext.class);
+
+        // when
+        journal.addErrorContext(mockErrorContext);
+        List<RouteRunErrorContext> errorContexts = journal.getErrorContexts();
+
+        // then
+        List<RouteRunErrorContext> expectedContexts = ImmutableList.of(
+                mockErrorContext
+        );
+        assertThat(errorContexts, is(expectedContexts));
     }
 
     private static class SomePage {}

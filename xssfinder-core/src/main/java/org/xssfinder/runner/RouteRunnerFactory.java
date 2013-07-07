@@ -2,6 +2,7 @@ package org.xssfinder.runner;
 
 import org.xssfinder.reflection.Instantiator;
 import org.xssfinder.reporting.HtmlReportWriter;
+import org.xssfinder.reporting.RouteRunErrorContextFactory;
 import org.xssfinder.xss.*;
 
 public class RouteRunnerFactory {
@@ -33,7 +34,9 @@ public class RouteRunnerFactory {
         return new RoutePageStrategyRunner(
                 driverWrapper,
                 createPageContextFactory(driverWrapper),
-                new LifecycleEventExecutor());
+                new LifecycleEventExecutor(),
+                new RouteRunErrorContextFactory()
+        );
     }
 
     private PageContextFactory createPageContextFactory(DriverWrapper driverWrapper) {

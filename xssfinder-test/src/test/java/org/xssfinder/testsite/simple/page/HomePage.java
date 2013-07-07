@@ -30,4 +30,8 @@ public class HomePage {
         driver.findElement(By.linkText("log out")).click();
         return new LoginPage(driver);
     }
+
+    public UnreachedPage throwException() {
+        throw new RuntimeException("Intentional thrown exception");
+    }
 }

@@ -1,9 +1,6 @@
 package org.xssfinder.reporting;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Writes HTML reports of the results of a run.
@@ -31,6 +28,7 @@ public class HtmlReportWriter {
             output.write("<html>");
             output.write("<head>");
             output.write("<title>XssFinder Report</title>");
+            output.write("<script src=\"http://code.jquery.com/jquery-1.10.2.min.js\"></script>");
             output.write("</head>");
             output.write("<body>");
             output.write("<p>The following vulnerabilities were detected:</p>");
@@ -72,6 +70,47 @@ public class HtmlReportWriter {
                         "</tr>"
                 );
             }
+            output.write("</table>");
+
+            output.write("<p>The following exceptions occurred:</p>");
+            output.write("<table id='errors'>");
+            output.write("<tr>");
+            output.write("<th>Page Class</th>");
+            output.write("<th>Traversal method</th>");
+            output.write("<th>Traversal mode</th>");
+            output.write("<th>Details</th>");
+            output.write("</tr>");
+            for (RouteRunErrorContext errorContext : journal.getErrorContexts()) {
+                String rowId = "errorContext-" + errorContext.hashCode();
+                String rowDetailsId = "errorContext-details-" + errorContext.hashCode();
+                output.write(
+                        "<tr id='" + rowId + "'>" +
+                            "<td>" +
+                                errorContext.getPageClassName() +
+                            "</td>" +
+                            "<td>" +
+                                errorContext.getPageTraversalMethodString() +
+                            "</td>" +
+                            "<td>" +
+                                errorContext.getTraversalModeName() +
+                            "</td>" +
+                            "<td>" +
+                                "<a href=\"#\" onClick=\"$('#" + rowDetailsId + "').toggle(); return false;\">Toggle details</a>" +
+                            "</td>" +
+                        "</tr>" +
+                        "<tr id='" + rowDetailsId + "' style='display:none'>" +
+                            "<td colspan='4'>" +
+                                "<div class='message'>" + errorContext.getExceptionMessage() + "</div>" +
+                                "<pre>"
+                );
+                errorContext.printStackTrace(new PrintWriter(output));
+                output.write(
+                                "</pre>" +
+                            "</td>" +
+                        "</tr>"
+                );
+            }
+            output.write("</tr>");
             output.write("</table>");
 
             output.write("</body>");
