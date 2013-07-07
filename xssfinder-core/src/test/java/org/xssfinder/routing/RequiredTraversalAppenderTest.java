@@ -89,7 +89,7 @@ public class RequiredTraversalAppenderTest {
         List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors, mockDjikstraResult);
 
         // then
-        verify(mockCloneRoute).appendTraversalByMethodToPageDescriptor(method, mockOtherPageDescriptor);
+        verify(mockCloneRoute).appendTraversal(method, mockOtherPageDescriptor);
         assertThat(appendedRoutes.size(), is(1));
         assertThat(appendedRoutes, hasItem(mockCloneRoute));
         //TODO final traversal of route has custom traverser suppressed
@@ -111,8 +111,8 @@ public class RequiredTraversalAppenderTest {
         List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors, mockDjikstraResult);
 
         // then
-        verify(mockRouteClone).appendTraversalByMethodToPageDescriptor(method, mockOtherPageDescriptor);
-        verify(mockAnotherRouteClone).appendTraversalByMethodToPageDescriptor(anotherMethod, mockAnotherPageDescriptor);
+        verify(mockRouteClone).appendTraversal(method, mockOtherPageDescriptor);
+        verify(mockAnotherRouteClone).appendTraversal(anotherMethod, mockAnotherPageDescriptor);
         assertThat(appendedRoutes.size(), is(2));
         assertThat(appendedRoutes, hasItems(mockRouteClone, mockAnotherRouteClone));
         //TODO final traversal of routes have custom traverser suppressed
@@ -133,7 +133,7 @@ public class RequiredTraversalAppenderTest {
         List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors, mockDjikstraResult);
 
         // then
-        verify(mockNewRoute).appendTraversalByMethodToPageDescriptor(method, mockOtherPageDescriptor);
+        verify(mockNewRoute).appendTraversal(method, mockOtherPageDescriptor);
         assertThat(appendedRoutes.size(), is(1));
         assertThat(appendedRoutes, hasItem(mockNewRoute));
         //TODO final traversal of route has custom traverser suppressed

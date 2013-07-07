@@ -57,7 +57,7 @@ public class Route {
         return traversal;
     }
 
-    public void appendTraversalByMethodToPageDescriptor(Method traversalMethod, PageDescriptor pageDescriptor) {
+    public void appendTraversal(Method traversalMethod, PageDescriptor pageDescriptor) {
         PageTraversal newTraversal = pageTraversalFactory.createTraversal(
                 traversalMethod, pageDescriptor, PageTraversal.TraversalMode.NORMAL);
         PageTraversal lastTraversal = getLastPageTraversal();

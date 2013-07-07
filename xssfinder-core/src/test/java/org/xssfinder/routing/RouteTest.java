@@ -41,7 +41,7 @@ public class RouteTest {
     @Before
     public void setUp() {
         //noinspection unchecked
-        when(mockPageDescriptor.getPageClass()).thenReturn((Class)RootPage.class);
+        when(mockPageDescriptor.getPageClass()).thenReturn((Class) RootPage.class);
     }
 
     @Test
@@ -140,7 +140,7 @@ public class RouteTest {
                 .thenReturn(mockNextPageTraversal);
 
         // when
-        route.appendTraversalByMethodToPageDescriptor(method, mockPageDescriptor);
+        route.appendTraversal(method, mockPageDescriptor);
 
         // then
         assertThat(route.getPageTraversal(), is(mockNextPageTraversal));
@@ -155,7 +155,7 @@ public class RouteTest {
                 .thenReturn(mockNextPageTraversal);
 
         // when
-        route.appendTraversalByMethodToPageDescriptor(method, mockPageDescriptor);
+        route.appendTraversal(method, mockPageDescriptor);
 
         // then
         verify(mockPageTraversal).setNextTraversal(mockNextPageTraversal);

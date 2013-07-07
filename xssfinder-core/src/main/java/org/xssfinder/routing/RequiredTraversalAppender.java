@@ -47,7 +47,7 @@ public class RequiredTraversalAppender {
                         augmentedRoute = djikstraResult.createRouteEndingAtClass(unusedMethod.getDeclaringClass());
                     }
                     PageDescriptor resultingPageDescriptor = getPageDescriptorForClass(unusedMethod.getReturnType(), pageDescriptors);
-                    augmentedRoute.appendTraversalByMethodToPageDescriptor(unusedMethod, resultingPageDescriptor);
+                    augmentedRoute.appendTraversal(unusedMethod, resultingPageDescriptor);
                     newRoutes.add(augmentedRoute);
                 }
             }
