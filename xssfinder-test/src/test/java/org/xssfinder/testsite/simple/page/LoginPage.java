@@ -4,8 +4,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.Page;
+import org.xssfinder.SubmitAction;
 import org.xssfinder.TraverseWith;
 import org.xssfinder.testsite.simple.lifecycle.LifecycleHandler;
+import org.xssfinder.testsite.simple.traverser.LoginPageSubmitter;
 import org.xssfinder.testsite.simple.traverser.LoginPageTraverser;
 
 @Page
@@ -17,10 +19,12 @@ public class LoginPage {
         this.driver = driver;
     }
 
-    //TODO: Should also be a @SubmitAction, but we need a way of gracefully coping with exceptions
+    @SubmitAction(LoginPageSubmitter.class)
     @TraverseWith(LoginPageTraverser.class)
     public HomePage logInAs(String username, String password) {
+        driver.findElement(By.name("j_username")).clear();
         driver.findElement(By.name("j_username")).sendKeys(username);
+        driver.findElement(By.name("j_password")).clear();
         driver.findElement(By.name("j_password")).sendKeys(password);
         driver.findElement(By.name("submit")).click();
         return new HomePage(driver);

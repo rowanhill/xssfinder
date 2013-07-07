@@ -74,7 +74,7 @@ public class XssFinderIT {
         XssSighting sighting = journal.getXssSightings().iterator().next();
         assertThat(sighting.getSubmitMethodName(), is("unsafeSubmit"));
         assertThat(sighting.getInputIdentifier(), is("//form[@id=\"unsafeForm\"]/input[1]"));
-        assertThat(journal.getPagesClassWithUntestedInputs().size(), is(2));
+        assertThat(journal.getPagesClassWithUntestedInputs().size(), is(1));
         assertThat(new File(OUTPUT_FILE).exists(), is(true));
     }
 }
