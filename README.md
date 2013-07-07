@@ -201,11 +201,14 @@ TODOs
 1. Allow no-args, no-@TraverseWith submit methods to be non-terminal (to reduce total # routes)
 1. Handle submit actions that return void (e.g. for client-side
 only submissions that don't change page).
+1. Add JavaDoc to classes in xssfinder-annotations
 1. Implement as a Maven plugin.
+1. Write a Builder interface for setting up & running XSS Finder (e.g. from JUnit)
 1. Make the reports (lots) prettier.
 1. Add DriverWrappers beyond just HtmlUnitDriver.
 1. Add more lifecycle events (before route, before/after traversal).
-1. Tidy up GraphTest following Graph refactor (it's a bit of a integration test now)
 1. Consider annotation inheritance - at a minimum, `@Page` probably
 wants to be marked as 
 [`@Inherited`](http://docs.oracle.com/javase/6/docs/api/java/lang/annotation/Inherited.html)
+1. Have RouteRunner#run create (from a factory) and return an XssJournal,
+rather than take one as a param
