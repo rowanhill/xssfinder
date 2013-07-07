@@ -17,12 +17,19 @@ public class Route {
     private final PageDescriptor rootPageDescriptor;
     private final String url;
     private final Instantiator instantiator;
+    private final PageTraversalFactory pageTraversalFactory;
     private PageTraversal pageTraversal;
 
-    public Route(PageDescriptor rootPageDescriptor, PageTraversal pageTraversal, Instantiator instantiator) {
+    public Route(
+            PageDescriptor rootPageDescriptor,
+            PageTraversal pageTraversal,
+            Instantiator instantiator,
+            PageTraversalFactory pageTraversalFactory
+    ) {
         this.rootPageDescriptor = rootPageDescriptor;
         this.url = rootPageDescriptor.getCrawlStartPointUrl();
         this.instantiator = instantiator;
+        this.pageTraversalFactory = pageTraversalFactory;
         this.pageTraversal = pageTraversal;
     }
 
@@ -51,7 +58,8 @@ public class Route {
     }
 
     public void appendTraversalByMethodToPageDescriptor(Method traversalMethod, PageDescriptor pageDescriptor) {
-        PageTraversal newTraversal = new PageTraversal(traversalMethod, pageDescriptor, PageTraversal.TraversalMode.NORMAL);
+        PageTraversal newTraversal = pageTraversalFactory.createTraversal(
+                traversalMethod, pageDescriptor, PageTraversal.TraversalMode.NORMAL);
         PageTraversal lastTraversal = getLastPageTraversal();
         if (lastTraversal == null) {
             pageTraversal = newTraversal;
@@ -87,6 +95,6 @@ public class Route {
     @Override
     public Route clone() {
         PageTraversal traversal = pageTraversal == null ? null : pageTraversal.clone();
-        return new Route(rootPageDescriptor, traversal, instantiator);
+        return new Route(rootPageDescriptor, traversal, instantiator, pageTraversalFactory);
     }
 }

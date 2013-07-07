@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 public class PageTraversalFactoryTest {
     @Test
-    public void predecessorTraversalHasPredecessorTraversalMethodAndResultingPageDescriptor() throws Exception {
+    public void creatingTraversalFromNodeUsesNodePredecessorTraversalMethodAndPageDescriptor() throws Exception {
         // given
         PageTraversalFactory factory = new PageTraversalFactory();
         GraphNode mockNode = mock(GraphNode.class);
@@ -26,6 +26,23 @@ public class PageTraversalFactoryTest {
         // then
         assertThat(traversal.getMethod(), is(method));
         assertThat(traversal.getResultingPageDescriptor(), is(mockPageDescriptor));
+    }
+
+    @Test
+    public void creatingTraversalFromMethodAndDescriptorUsesThoseGiven() throws Exception {
+        // given
+        PageTraversalFactory factory = new PageTraversalFactory();
+        Method method = SomePage.class.getMethod("someLink");
+        PageDescriptor mockPageDescriptor = mock(PageDescriptor.class);
+        PageTraversal.TraversalMode traversalMode = PageTraversal.TraversalMode.NORMAL;
+
+        // when
+        PageTraversal traversal = factory.createTraversal(method, mockPageDescriptor, traversalMode);
+
+        // then
+        assertThat(traversal.getMethod(), is(method));
+        assertThat(traversal.getResultingPageDescriptor(), is(mockPageDescriptor));
+        assertThat(traversal.getTraversalMode(), is(traversalMode));
     }
 
     @SuppressWarnings("UnusedDeclaration")

@@ -17,7 +17,7 @@ public class RouteFactory {
         LinkedList<GraphNode> routeNodes = new LinkedList<GraphNode>();
         PageTraversal nextTraversal = buildPageTraversalsEndingInNode(graphNode, routeNodes);
         GraphNode firstNode = routeNodes.getFirst();
-        return new Route(firstNode.getPageDescriptor(), nextTraversal, instantiator);
+        return new Route(firstNode.getPageDescriptor(), nextTraversal, instantiator, pageTraversalFactory);
     }
 
     private PageTraversal buildPageTraversalsEndingInNode(GraphNode node, LinkedList<GraphNode> routeNodes) {
