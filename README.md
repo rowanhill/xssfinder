@@ -21,7 +21,7 @@ if the attack is ever executed.
 The difficulty in automating this is knowing how to effectively
 navigate around the web site under test. Fortunately, if you've
 written you web tests using the page object pattern (which is
-good practice, regardless of whether or not you wnat to use XSS
+good practice, regardless of whether or not you want to use XSS
 Finder), you've already encoded a wealth of information about
 how to get around the site.
 
@@ -44,14 +44,17 @@ Usage
 ### Summary ###
 1. Annotate page objects with `@Page`.
 2. Annotate the entry point page objects with `@CrawlStartPoint`.
-3. Annotate the methods which submit forms ith `@SubmitAction`.
+3. Annotate the methods which submit forms with `@SubmitAction`.
 4. Add any custom traversers:
     1. Create a class that implements `CustomTraverser`
     2. Annotate the page object method with `@TraverseWith`
-5. Add any route lifecycle handlers:
+5. Add any custom submitters:
+    1. Create a class that implements `CustomSubmitter`
+    2. Supply the class to the page object method's `@SubmitAction` annotation.
+6. Add any route lifecycle handlers:
     1. Reference lifecycle handler class in `@CrawlStartPoint`
     2. Annotate a method on that class with `@AfterRoute`
-6. Run XSS Finder - currently easiest from a unit test
+7. Run XSS Finder - currently easiest from a unit test
 
 See the xssfinder-test module for an example.
 
@@ -91,7 +94,7 @@ set of pages; any more or less, and XSS Finder doesn't know how to
 begin.
 
 XSS Finder will generate a set of routes through the web site under
-test that excercises every page, but not necessarily every method
+test that exercises every page, but not necessarily every method
 that moves between pages. It's important that all the submit
 actions are traversed, though, to ensure the XSS vulnerabilities
 are flushed out. You can tell XSS Finder that a method on a page
@@ -112,6 +115,78 @@ a page and returns another.
 To tell XSS Finder to use a custom traverser, annotate the method with
 `@TraverseWith(YourCustomTraverser.class)`.
 
+```java
+@Page
+public class RegisterPage {
+    @TraverseWith(RegisterTraverser.class)
+    public HomePage register(String username, String password) {
+        // ...
+    }
+}
+
+public class RegisterTraverser implements CustomTraverser {
+    @Override
+    public HomePage traverse(Object page) {
+        if (!(page instanceof RegisterPage)) {
+            throw new UntraversableException(page.toString() + " was not instance of RegisterPage");
+        }
+        RegisterPage registerPage = (RegisterPage)page;
+        return registerPage.register(
+            // ...
+        );
+    }
+}
+```
+
+### Custom Submitters ###
+If you have a submit method (annotated with `@SubmitAction`) which also
+takes parameters (so is annotated with `@TraverseWith`), you'll want to
+user a custom submitter, as well.
+
+Custom submitters implement `CustomSubmitter`. They're like custom traversers,
+but are used when XSS Finder is attacking the page, so the parameters to
+provide when you call the annotated method on the page object should contain
+XSS attacks. You generate the attacks using the provided `LabelledXssGenerator`.
+
+Don't worry if providing XSS attacks as parameters won't result in the web
+session ending up on the right page (e.g. if you give XSS attacks to a login
+method, you may end up on an error page, rather than the page specified by the
+return type of the login method). When a custom submitter is used, it's always
+the last page traversal of a chain, so the resulting page doesn't matter.
+
+To tell XSS Finder to use a custom submitter, annotate the method with
+`@SubmitAction(YourCustomSubmitter.class)`.
+
+```java
+@Page
+public class LoginPage {
+    @TraverseWith(LoginTraverser.class)
+    @SubmitAction(LoginTraverser.class)
+    public HomePage login(String username, String password) {
+        // ...
+    }
+}
+
+public class LoginTraverser implements CustomTraverser, CustomSubmitter {
+    @Override
+    public HomePage traverse(Object page) {
+        // ...
+    }
+
+    @Override
+    public HomePage Object submit(Object page, LabelledXssGenerator xssGenerator) {
+        if (!(page instanceof LoginPage)) {
+            throw new UntraversableException(page.toString() + " was not instance of LoginPage");
+        }
+        LoginPage loginPage = (LoginPage)page;
+        return loginPage.logInAs(
+                xssGenerator.getXssAttackTextForLabel("username"),
+                xssGenerator.getXssAttackTextForLabel("password")
+        );
+    }
+}
+```
+
 ### Route Lifecycle Event Handlers ###
 If you need to perform any clean-up after a run through a route
 you can specify a route lifecycle event handler via the
@@ -123,7 +198,7 @@ once the route has finished with `@AfterRoute`.
 TODOs
 -----
 1. Record errors encountered traversing a route / in afterRoute.
-1. Make all submit traversals terminal, and in addition to normal traversal
+1. Allow no-args, no-@TraverseWith submit methods to be non-terminal (to reduce total # routes)
 1. Handle submit actions that return void (e.g. for client-side
 only submissions that don't change page).
 1. Implement as a Maven plugin.
