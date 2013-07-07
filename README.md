@@ -31,30 +31,30 @@ nutshell, it does the following:
 
 1. Find all pages, and how they fit together, then pick a few
 routes that visit all pages at least once.
-2. Run through all the routes, submitting all forms with uniquely
+1. Run through all the routes, submitting all forms with uniquely
 identifiable attacks as it goes.
-3. Look for evidence of these attacks being executed as it goes.
-4. Run through all the routes a second time (in case later attacks
+1. Look for evidence of these attacks being executed as it goes.
+1. Run through all the routes a second time (in case later attacks
 show up on earlier pages).
-5. Write a report on all successful attacks, details where they
+1. Write a report on all successful attacks, details where they
 originated and where they were executed.
 
 Usage
 -----
 ### Summary ###
 1. Annotate page objects with `@Page`.
-2. Annotate the entry point page objects with `@CrawlStartPoint`.
-3. Annotate the methods which submit forms with `@SubmitAction`.
-4. Add any custom traversers:
+1. Annotate the entry point page objects with `@CrawlStartPoint`.
+1. Annotate the methods which submit forms with `@SubmitAction`.
+1. Add any custom traversers:
     1. Create a class that implements `CustomTraverser`
-    2. Annotate the page object method with `@TraverseWith`
-5. Add any custom submitters:
+    1. Annotate the page object method with `@TraverseWith`
+1. Add any custom submitters:
     1. Create a class that implements `CustomSubmitter`
-    2. Supply the class to the page object method's `@SubmitAction` annotation.
-6. Add any route lifecycle handlers:
+    1. Supply the class to the page object method's `@SubmitAction` annotation.
+1. Add any route lifecycle handlers:
     1. Reference lifecycle handler class in `@CrawlStartPoint`
-    2. Annotate a method on that class with `@AfterRoute`
-7. Run XSS Finder - currently easiest from a unit test
+    1. Annotate a method on that class with `@AfterRoute`
+1. Run XSS Finder - currently easiest from a unit test
 
 See the xssfinder-test module for an example.
 
