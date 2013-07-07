@@ -1,5 +1,6 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.routing.PageTraversal;
 
@@ -10,6 +11,7 @@ public class PageContext {
     private final PageTraverser pageTraverser;
     private final Object page;
     private final DriverWrapper driverWrapper;
+    private final XssJournal xssJournal;
     private final PageTraversal pageTraversal;
     private PageDescriptor pageDescriptor;
 
@@ -17,12 +19,14 @@ public class PageContext {
             PageTraverser pageTraverser,
             Object page,
             DriverWrapper driverWrapper,
+            XssJournal xssJournal,
             PageTraversal pageTraversal,
             PageDescriptor pageDescriptor
     ) {
         this.pageTraverser = pageTraverser;
         this.page = page;
         this.driverWrapper = driverWrapper;
+        this.xssJournal = xssJournal;
         this.pageTraversal = pageTraversal;
         this.pageDescriptor = pageDescriptor;
     }
@@ -43,8 +47,8 @@ public class PageContext {
         if (!hasNextContext()) {
             throw new IllegalStateException();
         }
-        Object nextPage = pageTraverser.traverse(page, pageTraversal);
-        return new PageContext(pageTraverser, nextPage, driverWrapper, pageTraversal.getNextTraversal(), pageTraversal.getResultingPageDescriptor());
+        Object nextPage = pageTraverser.traverse(page, pageTraversal, xssJournal);
+        return new PageContext(pageTraverser, nextPage, driverWrapper, xssJournal, pageTraversal.getNextTraversal(), pageTraversal.getResultingPageDescriptor());
     }
 
     /**

@@ -41,7 +41,7 @@ class RoutePageStrategyRunner {
 
             lifecycleHandler = route.createLifecycleHandler();
 
-            pageContext = contextFactory.createContext(driverWrapper, route);
+            pageContext = contextFactory.createContext(driverWrapper, route, xssJournal);
             while (pageContext.hasNextContext()) {
                 executePageStrategies(pageStrategies, pageContext, xssJournal);
                 pageContext = pageContext.getNextContext();

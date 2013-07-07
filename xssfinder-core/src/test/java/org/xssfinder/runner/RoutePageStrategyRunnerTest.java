@@ -42,7 +42,7 @@ public class RoutePageStrategyRunnerTest {
 
     @Before
     public void setUp() throws Exception {
-        when(mockContextFactory.createContext(mockDriverWrapper, mockRoute)).thenReturn(mockPageContext);
+        when(mockContextFactory.createContext(mockDriverWrapper, mockRoute, mockXssJournal)).thenReturn(mockPageContext);
         when(mockPageContext.getPage()).thenReturn(mockPage);
         when(mockRoute.getUrl()).thenReturn(URL);
         when(mockRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
@@ -124,7 +124,7 @@ public class RoutePageStrategyRunnerTest {
         pageStrategies.add(mockStrategy);
         Route mockOtherRoute = mock(Route.class);
         PageContext mockOtherPageContext = mock(PageContext.class);
-        when(mockContextFactory.createContext(mockDriverWrapper, mockOtherRoute)).thenReturn(mockOtherPageContext);
+        when(mockContextFactory.createContext(mockDriverWrapper, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
         when(mockOtherPageContext.getPage()).thenReturn(mockPage);
         when(mockOtherRoute.getUrl()).thenReturn(URL);
         when(mockOtherRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
@@ -161,7 +161,7 @@ public class RoutePageStrategyRunnerTest {
         pageStrategies.add(mockStrategy);
         Route mockOtherRoute = mock(Route.class);
         PageContext mockOtherPageContext = mock(PageContext.class);
-        when(mockContextFactory.createContext(mockDriverWrapper, mockOtherRoute)).thenReturn(mockOtherPageContext);
+        when(mockContextFactory.createContext(mockDriverWrapper, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
         when(mockOtherPageContext.getPage()).thenReturn(mockPage);
         when(mockOtherRoute.getUrl()).thenReturn(URL);
         when(mockOtherRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);

@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.*;
+import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.routing.PageTraversal;
 
@@ -33,6 +34,8 @@ public class PageTraverserTest {
     @Mock
     private PageTraversal mockTraversal;
     @Mock
+    private XssJournal mockXssJournal;
+    @Mock
     private CustomTraverser mockCustomTraverser;
     @Mock
     private CustomSubmitter mockCustomSubmitter;
@@ -47,7 +50,7 @@ public class PageTraverserTest {
         Method method = RootPage.class.getMethod("goToSecondPage");
         when(mockTraversal.getMethod()).thenReturn(method);
 
-        when(mockLabelledXssGeneratorFactory.createLabelledXssGenerator(mockTraversal))
+        when(mockLabelledXssGeneratorFactory.createLabelledXssGenerator(mockTraversal, mockXssJournal))
                 .thenReturn(mockLabelledXssGenerator);
 
         traverser = new PageTraverser(mockTraverserInstantiator, mockSubmitterInstantiator, mockLabelledXssGeneratorFactory);
@@ -59,7 +62,7 @@ public class PageTraverserTest {
         RootPage page = new RootPage();
 
         // when
-        Object nextPage = traverser.traverse(page, mockTraversal);
+        Object nextPage = traverser.traverse(page, mockTraversal, mockXssJournal);
 
         // then
         assertThat(nextPage, is(instanceOf(SecondPage.class)));
@@ -72,7 +75,7 @@ public class PageTraverserTest {
         RootPage page = new RootPage();
 
         // when
-        traverser.traverse(page, mockTraversal);
+        traverser.traverse(page, mockTraversal, mockXssJournal);
     }
 
     @Test(expected=UntraversableException.class)
@@ -82,7 +85,7 @@ public class PageTraverserTest {
         RootPage page = new RootPage();
 
         // when
-        traverser.traverse(page, mockTraversal);
+        traverser.traverse(page, mockTraversal, mockXssJournal);
     }
 
     @Test
@@ -93,7 +96,7 @@ public class PageTraverserTest {
         SecondPage mockSecondPage = mockCustomTraversedSecondPage(page);
 
         // when
-        Object nextPage = traverser.traverse(page, mockTraversal);
+        Object nextPage = traverser.traverse(page, mockTraversal, mockXssJournal);
 
         // then
         assertThat(nextPage, is((Object) mockSecondPage));
@@ -108,7 +111,7 @@ public class PageTraverserTest {
         setSubmitTraversalMode();
 
         // when
-        Object nextPage = traverser.traverse(page, mockTraversal);
+        Object nextPage = traverser.traverse(page, mockTraversal, mockXssJournal);
 
         // then
         assertThat(nextPage, is((Object) mockSecondPage));
@@ -121,7 +124,7 @@ public class PageTraverserTest {
         RootPage page = new RootPage();
 
         // when
-        traverser.traverse(page, mockTraversal);
+        traverser.traverse(page, mockTraversal, mockXssJournal);
     }
 
     public void customTraverserIsUsedWhenTraversingMethodAnnotatedWithSubmitActionAndTraverseWith() throws Exception {
@@ -133,7 +136,7 @@ public class PageTraverserTest {
         setSubmitTraversalMode();
 
         // when
-        Object nextPage = traverser.traverse(page, mockTraversal);
+        Object nextPage = traverser.traverse(page, mockTraversal, mockXssJournal);
 
         // then
         assertThat(nextPage, is((Object)mockTraversedSecondPage));
@@ -147,7 +150,7 @@ public class PageTraverserTest {
         SecondPage mockSubmittedSecondPage = mockCustomSubmittedSecondPage(page);
 
         // when
-        Object nextPage = traverser.traverse(page, mockTraversal);
+        Object nextPage = traverser.traverse(page, mockTraversal, mockXssJournal);
 
         // then
         assertThat(nextPage, is((Object)mockSubmittedSecondPage));

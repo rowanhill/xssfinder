@@ -3,6 +3,7 @@ package org.xssfinder.runner;
 import org.xssfinder.CustomSubmitter;
 import org.xssfinder.CustomTraverser;
 import org.xssfinder.LabelledXssGenerator;
+import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.PageTraversal;
 
 import java.lang.reflect.InvocationTargetException;
@@ -29,9 +30,10 @@ class PageTraverser {
      *
      * @param page The current page object
      * @param traversal The traversal from the current page object to the next
+     * @param xssJournal The journal in which to record any XSS attacks made
      * @return The page object resulting from the traversal
      */
-    public Object traverse(Object page, PageTraversal traversal) {
+    public Object traverse(Object page, PageTraversal traversal, XssJournal xssJournal) {
         Method method = traversal.getMethod();
 
         CustomTraverser customTraverser = null;
@@ -59,7 +61,7 @@ class PageTraverser {
             } else {
                 if (customSubmitter != null) {
                     LabelledXssGenerator generator =
-                            labelledXssGeneratorFactory.createLabelledXssGenerator(traversal);
+                            labelledXssGeneratorFactory.createLabelledXssGenerator(traversal, xssJournal);
                     return customSubmitter.submit(page, generator);
                 } else {
                     return invokeNoArgsMethod(page, method);
