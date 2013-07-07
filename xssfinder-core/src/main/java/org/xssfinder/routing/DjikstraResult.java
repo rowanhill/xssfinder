@@ -29,11 +29,6 @@ public class DjikstraResult {
         return routeFactory.createRouteEndingAtNode(node);
     }
 
-    public boolean isClassLeafNode(Class<?> pageClass) {
-        GraphNode node = classesToNodes.get(pageClass);
-        return leafNodes.contains(node);
-    }
-
     public Set<GraphNode> getLeafNodes() {
         return leafNodes;
     }

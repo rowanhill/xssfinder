@@ -53,22 +53,6 @@ public class DjikstraResultTest {
         assertThat(route, is(mockRoute));
     }
 
-    @Test
-    public void canQueryIfClassIsLeafNode() {
-        // given
-        DjikstraResult djikstraResult = new DjikstraResult(mockRouteFactory, classesToNodes, leafNodes);
-        addLeafClass(SomePage.class);
-        mapClassToNode(SomeOtherPage.class);
-
-        // when
-        boolean isSomePageLeaf = djikstraResult.isClassLeafNode(SomePage.class);
-        boolean isSomeOtherPageLeaf = djikstraResult.isClassLeafNode(SomeOtherPage.class);
-
-        // then
-        assertThat(isSomePageLeaf, is(true));
-        assertThat(isSomeOtherPageLeaf, is(false));
-    }
-
     private void addLeafNodeAndExpectedRoute(List<Route> expectedRoutes) {
         GraphNode mockNode = mock(GraphNode.class);
         leafNodes.add(mockNode);
@@ -81,17 +65,5 @@ public class DjikstraResultTest {
         return mockRoute;
     }
 
-    private void addLeafClass(Class<?> pageClass) {
-        leafNodes.add(mapClassToNode(pageClass));
-    }
-
-    private GraphNode mapClassToNode(Class<?> pageClass) {
-        GraphNode mockNode = mock(GraphNode.class);
-        classesToNodes.put(pageClass, mockNode);
-        return mockNode;
-    }
-
     private static class SomePage {}
-
-    private static class SomeOtherPage {}
 }

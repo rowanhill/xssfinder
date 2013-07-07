@@ -83,7 +83,6 @@ public class RequiredTraversalAppenderTest {
         when(mockRoute.clone()).thenReturn(mockCloneRoute);
         Method method = SomePage.class.getMethod("goToSomeOtherPage");
         untraversedSubmitMethodsByDescriptor.put(mockSomePageDescriptor, method);
-        when(mockDjikstraResult.isClassLeafNode(SomePage.class)).thenReturn(true);
 
         // when
         List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors, mockDjikstraResult);
@@ -97,7 +96,6 @@ public class RequiredTraversalAppenderTest {
     @Test
     public void multipleUntraversedMethodsOnLeafNodesProduceMultipleAppendedRoutes() throws Exception {
         // given
-        when(mockDjikstraResult.isClassLeafNode(SomePage.class)).thenReturn(true);
         Method method = SomePage.class.getMethod("goToSomeOtherPage");
         Method anotherMethod = SomePage.class.getMethod("goToYetAnotherPage");
         untraversedSubmitMethodsByDescriptor.put(mockSomePageDescriptor, method);
@@ -119,11 +117,13 @@ public class RequiredTraversalAppenderTest {
     @Test
     public void untraversedMethodOnNonLeafNodeAddsNewShortestRouteWithAppendedTraversal() throws Exception {
         // given
+        PageTraversal mockTraversal = mock(PageTraversal.class);
+        when(mockRoute.getLastPageTraversal()).thenReturn(mockTraversal);
+        when(mockTraversal.getMethod()).thenReturn(SomePage.class.getMethod("goToSomeOtherPage"));
         DjikstraResult mockDjikstraResult = mock(DjikstraResult.class);
-        Method method = SomePage.class.getMethod("goToSomeOtherPage");
+        Method method = SomePage.class.getMethod("goToYetAnotherPage");
         untraversedSubmitMethodsByDescriptor.put(mockSomePageDescriptor, method);
-        when(mockDjikstraResult.isClassLeafNode(SomePage.class)).thenReturn(false);
-        Route mockNewRoute = mock(Route.class);
+        Route mockNewRoute = mock(Route.class, "mockNewRoute");
         when(mockDjikstraResult.createRouteEndingAtClass(SomePage.class))
                 .thenReturn(mockNewRoute);
 
@@ -131,8 +131,9 @@ public class RequiredTraversalAppenderTest {
         List<Route> appendedRoutes = traversalAppender.appendTraversalsToRoutes(routes, pageDescriptors, mockDjikstraResult);
 
         // then
-        verify(mockNewRoute).appendTraversal(method, mockOtherPageDescriptor, PageTraversal.TraversalMode.SUBMIT);
-        assertThat(appendedRoutes.size(), is(1));
+        verify(mockNewRoute).appendTraversal(method, mockAnotherPageDescriptor, PageTraversal.TraversalMode.SUBMIT);
+        assertThat(appendedRoutes.size(), is(2));
+        assertThat(appendedRoutes, hasItem(mockRoute));
         assertThat(appendedRoutes, hasItem(mockNewRoute));
     }
 

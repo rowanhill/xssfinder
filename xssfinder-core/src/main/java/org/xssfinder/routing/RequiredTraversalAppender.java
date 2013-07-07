@@ -3,10 +3,7 @@ package org.xssfinder.routing;
 import com.google.common.collect.SetMultimap;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class RequiredTraversalAppender {
     private final UntraversedSubmitMethodsFinder untraversedSubmitMethodsFinder;
@@ -40,21 +37,32 @@ public class RequiredTraversalAppender {
                 newRoutes.add(route);
             } else {
                 for (Method unusedMethod : unusedMethods) {
-                    Route augmentedRoute;
-                    if (djikstraResult.isClassLeafNode(endClass)) {
-                        augmentedRoute = route.clone();
-                    } else {
-                        augmentedRoute = djikstraResult.createRouteEndingAtClass(unusedMethod.getDeclaringClass());
-                    }
-                    PageDescriptor resultingPageDescriptor =
-                            getPageDescriptorForClass(unusedMethod.getReturnType(), pageDescriptors);
-                    augmentedRoute.appendTraversal(
-                            unusedMethod, resultingPageDescriptor, PageTraversal.TraversalMode.SUBMIT);
-                    newRoutes.add(augmentedRoute);
+                    Route routeToAugment = route.clone();
+                    appendMethodToRouteAndAddToList(unusedMethod, routeToAugment, newRoutes, pageDescriptors);
                 }
+                methodsByPage.removeAll(getPageDescriptorForClass(endClass, pageDescriptors));
             }
         }
+        for (Map.Entry<PageDescriptor, Method> unusedMethodByPage : methodsByPage.entries()) {
+            Class<?> owningPage = unusedMethodByPage.getKey().getPageClass();
+            Method unusedMethod = unusedMethodByPage.getValue();
+            Route routeToAugment = djikstraResult.createRouteEndingAtClass(owningPage);
+            appendMethodToRouteAndAddToList(unusedMethod, routeToAugment, newRoutes, pageDescriptors);
+        }
         return newRoutes;
+    }
+
+    private void appendMethodToRouteAndAddToList(
+            Method unusedMethod,
+            Route routeToAugment,
+            List<Route> newRoutes,
+            Set<PageDescriptor> pageDescriptors
+    ) {
+        PageDescriptor resultingPageDescriptor =
+                getPageDescriptorForClass(unusedMethod.getReturnType(), pageDescriptors);
+        routeToAugment.appendTraversal(
+                unusedMethod, resultingPageDescriptor, PageTraversal.TraversalMode.SUBMIT);
+        newRoutes.add(routeToAugment);
     }
 
     private Set<Method> getUnusedSubmitMethodsOnPage(

@@ -231,7 +231,7 @@ public class RouteTest {
         PageTraversal traversal = new PageTraversal(
                 RootPage.class.getMethod("submit"),
                 mockPageDescriptor,
-                PageTraversal.TraversalMode.NORMAL);
+                PageTraversal.TraversalMode.SUBMIT);
         Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
 
         // when
@@ -240,6 +240,60 @@ public class RouteTest {
         // then
         Set<Method> expectedMethods = ImmutableSet.of(
                 RootPage.class.getMethod("submit")
+        );
+        assertThat(submitMethods, is(expectedMethods));
+    }
+
+    @Test
+    public void submitMethodsTraversedInNormalModeNotConsideredTraversed() throws Exception {
+        // given
+        PageTraversal traversal = new PageTraversal(
+                RootPage.class.getMethod("submit"),
+                mockPageDescriptor,
+                PageTraversal.TraversalMode.NORMAL);
+        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
+
+        // when
+        Set<Method> submitMethods = route.getTraversedSubmitMethods();
+
+        // then
+        Set<Method> expectedMethods = ImmutableSet.of(
+        );
+        assertThat(submitMethods, is(expectedMethods));
+    }
+
+    @Test
+    public void normalMethodsTraversedInNormalModeNotConsideredTraversedSubmitMethods() throws Exception {
+        // given
+        PageTraversal traversal = new PageTraversal(
+                RootPage.class.getMethod("circularLink"),
+                mockPageDescriptor,
+                PageTraversal.TraversalMode.NORMAL);
+        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
+
+        // when
+        Set<Method> submitMethods = route.getTraversedSubmitMethods();
+
+        // then
+        Set<Method> expectedMethods = ImmutableSet.of(
+        );
+        assertThat(submitMethods, is(expectedMethods));
+    }
+
+    @Test
+    public void normalMethodsTraversedInSubmitModeNotConsideredTraversedSubmitMethods() throws Exception {
+        // given
+        PageTraversal traversal = new PageTraversal(
+                RootPage.class.getMethod("circularLink"),
+                mockPageDescriptor,
+                PageTraversal.TraversalMode.SUBMIT);
+        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
+
+        // when
+        Set<Method> submitMethods = route.getTraversedSubmitMethods();
+
+        // then
+        Set<Method> expectedMethods = ImmutableSet.of(
         );
         assertThat(submitMethods, is(expectedMethods));
     }

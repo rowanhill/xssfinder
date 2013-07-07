@@ -1,7 +1,6 @@
 package org.xssfinder.routing;
 
 import org.xssfinder.CrawlStartPoint;
-import org.xssfinder.SubmitAction;
 import org.xssfinder.reflection.*;
 import org.xssfinder.reflection.InstantiationException;
 import org.xssfinder.runner.LifecycleEventException;
@@ -87,7 +86,7 @@ public class Route {
         Set<Method> usedMethods = new HashSet<Method>();
         PageTraversal traversal = getPageTraversal();
         while (traversal != null && traversal.getMethod() != null) {
-            if (traversal.getMethod().isAnnotationPresent(SubmitAction.class)) {
+            if (traversal.getTraversalMode() == PageTraversal.TraversalMode.SUBMIT && traversal.isSubmit()) {
                 usedMethods.add(traversal.getMethod());
             }
             traversal = traversal.getNextTraversal();

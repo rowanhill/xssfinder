@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.reporting.XssSighting;
 import org.xssfinder.reporting.XssSightingFactory;
-import org.xssfinder.routing.GraphsFactory;
 import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
 import org.xssfinder.routing.RouteGeneratorFactory;
@@ -69,6 +68,7 @@ public class XssFinderIT {
         // Run!
         runner.run(routes, journal);
 
+        assertThat(routes.size(), is(3));
         assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
         assertThat(journal.getXssSightings().size(), is(1));
         XssSighting sighting = journal.getXssSightings().iterator().next();
