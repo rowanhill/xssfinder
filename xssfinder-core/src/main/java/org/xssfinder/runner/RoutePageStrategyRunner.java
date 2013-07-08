@@ -56,7 +56,7 @@ class RoutePageStrategyRunner {
             RouteRunErrorContext errorContext = errorContextFactory.createErrorContext(e, pageContext);
             xssJournal.addErrorContext(errorContext);
         } finally {
-            handleRouteError(lifecycleHandler, pageContext);
+            invokeAfterRouteIfNeeded(lifecycleHandler, pageContext);
         }
     }
 
@@ -66,7 +66,7 @@ class RoutePageStrategyRunner {
         }
     }
 
-    private void handleRouteError(Object lifecycleHandler, PageContext pageContext) {
+    private void invokeAfterRouteIfNeeded(Object lifecycleHandler, PageContext pageContext) {
         if (pageContext == null) {
             return;
         }
