@@ -198,6 +198,8 @@ once the route has finished with `@AfterRoute`.
 TODOs
 -----
 1. Record entirety of route that had error
+1. Record errors executing lifecycle event handlers
+1. Pass DriverWrapper to @AfterRoute method
 1. Somehow group / de-duplicate errors that happen on both runs (attack / observe)
 1. Allow no-args, no-@TraverseWith submit methods to be non-terminal (to reduce total # routes)
 1. Handle submit actions that return void (e.g. for client-side

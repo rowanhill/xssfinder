@@ -9,6 +9,9 @@ import java.lang.reflect.Method;
  */
 class LifecycleEventExecutor {
     public void afterRoute(Object lifecycleHandler, Object page) {
+        if (lifecycleHandler == null) {
+            return;
+        }
         Class<?> handlerClass = lifecycleHandler.getClass();
         Method afterRouteMethod = getAfterRouteMethod(handlerClass);
         try {

@@ -8,6 +8,7 @@ import org.xssfinder.AfterRoute;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LifecycleEventExecutorTest {
@@ -57,6 +58,19 @@ public class LifecycleEventExecutorTest {
 
         // then
         assertThat(handler.afterRouteInvoked, is(true));
+    }
+
+    @Test
+    public void invokingAfterRouteDoesNothingIfLifecycleHandlerIsNull() {
+        // given
+        LifecycleEventExecutor eventExecutor = new LifecycleEventExecutor();
+
+        // when
+        eventExecutor.afterRoute(null, mockPage);
+
+        // then
+        // No exception is thrown
+        verifyZeroInteractions(mockPage);
     }
 
     private static class SomePage {}

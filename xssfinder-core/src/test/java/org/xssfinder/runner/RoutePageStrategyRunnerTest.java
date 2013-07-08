@@ -204,4 +204,17 @@ public class RoutePageStrategyRunnerTest {
         // then
         verify(mockStrategy).processPage(mockOtherPageContext, mockXssJournal);
     }
+
+    @Test
+    public void afterRouteNotCalledIfExceptionThrownBeforePageContextCanBeCreated() {
+        // given
+        when(mockPageContextFactory.createContext(mockDriverWrapper, mockRoute, mockXssJournal))
+                .thenThrow(new RuntimeException("Error!"));
+
+        // when
+        runner.run(routes, pageStrategies, mockXssJournal);
+
+        // then
+        verifyZeroInteractions(mockLifecycleEventExecutor);
+    }
 }

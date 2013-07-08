@@ -75,6 +75,10 @@ public class Route {
         Class<?> pageClass = getRootPageClass();
         CrawlStartPoint startPointAnnotation = pageClass.getAnnotation(CrawlStartPoint.class);
         Class<?> handlerClass = startPointAnnotation.lifecycleHandler();
+        if (handlerClass == Object.class) {
+            // Object is the default lifecycle handler; it indicates that no handler has been set, so we return null
+            return null;
+        }
         try {
             return instantiator.instantiate(handlerClass);
         } catch (InstantiationException ex) {

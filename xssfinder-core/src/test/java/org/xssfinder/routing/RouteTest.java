@@ -19,9 +19,7 @@ import java.util.Set;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RouteTest {
@@ -226,6 +224,22 @@ public class RouteTest {
     }
 
     @Test
+    public void createsNullLifecycleHandlerIfNoneSpecified() throws Exception {
+        // given
+        //noinspection unchecked
+        when(mockPageDescriptor.getPageClass()).thenReturn((Class) PageWithoutLifecycleHandler.class);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+
+        // when
+        Object handler = route.createLifecycleHandler();
+
+        // then
+        assertThat(handler, is(nullValue()));
+        //noinspection unchecked
+        verify(mockInstantiator, never()).instantiate(any(Class.class));
+    }
+
+    @Test
     public void returnsTraversedSubmitMethods() throws Exception {
         // given
         PageTraversal traversal = new PageTraversal(
@@ -308,4 +322,10 @@ public class RouteTest {
     }
 
     private static class LifecycleHandler {}
+
+    @SuppressWarnings("UnusedDeclaration")
+    @CrawlStartPoint(url=ROOT_PAGE_URL)
+    private static class PageWithoutLifecycleHandler {
+
+    }
 }
