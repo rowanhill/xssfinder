@@ -204,7 +204,6 @@ TODOs
 1. Allow no-args, no-@TraverseWith submit methods to be non-terminal (to reduce total # routes)
 1. Handle submit actions that return void (e.g. for client-side
 only submissions that don't change page).
-1. Add JavaDoc to classes in xssfinder-annotations
 1. Implement as a Maven plugin.
 1. Write a Builder interface for setting up & running XSS Finder (e.g. from JUnit)
 1. Make the reports (lots) prettier.
