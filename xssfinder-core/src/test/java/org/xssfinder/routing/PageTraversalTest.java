@@ -146,6 +146,35 @@ public class PageTraversalTest {
         assertThat(isSubmit, is(false));
     }
 
+    @Test
+    public void includesMethodAndTraversalModeInToString() throws Exception {
+        // given
+        Method submitMethod = Page.class.getDeclaredMethod("goToPage");
+        PageTraversal traversal = new PageTraversal(submitMethod, mockPageDescriptor, traversalMode);
+
+        // when
+        String toString = traversal.toString();
+
+        // then
+        assertThat(toString, is("{goToPage, Normal} -> Page"));
+    }
+
+    @Test
+    public void includesNextTraversalInToString() throws Exception {
+        // given
+        Method submitMethod = Page.class.getDeclaredMethod("goToPage");
+        PageTraversal traversal = new PageTraversal(submitMethod, mockPageDescriptor, traversalMode);
+        PageTraversal mockNextTraversal = mock(PageTraversal.class);
+        when(mockNextTraversal.toString()).thenReturn("<child traversal>");
+        traversal.setNextTraversal(mockNextTraversal);
+
+        // when
+        String toString = traversal.toString();
+
+        // then
+        assertThat(toString, is("{goToPage, Normal} -> Page -> <child traversal>"));
+    }
+
     @SuppressWarnings("UnusedDeclaration")
     private static class Page {
         Page goToPage() { return null; }

@@ -71,6 +71,18 @@ public class PageTraversal {
         return clone;
     }
 
+    @Override
+    public String toString() {
+        String childString = nextTraversal == null ? "" : " -> " + nextTraversal.toString();
+        return String.format(
+                "{%s, %s} -> %s%s",
+                this.getMethod().getName(),
+                this.traversalMode.getDescription(),
+                this.getMethod().getReturnType().getSimpleName(),
+                childString
+        );
+    }
+
     public TraversalMode getTraversalMode() {
         return traversalMode;
     }
