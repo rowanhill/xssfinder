@@ -1,13 +1,13 @@
 package org.xssfinder.routing;
 
 import com.google.common.collect.ImmutableSet;
-import org.dummytest.simple.HomePage;
-import org.dummytest.simple.SecondPage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.CrawlStartPoint;
+import org.xssfinder.Page;
 
 import java.util.Set;
 
@@ -48,4 +48,14 @@ public class GraphsFactoryTest {
         // then
         assertThat(graphs.size(), is(1));
     }
+
+    @SuppressWarnings("UnusedDeclaration")
+    @CrawlStartPoint(url="http://localhost/")
+    @Page
+    private static class HomePage {
+        public SecondPage goToSecondPage() { return null; }
+    }
+
+    @Page
+    private static class SecondPage {}
 }

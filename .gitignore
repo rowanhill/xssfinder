@@ -3,4 +3,6 @@
 target/*
 xssfinder-annotations/target/*
 xssfinder-core/target/*
+xssfinder-remote/target/*
+xssfinder-remote-java/target/*
 xssfinder-test/target/*

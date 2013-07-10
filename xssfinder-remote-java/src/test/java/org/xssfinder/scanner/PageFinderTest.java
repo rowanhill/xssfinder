@@ -12,21 +12,21 @@ import static org.junit.Assert.assertThat;
 
 public class PageFinderTest {
     @Test(expected=NoPagesFoundException.class)
-    public void pageFinderThrowsExceptionIfNoPagesAreFound() {
+    public void pageFinderThrowsExceptionIfNoPagesAreFound() throws Exception {
         // given
-        PageFinder pageFinder = new PageFinder("org.xssfinder.scanner");
+        PageFinder pageFinder = new PageFinder();
 
         // when
-        pageFinder.findAllPages();
+        pageFinder.findAllPages("org.xssfinder.scanner");
     }
 
     @Test
-    public void pageFinderReturnsClassesAnnotatedWithPage() {
+    public void pageFinderReturnsClassesAnnotatedWithPage() throws Exception {
         // given
-        PageFinder pageFinder = new PageFinder("org.dummytest.simple");
+        PageFinder pageFinder = new PageFinder();
 
         // when
-        Set<Class<?>> pages = pageFinder.findAllPages();
+        Set<Class<?>> pages = pageFinder.findAllPages("org.dummytest.simple");
 
         // then
         Set<Class<?>> expectedPages = ImmutableSet.of(HomePage.class, SecondPage.class);

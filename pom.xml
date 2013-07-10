@@ -13,6 +13,8 @@
         <module>xssfinder-core</module>
         <module>xssfinder-annotations</module>
         <module>xssfinder-test</module>
+        <module>xssfinder-remote</module>
+        <module>xssfinder-remote-java</module>
     </modules>
 
     <dependencyManagement>

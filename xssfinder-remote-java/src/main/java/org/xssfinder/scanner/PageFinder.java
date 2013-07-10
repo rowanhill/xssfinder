@@ -9,14 +9,8 @@ import java.util.Set;
  * Finds all @Page annotated classes on the classpath within a package
  */
 public class PageFinder {
-    private final String packageName;
-
-    public PageFinder(String packageName) {
-        this.packageName = packageName;
-    }
-
-    public Set<Class<?>> findAllPages() {
-        Reflections reflections = new Reflections(this.packageName);
+    public Set<Class<?>> findAllPages(String packageName) throws NoPagesFoundException {
+        Reflections reflections = new Reflections(packageName);
         Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(Page.class);
         if (annotatedClasses.isEmpty()) {
             throw new NoPagesFoundException();
