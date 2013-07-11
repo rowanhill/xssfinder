@@ -1,10 +1,7 @@
 package org.xssfinder.remote;
 
-import org.apache.thrift.TApplicationException;
-import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TMemoryBuffer;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
@@ -16,20 +13,19 @@ import java.util.Set;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
-public class RunnerServerTest {
+public class ExecutorServerTest {
     private static final int PORT = 9090;
 
     @Ignore("Creating more than one TSocket in one test run fails")
     @Test(expected = TTransportException.class)
-    public void runnerClientCannotConnectIfServerIsNotRunning() throws Exception {
+    public void executorClientCannotConnectIfServerIsNotRunning() throws Exception {
         // given
         TTransport transport = new TSocket("localhost", PORT, 5000);
         try {
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
-            Runner.Client client = new Runner.Client(protocol);
+            Executor.Client client = new Executor.Client(protocol);
 
             // when
             client.getPageDefinitions("org.dummytest.simple");
@@ -39,14 +35,14 @@ public class RunnerServerTest {
     }
 
     @Test
-    public void runnerClientConnectsIfServerIsRunning() throws Exception {
+    public void executorClientConnectsIfServerIsRunning() throws Exception {
         // given
         startServerAsync();
         TTransport transport = new TSocket("localhost", PORT, 5000);
         try {
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
-            Runner.Client client = new Runner.Client(protocol);
+            Executor.Client client = new Executor.Client(protocol);
 
             // when
             Set<PageDefinition> pageDefinitions = client.getPageDefinitions("org.dummytest.simple");
@@ -62,9 +58,9 @@ public class RunnerServerTest {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                RunnerServer server;
+                ExecutorServer server;
                 try {
-                    server = new RunnerServer(PORT);
+                    server = new ExecutorServer(PORT);
                     server.serve();
                 } catch (TTransportException e) {
                     e.printStackTrace();

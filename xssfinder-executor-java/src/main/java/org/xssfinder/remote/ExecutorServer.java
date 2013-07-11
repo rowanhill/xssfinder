@@ -9,16 +9,16 @@ import org.xssfinder.scanner.MethodDefinitionFactory;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
 
-public class RunnerServer {
+public class ExecutorServer {
 
     private final TServer server;
 
-    public RunnerServer(int port) throws TTransportException {
-        RunnerHandler handler = new RunnerHandler(
+    public ExecutorServer(int port) throws TTransportException {
+        ExecutorHandler handler = new ExecutorHandler(
                 new PageFinder(),
                 new PageDefinitionFactory(new MethodDefinitionFactory())
         );
-        Runner.Processor<RunnerHandler> processor = new Runner.Processor<RunnerHandler>(handler);
+        Executor.Processor<ExecutorHandler> processor = new Executor.Processor<ExecutorHandler>(handler);
         TServerTransport transport = new TServerSocket(port);
         server = new TSimpleServer(new TServer.Args(transport).processor(processor));
     }

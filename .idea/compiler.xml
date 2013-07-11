@@ -24,8 +24,8 @@
         <processorPath useClasspath="true" />
         <module name="xssfinder-annotations" />
         <module name="xssfinder-core" />
-        <module name="xssfinder-remote" />
-        <module name="xssfinder-remote-java" />
+        <module name="xssfinder-executor" />
+        <module name="xssfinder-executor-java" />
         <module name="xssfinder-test" />
       </profile>
     </annotationProcessing>
@@ -33,6 +33,8 @@
       <module name="xssfinder" target="1.6" />
       <module name="xssfinder-annotations" target="1.6" />
       <module name="xssfinder-core" target="1.6" />
+      <module name="xssfinder-executor" target="1.6" />
+      <module name="xssfinder-executor-java" target="1.6" />
       <module name="xssfinder-remote" target="1.6" />
       <module name="xssfinder-remote-java" target="1.6" />
       <module name="xssfinder-test" target="1.6" />

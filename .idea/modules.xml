@@ -5,8 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/xssfinder.iml" filepath="$PROJECT_DIR$/xssfinder.iml" />
       <module fileurl="file://$PROJECT_DIR$/xssfinder-annotations/xssfinder-annotations.iml" filepath="$PROJECT_DIR$/xssfinder-annotations/xssfinder-annotations.iml" />
       <module fileurl="file://$PROJECT_DIR$/xssfinder-core/xssfinder-core.iml" filepath="$PROJECT_DIR$/xssfinder-core/xssfinder-core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/xssfinder-remote/xssfinder-remote.iml" filepath="$PROJECT_DIR$/xssfinder-remote/xssfinder-remote.iml" />
-      <module fileurl="file://$PROJECT_DIR$/xssfinder-remote-java/xssfinder-remote-java.iml" filepath="$PROJECT_DIR$/xssfinder-remote-java/xssfinder-remote-java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xssfinder-executor/xssfinder-executor.iml" filepath="$PROJECT_DIR$/xssfinder-executor/xssfinder-executor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xssfinder-executor-java/xssfinder-executor-java.iml" filepath="$PROJECT_DIR$/xssfinder-executor-java/xssfinder-executor-java.iml" />
       <module fileurl="file://$PROJECT_DIR$/xssfinder-test/xssfinder-test.iml" filepath="$PROJECT_DIR$/xssfinder-test/xssfinder-test.iml" />
     </modules>
   </component>

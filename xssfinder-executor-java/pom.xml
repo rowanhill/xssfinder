@@ -9,12 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>xssfinder-remote-java</artifactId>
+    <artifactId>xssfinder-executor-java</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>org.xssfinder</groupId>
-            <artifactId>xssfinder-remote</artifactId>
+            <artifactId>xssfinder-executor</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

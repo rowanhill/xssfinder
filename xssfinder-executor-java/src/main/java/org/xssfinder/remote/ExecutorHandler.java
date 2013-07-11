@@ -8,11 +8,11 @@ import org.xssfinder.scanner.PageFinder;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RunnerHandler implements Runner.Iface {
+public class ExecutorHandler implements Executor.Iface {
     private final PageFinder pageFinder;
     private final PageDefinitionFactory pageDefinitionFactory;
 
-    public RunnerHandler(PageFinder pageFinder, PageDefinitionFactory pageDefinitionFactory) {
+    public ExecutorHandler(PageFinder pageFinder, PageDefinitionFactory pageDefinitionFactory) {
         this.pageFinder = pageFinder;
         this.pageDefinitionFactory = pageDefinitionFactory;
     }

@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RunnerHandlerTest {
+public class ExecutorHandlerTest {
     @Mock
     private PageFinder mockPageFinder;
     @Mock
@@ -32,10 +32,10 @@ public class RunnerHandlerTest {
         pageClasses.add(SomePage.class);
         when(mockPageFinder.findAllPages("some.namespace")).thenReturn(pageClasses);
         when(mockPageDefFactory.createPageDefinition(SomePage.class, pageClasses)).thenReturn(mockPageDefinition);
-        RunnerHandler runnerHandler = new RunnerHandler(mockPageFinder, mockPageDefFactory);
+        ExecutorHandler executorHandler = new ExecutorHandler(mockPageFinder, mockPageDefFactory);
 
         // when
-        Set<PageDefinition> pageDefinitions = runnerHandler.getPageDefinitions("some.namespace");
+        Set<PageDefinition> pageDefinitions = executorHandler.getPageDefinitions("some.namespace");
 
         // then
         Set<PageDefinition> expectedDefinitions = ImmutableSet.of(mockPageDefinition);
@@ -48,10 +48,10 @@ public class RunnerHandlerTest {
         PageFinder mockPageFinder = mock(PageFinder.class);
         Set<Class<?>> pageClasses = new HashSet<Class<?>>();
         when(mockPageFinder.findAllPages("some.namespace")).thenReturn(pageClasses);
-        RunnerHandler runnerHandler = new RunnerHandler(mockPageFinder, mockPageDefFactory);
+        ExecutorHandler executorHandler = new ExecutorHandler(mockPageFinder, mockPageDefFactory);
 
         // when
-        runnerHandler.getPageDefinitions("some.namespace");
+        executorHandler.getPageDefinitions("some.namespace");
     }
 
     private static class SomePage {}

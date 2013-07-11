@@ -17,7 +17,7 @@ struct PageDefinition {
   4:optional string startPointUrl,
 }
 
-service Runner {
+service Executor {
   /**
    * Gets definitions of all page objects in the given namespace
    *
