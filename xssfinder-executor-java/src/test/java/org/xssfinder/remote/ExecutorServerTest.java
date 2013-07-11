@@ -38,6 +38,8 @@ public class ExecutorServerTest {
     public void executorClientConnectsIfServerIsRunning() throws Exception {
         // given
         startServerAsync();
+        Thread.sleep(1000); // TODO Find a better way to ensure server is up and running
+
         TTransport transport = new TSocket("localhost", PORT, 5000);
         try {
             transport.open();
