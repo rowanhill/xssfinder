@@ -197,6 +197,9 @@ once the route has finished with `@AfterRoute`.
 
 TODOs
 -----
+1. Investigate splitting control & coordination (generating & running routes, creating XSS attacks, logging results &
+   making reports, etc) from execution (finding pages, invoking traversals) and connecting via Thrift, to allow multiple
+   language implementations of the execution section. See thrift branch.
 1. Record entirety of route that had error
 1. Record errors executing lifecycle event handlers
 1. Pass DriverWrapper to @AfterRoute method
