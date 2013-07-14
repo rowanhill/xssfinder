@@ -16,7 +16,7 @@ public class XssSighting {
     }
 
     public String getVulnerableClassName() {
-        return xssDescriptor.getSubmitMethod().getOwningType().getIdentifier();
+        return xssDescriptor.getSubmitMethod().getOwningTypeIdentifier();
     }
 
     public String getSightingClassName() {

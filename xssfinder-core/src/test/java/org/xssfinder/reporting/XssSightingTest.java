@@ -6,12 +6,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
-import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.xss.XssDescriptor;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,9 +24,7 @@ public class XssSightingTest {
     @Test
     public void vulnerableClassNameIsAvailable() throws Exception {
         // given
-        PageDefinition mockOwningPageDefinition = mock(PageDefinition.class);
-        when(mockOwningPageDefinition.getIdentifier()).thenReturn("pageIdentifier");
-        when(mockMethodDefinition.getOwningType()).thenReturn(mockOwningPageDefinition);
+        when(mockMethodDefinition.getOwningTypeIdentifier()).thenReturn("pageIdentifier");
         when(mockDescriptor.getSubmitMethod()).thenReturn(mockMethodDefinition);
         XssSighting sighting = new XssSighting(mockPageDefinition, mockDescriptor);
 

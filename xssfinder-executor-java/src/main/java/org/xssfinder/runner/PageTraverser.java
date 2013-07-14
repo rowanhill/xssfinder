@@ -3,12 +3,12 @@ package org.xssfinder.runner;
 import org.xssfinder.CustomSubmitter;
 import org.xssfinder.CustomTraverser;
 import org.xssfinder.LabelledXssGenerator;
-import org.xssfinder.remote.MethodDefinition;
-import org.xssfinder.reporting.XssJournal;
-import org.xssfinder.routing.PageTraversal;
+import org.xssfinder.remote.TraversalMode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 class PageTraverser {
     private final CustomTraverserInstantiator traverserInstantiator;
@@ -30,17 +30,15 @@ class PageTraverser {
      * if possible or via a custom traverser if instructed.
      *
      * @param page The current page object
-     * @param traversal The traversal from the current page object to the next
-     * @param xssJournal The journal in which to record any XSS attacks made
-     * @return The page object resulting from the traversal
+     * @param method The method from the current page object to the next
+     * @param traversalMode The mode in which the traversal should be made - controls which annotations are observed
+     * @return A result object containing the page object resulting from the traversal plus any XSS attacks made
      */
-    public Object traverse(Object page, PageTraversal traversal, XssJournal xssJournal) {
-        MethodDefinition method = traversal.getMethod();
-
+    public TraversalResult traverse(Object page, Method method, TraversalMode traversalMode) {
         CustomTraverser customTraverser = null;
         CustomSubmitter customSubmitter = null;
         boolean methodMustHaveNoArgs;
-        if (traversal.getTraversalMode() == PageTraversal.TraversalMode.NORMAL) {
+        if (traversalMode == TraversalMode.NORMAL) {
             customTraverser = traverserInstantiator.instantiate(method);
             methodMustHaveNoArgs = customTraverser == null;
         } else {
@@ -48,26 +46,29 @@ class PageTraverser {
             methodMustHaveNoArgs = customSubmitter == null;
         }
 
-        if (method.isParameterised() && methodMustHaveNoArgs) {
+        if (method.getParameterTypes().length > 0 && methodMustHaveNoArgs) {
             throw new UntraversableException("Cannot traverse methods that take parameters");
         }
 
         try {
-            if (traversal.getTraversalMode() == PageTraversal.TraversalMode.NORMAL) {
+            Object newPage;
+            Map<String, String> inputIdsToAttackIds = new HashMap<String, String>();
+            if (traversalMode == TraversalMode.NORMAL) {
                 if (customTraverser != null) {
-                    return customTraverser.traverse(page);
+                    newPage = customTraverser.traverse(page);
                 } else {
-                    return invokeNoArgsMethod(page, method);
+                    newPage = invokeNoArgsMethod(page, method);
                 }
             } else {
                 if (customSubmitter != null) {
-                    LabelledXssGenerator generator =
-                            labelledXssGeneratorFactory.createLabelledXssGenerator(traversal, xssJournal);
-                    return customSubmitter.submit(page, generator);
+                    LabelledXssGenerator generator = null;
+                            //qq labelledXssGeneratorFactory.createLabelledXssGenerator(traversal, xssJournal);
+                    newPage = customSubmitter.submit(page, generator);
                 } else {
-                    return invokeNoArgsMethod(page, method);
+                    newPage = invokeNoArgsMethod(page, method);
                 }
             }
+            return new TraversalResult(newPage, inputIdsToAttackIds);
         } catch (Exception e) {
             throw new UntraversableException(e);
         }

@@ -61,6 +61,21 @@
             <artifactId>hamcrest-all</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock</artifactId>
+            <scope>test</scope>
+            <!-- Include this if you have dependency conflicts for Guava, Jetty, Jackson or Apache HTTP Client -->
+            <classifier>standalone</classifier>
+        </dependency>
+        <!-- The following dependency is required by wiremock, to satisfy a reference to
+             org.w3c.dom.ElementTraversal
+             Also note that version 2 doesn't satisfy this dependency -->
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
