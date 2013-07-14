@@ -1,15 +1,11 @@
 package org.xssfinder.routing;
 
-import org.xssfinder.reflection.Instantiator;
-
 import java.util.LinkedList;
 
 public class RouteFactory {
-    private final Instantiator instantiator;
     private final PageTraversalFactory pageTraversalFactory;
 
-    public RouteFactory(Instantiator instantiator, PageTraversalFactory pageTraversalFactory) {
-        this.instantiator = instantiator;
+    public RouteFactory(PageTraversalFactory pageTraversalFactory) {
         this.pageTraversalFactory = pageTraversalFactory;
     }
 
@@ -17,7 +13,7 @@ public class RouteFactory {
         LinkedList<GraphNode> routeNodes = new LinkedList<GraphNode>();
         PageTraversal nextTraversal = buildPageTraversalsEndingInNode(graphNode, routeNodes);
         GraphNode firstNode = routeNodes.getFirst();
-        return new Route(firstNode.getPageDescriptor(), nextTraversal, instantiator, pageTraversalFactory);
+        return new Route(firstNode.getPageDescriptor(), nextTraversal, pageTraversalFactory);
     }
 
     private PageTraversal buildPageTraversalsEndingInNode(GraphNode node, LinkedList<GraphNode> routeNodes) {

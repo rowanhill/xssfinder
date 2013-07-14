@@ -1,6 +1,5 @@
 package org.xssfinder.routing;
 
-import org.xssfinder.reflection.*;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
 
@@ -13,19 +12,16 @@ import java.util.Set;
 public class Route {
     private final PageDescriptor rootPageDescriptor;
     private final String url;
-    private final Instantiator instantiator;
     private final PageTraversalFactory pageTraversalFactory;
     private PageTraversal pageTraversal;
 
     public Route(
             PageDescriptor rootPageDescriptor,
             PageTraversal pageTraversal,
-            Instantiator instantiator,
             PageTraversalFactory pageTraversalFactory
     ) {
         this.rootPageDescriptor = rootPageDescriptor;
         this.url = rootPageDescriptor.getCrawlStartPointUrl();
-        this.instantiator = instantiator;
         this.pageTraversalFactory = pageTraversalFactory;
         this.pageTraversal = pageTraversal;
     }
@@ -104,6 +100,6 @@ public class Route {
     @Override
     public Route clone() {
         PageTraversal traversal = pageTraversal == null ? null : pageTraversal.clone();
-        return new Route(rootPageDescriptor, traversal, instantiator, pageTraversalFactory);
+        return new Route(rootPageDescriptor, traversal, pageTraversalFactory);
     }
 }

@@ -51,4 +51,9 @@ public class ExecutorHandler implements Executor.Iface {
     public int getFormCount() throws TException {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public Map<String, String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

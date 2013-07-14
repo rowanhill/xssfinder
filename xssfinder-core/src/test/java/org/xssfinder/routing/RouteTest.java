@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.xssfinder.reflection.Instantiator;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
 
@@ -23,8 +22,6 @@ public class RouteTest {
 
     @Mock
     private PageTraversal mockPageTraversal;
-    @Mock
-    private Instantiator mockInstantiator;
     @Mock
     private PageDescriptor mockPageDescriptor;
     @Mock
@@ -55,7 +52,7 @@ public class RouteTest {
     @Test
     public void rootPageClassIsAvailable() {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         PageDefinition rootPageClass = route.getRootPageClass();
@@ -67,7 +64,7 @@ public class RouteTest {
     @Test
     public void rootPageDescriptorIsAvailable() {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         PageDescriptor descriptor = route.getRootPageDescriptor();
@@ -80,7 +77,7 @@ public class RouteTest {
     public void urlIsTakenFromRootPage() {
         // given
         when(mockPageDescriptor.getCrawlStartPointUrl()).thenReturn(ROOT_PAGE_URL);
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         String url = route.getUrl();
@@ -92,7 +89,7 @@ public class RouteTest {
     @Test
     public void pageTraversalIsAvailable() {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         PageTraversal traversal = route.getPageTraversal();
@@ -104,7 +101,7 @@ public class RouteTest {
     @Test
     public void lastPageTraversalIsNullIfFirstPageTraversalIsNull() {
         // given
-        Route route = new Route(mockPageDescriptor, null, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, null, mockPageTraversalFactory);
 
         // when
         PageTraversal traversal = route.getLastPageTraversal();
@@ -116,7 +113,7 @@ public class RouteTest {
     @Test
     public void lastPageTraversalIsFirstPageTraversalIfItHasNoSubsequentTraversal() {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         PageTraversal traversal = route.getLastPageTraversal();
@@ -130,7 +127,7 @@ public class RouteTest {
         // given
         PageTraversal mockPageTraversal2 = mock(PageTraversal.class);
         when(mockPageTraversal.getNextTraversal()).thenReturn(mockPageTraversal2);
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         PageTraversal traversal = route.getLastPageTraversal();
@@ -142,7 +139,7 @@ public class RouteTest {
     @Test
     public void appendingTraversalToNullTraversalSetsNewTraversalFromRoot() throws Exception {
         // given
-        Route route = new Route(mockPageDescriptor, null, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, null, mockPageTraversalFactory);
         PageTraversal.TraversalMode traversalMode = PageTraversal.TraversalMode.NORMAL;
         when(mockPageTraversalFactory.createTraversal(mockCircularMethodDefinition, mockPageDescriptor, traversalMode))
                 .thenReturn(mockNextPageTraversal);
@@ -157,7 +154,7 @@ public class RouteTest {
     @Test
     public void appendingTraversalToNonNullTraversalSetsNextTraversal() throws Exception {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
         PageTraversal.TraversalMode traversalMode = PageTraversal.TraversalMode.NORMAL;
         when(mockPageTraversalFactory.createTraversal(mockCircularMethodDefinition, mockPageDescriptor, traversalMode))
                 .thenReturn(mockNextPageTraversal);
@@ -172,7 +169,7 @@ public class RouteTest {
     @Test
     public void cloneHasSameRootClass() {
         // given
-        Route route = new Route(mockPageDescriptor, null, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, null, mockPageTraversalFactory);
 
         // when
         Route clonedRoute = route.clone();
@@ -184,7 +181,7 @@ public class RouteTest {
     @Test
     public void cloneHasNullTraversalIfOriginalDoes() {
         // given
-        Route route = new Route(mockPageDescriptor, null, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, null, mockPageTraversalFactory);
 
         // when
         Route clonedRoute = route.clone();
@@ -198,7 +195,7 @@ public class RouteTest {
         // given
         PageTraversal mockCloneTraversal = mock(PageTraversal.class);
         when(mockPageTraversal.clone()).thenReturn(mockCloneTraversal);
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         Route clonedRoute = route.clone();
@@ -212,7 +209,7 @@ public class RouteTest {
     @Test
     public void createsLifecycleHandler() throws Exception {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
         LifecycleHandler mockHandler = mock(LifecycleHandler.class);
         when(mockInstantiator.instantiate(LifecycleHandler.class)).thenReturn(mockHandler);
 
@@ -226,7 +223,7 @@ public class RouteTest {
     @Test(expected=LifecycleEventException.class)
     public void throwsExceptionIfCreatingLifecycleHandlerFails() throws Exception {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
         when(mockInstantiator.instantiate(LifecycleHandler.class)).thenThrow(new InstantiationException(null));
 
         // when
@@ -238,7 +235,7 @@ public class RouteTest {
         // given
         //noinspection unchecked
         //qq when(mockPageDescriptor.getPageClass()).thenReturn((Class) PageWithoutLifecycleHandler.class);
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         Object handler = route.createLifecycleHandler();
@@ -246,7 +243,7 @@ public class RouteTest {
         // then
         assertThat(handler, is(nullValue()));
         //noinspection unchecked
-        verify(mockInstantiator, never()).instantiate(any(Class.class));
+        verify(never()).instantiate(any(Class.class));
     }
     */
 
@@ -257,7 +254,7 @@ public class RouteTest {
                 mockSubmitMethodDefinition,
                 mockPageDescriptor,
                 PageTraversal.TraversalMode.SUBMIT);
-        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, traversal, mockPageTraversalFactory);
 
         // when
         Set<MethodDefinition> submitMethods = route.getTraversedSubmitMethods();
@@ -276,7 +273,7 @@ public class RouteTest {
                 mockSubmitMethodDefinition,
                 mockPageDescriptor,
                 PageTraversal.TraversalMode.NORMAL);
-        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, traversal, mockPageTraversalFactory);
 
         // when
         Set<MethodDefinition> submitMethods = route.getTraversedSubmitMethods();
@@ -294,7 +291,7 @@ public class RouteTest {
                 mockCircularMethodDefinition,
                 mockPageDescriptor,
                 PageTraversal.TraversalMode.NORMAL);
-        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, traversal, mockPageTraversalFactory);
 
         // when
         Set<MethodDefinition> submitMethods = route.getTraversedSubmitMethods();
@@ -312,7 +309,7 @@ public class RouteTest {
                 mockCircularMethodDefinition,
                 mockPageDescriptor,
                 PageTraversal.TraversalMode.SUBMIT);
-        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, traversal, mockPageTraversalFactory);
 
         // when
         Set<MethodDefinition> submitMethods = route.getTraversedSubmitMethods();
