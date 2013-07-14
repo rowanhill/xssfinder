@@ -9,11 +9,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.xssfinder.runner.DefaultHtmlUnitDriverWrapper;
+import org.xssfinder.runner.ExecutorContext;
 import org.xssfinder.scanner.MethodDefinitionFactory;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
-import org.xssfinder.xss.XssAttackFactory;
-import org.xssfinder.xss.XssGenerator;
 
 import java.util.Set;
 
@@ -32,9 +31,8 @@ public class ExecutorServerTest {
                 new PageDefinitionFactory(
                         new MethodDefinitionFactory()
                 ),
-                new DefaultHtmlUnitDriverWrapper(),
-                new XssGenerator(
-                        new XssAttackFactory()
+                new ExecutorContext(
+                        new DefaultHtmlUnitDriverWrapper()
                 )
         );
     }

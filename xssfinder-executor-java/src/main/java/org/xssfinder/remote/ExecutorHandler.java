@@ -2,6 +2,7 @@ package org.xssfinder.remote;
 
 import org.apache.thrift.TException;
 import org.xssfinder.runner.DriverWrapper;
+import org.xssfinder.runner.ExecutorContext;
 import org.xssfinder.scanner.NoPagesFoundException;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
@@ -14,19 +15,15 @@ import java.util.Set;
 public class ExecutorHandler implements Executor.Iface {
     private final PageFinder pageFinder;
     private final PageDefinitionFactory pageDefinitionFactory;
-    private final DriverWrapper driverWrapper;
-    private final XssGenerator xssGenerator;
+    private final ExecutorContext executorContext;
 
     public ExecutorHandler(
             PageFinder pageFinder,
             PageDefinitionFactory pageDefinitionFactory,
-            DriverWrapper driverWrapper,
-            XssGenerator xssGenerator
-    ) {
+            ExecutorContext executorContext) {
         this.pageFinder = pageFinder;
         this.pageDefinitionFactory = pageDefinitionFactory;
-        this.driverWrapper = driverWrapper;
-        this.xssGenerator = xssGenerator;
+        this.executorContext = executorContext;
     }
 
     @Override
@@ -45,22 +42,25 @@ public class ExecutorHandler implements Executor.Iface {
 
     @Override
     public void startRoute(String pageIdentifier) throws TException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        executorContext.visitUrlOfRootPage(pageIdentifier);
     }
 
     @Override
     public Map<String, String> putXssAttackStringsInInputs() throws TException {
-        return driverWrapper.putXssAttackStringsInInputs(xssGenerator);
+        //return driverWrapper.putXssAttackStringsInInputs(xssGenerator);
+        return null;
     }
 
     @Override
     public Set<String> getCurrentXssIds() throws TException {
-        return driverWrapper.getCurrentXssIds();
+        // return driverWrapper.getCurrentXssIds();
+        return null;
     }
 
     @Override
     public int getFormCount() throws TException {
-        return driverWrapper.getFormCount();
+        // return driverWrapper.getFormCount();
+        return 0;
     }
 
     @Override
