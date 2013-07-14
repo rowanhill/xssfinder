@@ -54,5 +54,47 @@ public class ExecutorHandlerTest {
         executorHandler.getPageDefinitions("some.namespace");
     }
 
+        /*
+    @Test
+    public void createsLifecycleHandler() throws Exception {
+        // given
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
+        LifecycleHandler mockHandler = mock(LifecycleHandler.class);
+        when(mockInstantiator.instantiate(LifecycleHandler.class)).thenReturn(mockHandler);
+
+        // when
+        Object handler = route.createLifecycleHandler();
+
+        // then
+        assertThat(handler, is((Object)mockHandler));
+    }
+
+    @Test(expected=LifecycleEventException.class)
+    public void throwsExceptionIfCreatingLifecycleHandlerFails() throws Exception {
+        // given
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
+        when(mockInstantiator.instantiate(LifecycleHandler.class)).thenThrow(new InstantiationException(null));
+
+        // when
+        route.createLifecycleHandler();
+    }
+
+    @Test
+    public void createsNullLifecycleHandlerIfNoneSpecified() throws Exception {
+        // given
+        //noinspection unchecked
+        when(mockPageDescriptor.getPageClass()).thenReturn((Class) PageWithoutLifecycleHandler.class);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
+
+        // when
+        Object handler = route.createLifecycleHandler();
+
+        // then
+        assertThat(handler, is(nullValue()));
+        //noinspection unchecked
+        verify(never()).instantiate(any(Class.class));
+    }
+    */
+
     private static class SomePage {}
 }

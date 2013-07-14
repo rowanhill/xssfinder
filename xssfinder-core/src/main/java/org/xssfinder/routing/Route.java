@@ -66,24 +66,6 @@ public class Route {
         }
     }
 
-    public Object createLifecycleHandler() {
-        //qq
-        /*
-        PageDefinition pageClass = getRootPageClass();
-        Class<?> handlerClass = startPointAnnotation.lifecycleHandler();
-        if (handlerClass == Object.class) {
-            // Object is the default lifecycle handler; it indicates that no handler has been set, so we return null
-            return null;
-        }
-        try {
-            return instantiator.instantiate(handlerClass);
-        } catch (InstantiationException ex) {
-            throw new LifecycleEventException(ex);
-        }
-        */
-        return null;
-    }
-
     public Set<MethodDefinition> getTraversedSubmitMethods() {
         Set<MethodDefinition> usedMethods = new HashSet<MethodDefinition>();
         PageTraversal traversal = getPageTraversal();

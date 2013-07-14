@@ -204,49 +204,6 @@ public class RouteTest {
         assertThat(clonedRoute.getPageTraversal(), is(mockCloneTraversal));
     }
 
-    //qq uncomment and fix once lifecycle events are Thrifty
-    /*
-    @Test
-    public void createsLifecycleHandler() throws Exception {
-        // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
-        LifecycleHandler mockHandler = mock(LifecycleHandler.class);
-        when(mockInstantiator.instantiate(LifecycleHandler.class)).thenReturn(mockHandler);
-
-        // when
-        Object handler = route.createLifecycleHandler();
-
-        // then
-        assertThat(handler, is((Object)mockHandler));
-    }
-
-    @Test(expected=LifecycleEventException.class)
-    public void throwsExceptionIfCreatingLifecycleHandlerFails() throws Exception {
-        // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
-        when(mockInstantiator.instantiate(LifecycleHandler.class)).thenThrow(new InstantiationException(null));
-
-        // when
-        route.createLifecycleHandler();
-    }
-
-    @Test
-    public void createsNullLifecycleHandlerIfNoneSpecified() throws Exception {
-        // given
-        //noinspection unchecked
-        //qq when(mockPageDescriptor.getPageClass()).thenReturn((Class) PageWithoutLifecycleHandler.class);
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
-
-        // when
-        Object handler = route.createLifecycleHandler();
-
-        // then
-        assertThat(handler, is(nullValue()));
-        //noinspection unchecked
-        verify(never()).instantiate(any(Class.class));
-    }
-    */
-
     @Test
     public void returnsTraversedSubmitMethods() throws Exception {
         // given
@@ -319,22 +276,4 @@ public class RouteTest {
         );
         assertThat(submitMethods, is(expectedMethods));
     }
-
-    // qq replace with mocks once life cycle events are done via Thrift
-    /*
-    @SuppressWarnings("UnusedDeclaration")
-    @Page
-    @CrawlStartPoint(url=ROOT_PAGE_URL, lifecycleHandler=LifecycleHandler.class)
-    private static class RootPage {
-        public RootPage circularLink() { return null; }
-        @SubmitAction
-        public RootPage submit() { return null; }
-    }
-
-    private static class LifecycleHandler {}
-
-    @SuppressWarnings("UnusedDeclaration")
-    @CrawlStartPoint(url=ROOT_PAGE_URL)
-    private static class PageWithoutLifecycleHandler { }
-    */
 }

@@ -60,5 +60,18 @@ public class ExecutorHandler implements Executor.Iface {
     @Override
     public void invokeAfterRouteHandler() throws TException {
         //To change body of implemented methods use File | Settings | File Templates.
+        /*
+        PageDefinition pageClass = getRootPageClass();
+        Class<?> handlerClass = startPointAnnotation.lifecycleHandler();
+        if (handlerClass == Object.class) {
+            // Object is the default lifecycle handler; it indicates that no handler has been set, so we return null
+            return null;
+        }
+        try {
+            return instantiator.instantiate(handlerClass);
+        } catch (InstantiationException ex) {
+            throw new LifecycleEventException(ex);
+        }
+        */
     }
 }
