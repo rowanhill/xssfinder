@@ -21,16 +21,13 @@ public class MethodDefinitionFactory {
         PageDefinition returnType = getPageDefinition(
                 pageDefinitionCache, pageDefinitionFactory, knownPageClasses, returnTypeClass);
         Class<?> owningTypeClass = method.getDeclaringClass();
-        PageDefinition owningType = getPageDefinition(
-                pageDefinitionCache, pageDefinitionFactory, knownPageClasses, owningTypeClass
-        );
         boolean hasArgs = method.getParameterTypes().length > 0;
         boolean isSubmit = method.isAnnotationPresent(SubmitAction.class);
         boolean hasCustomTraverser = method.isAnnotationPresent(TraverseWith.class);
         return new MethodDefinition(
                 identifier,
                 returnType,
-                owningType,
+                owningTypeClass.getCanonicalName(),
                 hasArgs,
                 isSubmit,
                 hasCustomTraverser

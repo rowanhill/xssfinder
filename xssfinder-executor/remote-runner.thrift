@@ -5,7 +5,7 @@ struct PageDefinition {}
 struct MethodDefinition {
   1:string identifier,
   2:PageDefinition returnType,
-  3:PageDefinition owningType,
+  3:string owningTypeIdentifier,
   4:bool parameterised,
   5:bool submitAnnotated,
   6:bool customTraversed,
