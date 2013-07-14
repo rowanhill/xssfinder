@@ -1,12 +1,10 @@
 package org.xssfinder.remote;
 
 import org.apache.thrift.TException;
-import org.xssfinder.runner.DriverWrapper;
 import org.xssfinder.runner.ExecutorContext;
 import org.xssfinder.scanner.NoPagesFoundException;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
-import org.xssfinder.xss.XssGenerator;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -47,20 +45,17 @@ public class ExecutorHandler implements Executor.Iface {
 
     @Override
     public Map<String, String> putXssAttackStringsInInputs() throws TException {
-        //return driverWrapper.putXssAttackStringsInInputs(xssGenerator);
-        return null;
+        return executorContext.putXssAttackStringsInInputs();
     }
 
     @Override
     public Set<String> getCurrentXssIds() throws TException {
-        // return driverWrapper.getCurrentXssIds();
-        return null;
+        return executorContext.getCurrentXssIds();
     }
 
     @Override
     public int getFormCount() throws TException {
-        // return driverWrapper.getFormCount();
-        return 0;
+        return executorContext.getFormCount();
     }
 
     @Override

@@ -2,17 +2,14 @@ package org.xssfinder.remote;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.xssfinder.runner.DriverWrapper;
 import org.xssfinder.runner.ExecutorContext;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
-import org.xssfinder.xss.XssGenerator;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -73,12 +70,11 @@ public class ExecutorHandlerTest {
         verify(mockExecutorContext).visitUrlOfRootPage("pageId");
     }
 
-    @Ignore("Move to context")
     @Test
-    public void puttingXssAttackStringsInInputsIsDelegatedToDriverWrapper() throws Exception {
+    public void puttingXssAttackStringsInInputsIsDelegatedToExecutorContext() throws Exception {
         // given
         Map<String, String> givenInputIdsToAttackIds = ImmutableMap.of("foo", "bar");
-        // when(mockDriverWrapper.putXssAttackStringsInInputs(mockXssGenerator)).thenReturn(givenInputIdsToAttackIds);
+        when(mockExecutorContext.putXssAttackStringsInInputs()).thenReturn(givenInputIdsToAttackIds);
 
         // when
         Map<String, String> inputIdsToAttackIds = executorHandler.putXssAttackStringsInInputs();
@@ -87,12 +83,11 @@ public class ExecutorHandlerTest {
         assertThat(inputIdsToAttackIds, is(givenInputIdsToAttackIds));
     }
 
-    @Ignore("Move to context")
     @Test
-    public void gettingCurrentXssIdsIsDelegatedToDriverWrapper() throws Exception {
+    public void gettingCurrentXssIdsIsDelegatedToExecutorContext() throws Exception {
         // given
         Set<String> givenIds = ImmutableSet.of("foo");
-        //when(mockDriverWrapper.getCurrentXssIds()).thenReturn(givenIds);
+        when(mockExecutorContext.getCurrentXssIds()).thenReturn(givenIds);
 
         // when
         Set<String> xssIds = executorHandler.getCurrentXssIds();
@@ -101,12 +96,11 @@ public class ExecutorHandlerTest {
         assertThat(xssIds, is(givenIds));
     }
 
-    @Ignore("Move to context")
     @Test
-    public void gettingFormCountIsDelegatedToDriverWrapper() throws Exception {
+    public void gettingFormCountIsDelegatedToExecutorContext() throws Exception {
         // given
         int givenFormCount = 3;
-        //when(mockDriverWrapper.getFormCount()).thenReturn(givenFormCount);
+        when(mockExecutorContext.getFormCount()).thenReturn(givenFormCount);
 
         // when
         int formCount =  executorHandler.getFormCount();

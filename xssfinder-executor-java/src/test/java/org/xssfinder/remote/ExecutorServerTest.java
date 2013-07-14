@@ -13,6 +13,8 @@ import org.xssfinder.runner.ExecutorContext;
 import org.xssfinder.scanner.MethodDefinitionFactory;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.xss.XssAttackFactory;
+import org.xssfinder.xss.XssGenerator;
 
 import java.util.Set;
 
@@ -32,7 +34,10 @@ public class ExecutorServerTest {
                         new MethodDefinitionFactory()
                 ),
                 new ExecutorContext(
-                        new DefaultHtmlUnitDriverWrapper()
+                        new DefaultHtmlUnitDriverWrapper(),
+                        new XssGenerator(
+                                new XssAttackFactory()
+                        )
                 )
         );
     }
