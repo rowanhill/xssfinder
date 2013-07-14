@@ -8,8 +8,8 @@ import org.apache.thrift.transport.TTransportException;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.xssfinder.runner.DefaultHtmlUnitDriverWrapper;
-import org.xssfinder.runner.ExecutorContext;
+import org.xssfinder.reflection.Instantiator;
+import org.xssfinder.runner.*;
 import org.xssfinder.scanner.MethodDefinitionFactory;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
@@ -37,6 +37,15 @@ public class ExecutorServerTest {
                         new DefaultHtmlUnitDriverWrapper(),
                         new XssGenerator(
                                 new XssAttackFactory()
+                        ),
+                        new PageTraverser(
+                                new CustomTraverserInstantiator(
+                                        new Instantiator()
+                                ),
+                                new CustomSubmitterInstantiator(
+                                        new Instantiator()
+                                ),
+                                null
                         )
                 )
         );

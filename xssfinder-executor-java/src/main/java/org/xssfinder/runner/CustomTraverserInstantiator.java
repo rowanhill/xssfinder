@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 /**
  * Creates custom traversers from @TraverseWith annotations
  */
-class CustomTraverserInstantiator {
+public class CustomTraverserInstantiator {
     private final Instantiator instantiator;
 
     public CustomTraverserInstantiator(Instantiator instantiator) {

@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-class PageTraverser {
+public class PageTraverser {
     private final CustomTraverserInstantiator traverserInstantiator;
     private final CustomSubmitterInstantiator submitterInstantiator;
     private final LabelledXssGeneratorFactory labelledXssGeneratorFactory;

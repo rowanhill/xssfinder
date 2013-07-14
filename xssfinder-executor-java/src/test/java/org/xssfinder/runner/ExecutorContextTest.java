@@ -2,19 +2,23 @@ package org.xssfinder.runner;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
+import org.xssfinder.remote.TraversalMode;
 import org.xssfinder.xss.XssGenerator;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,9 +30,22 @@ public class ExecutorContextTest {
     private DriverWrapper mockDriverWrapper;
     @Mock
     private XssGenerator mockXssGenerator;
+    @Mock
+    private PageTraverser mockPageTraverser;
+    @Mock
+    private PageInstantiator mockPageInstantiator;
 
-    @InjectMocks
+    @Mock
+    private HomePage mockHomePage;
+
     private ExecutorContext context;
+
+    @Before
+    public void setUp() {
+        when(mockDriverWrapper.getPageInstantiator()).thenReturn(mockPageInstantiator);
+        when(mockPageInstantiator.instantiatePage(HomePage.class)).thenReturn(mockHomePage);
+        context = new ExecutorContext(mockDriverWrapper, mockXssGenerator, mockPageTraverser);
+    }
 
     @Test
     public void visitingUrlOfRootPageIsDelegatedToDriverWrapper() {
@@ -42,6 +59,20 @@ public class ExecutorContextTest {
 
         // then
         verify(mockDriverWrapper).visit(HOME_PAGE_URL);
+    }
+
+    @Test
+    public void visitingRootPageInstantiatesPage() {
+        // given
+        String pageId = "HomePage";
+        Class<?> pageClass = HomePage.class;
+        context.addPageMapping(pageId, pageClass);
+
+        // when
+        context.visitUrlOfRootPage(pageId);
+
+        // then
+        verify(mockPageInstantiator).instantiatePage(HomePage.class);
     }
 
     @Test
@@ -77,12 +108,38 @@ public class ExecutorContextTest {
         when(mockDriverWrapper.getFormCount()).thenReturn(givenFormCount);
 
         // when
-        int formCount =  context.getFormCount();
+        int formCount = context.getFormCount();
 
         // then
         assertThat(formCount, is(givenFormCount));
     }
 
+    @Test
+    public void traversingMethodDelegatesToPageTraverser() throws Exception {
+        // given
+        Method method = HomePage.class.getMethod("goToSecondPage");
+        TraversalResult mockTraversalResult = mock(TraversalResult.class);
+        when(mockPageTraverser.traverse(mockHomePage, method, TraversalMode.NORMAL)).thenReturn(mockTraversalResult);
+        visitHomePage();
+
+        // when
+        TraversalResult traversalResult = context.traverseMethod(method, TraversalMode.NORMAL);
+
+        // then
+        assertThat(traversalResult, is(mockTraversalResult));
+    }
+
+    private void visitHomePage() {
+        String pageId = "HomePage";
+        Class<?> pageClass = HomePage.class;
+        context.addPageMapping(pageId, pageClass);
+        context.visitUrlOfRootPage(pageId);
+    }
+
     @CrawlStartPoint(url=HOME_PAGE_URL)
-    private static class HomePage {}
+    private static class HomePage {
+        public SecondPage goToSecondPage() { return null; }
+    }
+
+    private static class SecondPage {}
 }
