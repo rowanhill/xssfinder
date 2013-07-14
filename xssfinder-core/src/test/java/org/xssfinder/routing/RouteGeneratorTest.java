@@ -6,8 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.xssfinder.CrawlStartPoint;
-import org.xssfinder.Page;
 import org.xssfinder.remote.PageDefinition;
 
 import java.util.List;
@@ -43,11 +41,4 @@ public class RouteGeneratorTest {
         // then
         assertThat(routes, is(graphRoutes));
     }
-
-    @Page
-    private class OrdinaryPage {}
-
-    @Page
-    @CrawlStartPoint(url="")
-    private class StartPage {}
 }

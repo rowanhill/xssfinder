@@ -6,17 +6,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.xssfinder.CrawlStartPoint;
-import org.xssfinder.Page;
-import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
 
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.xssfinder.testhelper.MockPageDefinitionBuilder.mockPageDefinition;
 
 @RunWith(MockitoJUnitRunner.class)

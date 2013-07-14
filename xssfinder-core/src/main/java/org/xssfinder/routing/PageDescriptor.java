@@ -1,12 +1,8 @@
 package org.xssfinder.routing;
 
-import org.xssfinder.CrawlStartPoint;
-import org.xssfinder.Page;
-import org.xssfinder.SubmitAction;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
 
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
