@@ -11,18 +11,15 @@ import java.util.List;
 class RoutePageStrategyRunner {
     private final ExecutorWrapper executor;
     private final PageContextFactory contextFactory;
-    private final LifecycleEventExecutor lifecycleEventExecutor;
     private final RouteRunErrorContextFactory errorContextFactory;
 
     public RoutePageStrategyRunner(
             ExecutorWrapper executor,
             PageContextFactory contextFactory,
-            LifecycleEventExecutor lifecycleEventExecutor,
             RouteRunErrorContextFactory errorContextFactory
     ) {
         this.executor = executor;
         this.contextFactory = contextFactory;
-        this.lifecycleEventExecutor = lifecycleEventExecutor;
         this.errorContextFactory = errorContextFactory;
     }
 
@@ -40,12 +37,9 @@ class RoutePageStrategyRunner {
     }
 
     private void runRoute(Route route, XssJournal xssJournal, List<PageStrategy> pageStrategies) {
-        Object lifecycleHandler = null;
         PageContext pageContext = null;
         try {
             executor.visit(route.getUrl());
-
-            lifecycleHandler = route.createLifecycleHandler();
 
             pageContext = contextFactory.createContext(executor, route, xssJournal);
             while (pageContext.hasNextContext()) {
@@ -57,7 +51,7 @@ class RoutePageStrategyRunner {
             RouteRunErrorContext errorContext = errorContextFactory.createErrorContext(e, pageContext);
             xssJournal.addErrorContext(errorContext);
         } finally {
-            invokeAfterRouteIfNeeded(lifecycleHandler, pageContext);
+            invokeAfterRouteIfNeeded(pageContext);
         }
     }
 
@@ -67,12 +61,12 @@ class RoutePageStrategyRunner {
         }
     }
 
-    private void invokeAfterRouteIfNeeded(Object lifecycleHandler, PageContext pageContext) {
+    private void invokeAfterRouteIfNeeded(PageContext pageContext) {
         if (pageContext == null) {
             return;
         }
         try {
-            lifecycleEventExecutor.afterRoute(lifecycleHandler, pageContext.getPageDefinition());
+            executor.invokeAfterRouteHandler();
         } catch (Exception e) {
             // Do nothing... for now
         }

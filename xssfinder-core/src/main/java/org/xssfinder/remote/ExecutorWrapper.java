@@ -66,4 +66,13 @@ public class ExecutorWrapper implements Executor.Iface {
             throw new CommunicationsException(e);
         }
     }
+
+    @Override
+    public void invokeAfterRouteHandler() {
+        try {
+            innerExecutor.invokeAfterRouteHandler();
+        } catch (TException e) {
+            throw new CommunicationsException(e);
+        }
+    }
 }

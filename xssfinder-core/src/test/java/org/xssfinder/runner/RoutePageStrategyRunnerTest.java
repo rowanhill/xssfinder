@@ -33,10 +33,6 @@ public class RoutePageStrategyRunnerTest {
     @Mock
     private XssJournal mockXssJournal;
     @Mock
-    private Object mockLifecycleHandler;
-    @Mock
-    private LifecycleEventExecutor mockLifecycleEventExecutor;
-    @Mock
     private RouteRunErrorContextFactory mockErrorContextFactory;
     @Mock
     private PageDefinition mockPageDefinition;
@@ -51,13 +47,11 @@ public class RoutePageStrategyRunnerTest {
         when(mockPageContextFactory.createContext(mockExecutor, mockRoute, mockXssJournal)).thenReturn(mockPageContext);
         when(mockPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
         when(mockRoute.getUrl()).thenReturn(URL);
-        when(mockRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
         routes.add(mockRoute);
 
         runner = new RoutePageStrategyRunner(
                 mockExecutor,
                 mockPageContextFactory,
-                mockLifecycleEventExecutor,
                 mockErrorContextFactory
         );
     }
@@ -95,10 +89,10 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockLifecycleEventExecutor);
+        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockExecutor);
         inOrder.verify(mockStrategy1).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
-        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPageDefinition);
+        inOrder.verify(mockExecutor).invokeAfterRouteHandler();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -119,12 +113,12 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockLifecycleEventExecutor);
+        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockExecutor);
         inOrder.verify(mockStrategy1).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy1).processPage(mockNextContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockNextContext, mockXssJournal);
-        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockNextPage);
+        inOrder.verify(mockExecutor).invokeAfterRouteHandler();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -138,7 +132,6 @@ public class RoutePageStrategyRunnerTest {
         when(mockPageContextFactory.createContext(mockExecutor, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
         when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
         when(mockOtherRoute.getUrl()).thenReturn(URL);
-        when(mockOtherRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
         routes.add(mockOtherRoute);
         when(mockPageContext.hasNextContext()).thenReturn(true, false);
         when(mockPageContext.getNextContext()).thenThrow(new RuntimeException("Error!"));
@@ -162,7 +155,7 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPageDefinition);
+        verify(mockExecutor).invokeAfterRouteHandler();
     }
 
     @Test
@@ -194,11 +187,9 @@ public class RoutePageStrategyRunnerTest {
         when(mockPageContextFactory.createContext(mockExecutor, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
         when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
         when(mockOtherRoute.getUrl()).thenReturn(URL);
-        when(mockOtherRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
         routes.add(mockOtherRoute);
 
-        doThrow(new RuntimeException("Error!"))
-                .when(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPageDefinition);
+        doThrow(new RuntimeException("Error!")).when(mockExecutor).invokeAfterRouteHandler();
 
         // when
         runner.run(routes, pageStrategies, mockXssJournal);
@@ -217,6 +208,6 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        verifyZeroInteractions(mockLifecycleEventExecutor);
+        verify(mockExecutor, never()).invokeAfterRouteHandler();
     }
 }

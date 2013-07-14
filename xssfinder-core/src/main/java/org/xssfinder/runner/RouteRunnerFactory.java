@@ -26,7 +26,6 @@ public class RouteRunnerFactory {
         return new RoutePageStrategyRunner(
                 executor,
                 createPageContextFactory(),
-                new LifecycleEventExecutor(),
                 new RouteRunErrorContextFactory()
         );
     }
