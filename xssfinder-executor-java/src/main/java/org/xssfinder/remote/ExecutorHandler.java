@@ -1,9 +1,11 @@
 package org.xssfinder.remote;
 
 import org.apache.thrift.TException;
+import org.xssfinder.runner.DriverWrapper;
 import org.xssfinder.scanner.NoPagesFoundException;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.xss.XssGenerator;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -12,10 +14,19 @@ import java.util.Set;
 public class ExecutorHandler implements Executor.Iface {
     private final PageFinder pageFinder;
     private final PageDefinitionFactory pageDefinitionFactory;
+    private final DriverWrapper driverWrapper;
+    private final XssGenerator xssGenerator;
 
-    public ExecutorHandler(PageFinder pageFinder, PageDefinitionFactory pageDefinitionFactory) {
+    public ExecutorHandler(
+            PageFinder pageFinder,
+            PageDefinitionFactory pageDefinitionFactory,
+            DriverWrapper driverWrapper,
+            XssGenerator xssGenerator
+    ) {
         this.pageFinder = pageFinder;
         this.pageDefinitionFactory = pageDefinitionFactory;
+        this.driverWrapper = driverWrapper;
+        this.xssGenerator = xssGenerator;
     }
 
     @Override
@@ -34,22 +45,22 @@ public class ExecutorHandler implements Executor.Iface {
 
     @Override
     public void visit(String url) throws TException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        driverWrapper.visit(url);
     }
 
     @Override
     public Map<String, String> putXssAttackStringsInInputs() throws TException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return driverWrapper.putXssAttackStringsInInputs(xssGenerator);
     }
 
     @Override
     public Set<String> getCurrentXssIds() throws TException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return driverWrapper.getCurrentXssIds();
     }
 
     @Override
     public int getFormCount() throws TException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return driverWrapper.getFormCount();
     }
 
     @Override

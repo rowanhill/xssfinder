@@ -5,8 +5,15 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.xssfinder.runner.DefaultHtmlUnitDriverWrapper;
+import org.xssfinder.scanner.MethodDefinitionFactory;
+import org.xssfinder.scanner.PageDefinitionFactory;
+import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.xss.XssAttackFactory;
+import org.xssfinder.xss.XssGenerator;
 
 import java.util.Set;
 
@@ -16,6 +23,21 @@ import static org.junit.Assert.assertThat;
 
 public class ExecutorServerTest {
     private static final int PORT = 9090;
+    private ExecutorHandler handler;
+
+    @Before
+    public void setUp() {
+        handler = new ExecutorHandler(
+                new PageFinder(),
+                new PageDefinitionFactory(
+                        new MethodDefinitionFactory()
+                ),
+                new DefaultHtmlUnitDriverWrapper(),
+                new XssGenerator(
+                        new XssAttackFactory()
+                )
+        );
+    }
 
     @Ignore("Creating more than one TSocket in one test run fails")
     @Test(expected = TTransportException.class)
@@ -62,7 +84,7 @@ public class ExecutorServerTest {
             public void run() {
                 ExecutorServer server;
                 try {
-                    server = new ExecutorServer(PORT);
+                    server = new ExecutorServer(PORT, handler);
                     server.serve();
                 } catch (TTransportException e) {
                     e.printStackTrace();

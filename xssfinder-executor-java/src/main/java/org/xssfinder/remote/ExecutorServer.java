@@ -13,11 +13,7 @@ public class ExecutorServer {
 
     private final TServer server;
 
-    public ExecutorServer(int port) throws TTransportException {
-        ExecutorHandler handler = new ExecutorHandler(
-                new PageFinder(),
-                new PageDefinitionFactory(new MethodDefinitionFactory())
-        );
+    public ExecutorServer(int port, ExecutorHandler handler) throws TTransportException {
         Executor.Processor<ExecutorHandler> processor = new Executor.Processor<ExecutorHandler>(handler);
         TServerTransport transport = new TServerSocket(port);
         server = new TSimpleServer(new TServer.Args(transport).processor(processor));
