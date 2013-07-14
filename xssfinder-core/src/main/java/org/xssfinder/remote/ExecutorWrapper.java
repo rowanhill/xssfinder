@@ -23,9 +23,9 @@ public class ExecutorWrapper implements Executor.Iface {
     }
 
     @Override
-    public void visit(String url) {
+    public void startRoute(String pageIdentifier) {
         try {
-            innerExecutor.visit(url);
+            innerExecutor.startRoute(pageIdentifier);
         } catch (TException e) {
             throw new CommunicationsException(e);
         }

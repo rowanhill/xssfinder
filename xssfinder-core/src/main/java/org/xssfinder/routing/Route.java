@@ -11,7 +11,6 @@ import java.util.Set;
  */
 public class Route {
     private final PageDescriptor rootPageDescriptor;
-    private final String url;
     private final PageTraversalFactory pageTraversalFactory;
     private PageTraversal pageTraversal;
 
@@ -21,7 +20,6 @@ public class Route {
             PageTraversalFactory pageTraversalFactory
     ) {
         this.rootPageDescriptor = rootPageDescriptor;
-        this.url = rootPageDescriptor.getCrawlStartPointUrl();
         this.pageTraversalFactory = pageTraversalFactory;
         this.pageTraversal = pageTraversal;
     }
@@ -29,10 +27,6 @@ public class Route {
     //qq Rename
     public PageDefinition getRootPageClass() {
         return rootPageDescriptor.getPageDefinition();
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     public PageTraversal getPageTraversal() {

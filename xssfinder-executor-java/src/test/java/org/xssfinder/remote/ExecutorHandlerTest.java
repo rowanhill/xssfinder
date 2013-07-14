@@ -2,6 +2,7 @@ package org.xssfinder.remote;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -64,10 +65,11 @@ public class ExecutorHandlerTest {
         executorHandler.getPageDefinitions(PACKAGE_NAME);
     }
 
+    @Ignore("Replace with test about startRoute once id -> page Class mapping done")
     @Test
     public void visitingUrlIsDelegatedToDriverWrapper() throws Exception {
         // when
-        executorHandler.visit("http://www.google.com");
+        // executorHandler.visit("http://www.google.com");
 
         // then
         verify(mockDriverWrapper).visit("http://www.google.com");

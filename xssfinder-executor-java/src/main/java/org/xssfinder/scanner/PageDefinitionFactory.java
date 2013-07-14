@@ -25,10 +25,6 @@ public class PageDefinitionFactory {
             Set<MethodDefinition> methods = getMethodDefinitions(pageClass, knownPageClasses);
             boolean isCrawlStartPoint = pageClass.isAnnotationPresent(CrawlStartPoint.class);
             PageDefinition pageDefinition = new PageDefinition(identifier, methods, isCrawlStartPoint);
-            if (isCrawlStartPoint) {
-                CrawlStartPoint crawlStartPoint = pageClass.getAnnotation(CrawlStartPoint.class);
-                pageDefinition.setStartPointUrl(crawlStartPoint.url());
-            }
             pageDefinitionCache.put(pageClass, pageDefinition);
         }
         return pageDefinitionCache.get(pageClass);

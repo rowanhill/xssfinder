@@ -85,23 +85,21 @@ public class PageDefinitionFactoryTest {
     }
 
     @Test
-    public void definitionIsCrawlStartPointAndUrlIfPageIsAnnotatedWithCrawlStartPoint() throws Exception {
+    public void definitionIsCrawlStartPointIfPageIsAnnotatedWithCrawlStartPoint() throws Exception {
         // when
         PageDefinition pageDefinition = factory.createPageDefinition(HomePage.class, knownPageClasses);
 
         // then
         assertThat(pageDefinition.isCrawlStartPoint(), is(true));
-        assertThat(pageDefinition.getStartPointUrl(), is("some-url"));
     }
 
     @Test
-    public void definitionIsNotCrawlStartPointAndHasNoUrlIfPageIsNotAnnotatedWithCrawlStartPoint() throws Exception {
+    public void definitionIsNotCrawlStartPointIfPageIsNotAnnotatedWithCrawlStartPoint() throws Exception {
         // when
         PageDefinition pageDefinition = factory.createPageDefinition(SomePage.class, knownPageClasses);
 
         // then
         assertThat(pageDefinition.isCrawlStartPoint(), is(false));
-        assertThat(pageDefinition.getStartPointUrl(), is(nullValue()));
     }
 
     private static class SomePage {}

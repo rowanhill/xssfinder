@@ -44,8 +44,8 @@ public class ExecutorHandler implements Executor.Iface {
     }
 
     @Override
-    public void visit(String url) throws TException {
-        driverWrapper.visit(url);
+    public void startRoute(String pageIdentifier) throws TException {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

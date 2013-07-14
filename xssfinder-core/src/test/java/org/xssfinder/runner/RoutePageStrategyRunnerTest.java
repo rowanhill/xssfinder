@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RoutePageStrategyRunnerTest {
-    private static final String URL = "http://localhost";
+    private static final String PAGE_ID = "some page";
 
     @Mock
     private ExecutorWrapper mockExecutor;
@@ -46,7 +46,8 @@ public class RoutePageStrategyRunnerTest {
     public void setUp() throws Exception {
         when(mockPageContextFactory.createContext(mockExecutor, mockRoute, mockXssJournal)).thenReturn(mockPageContext);
         when(mockPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
-        when(mockRoute.getUrl()).thenReturn(URL);
+        when(mockRoute.getRootPageClass()).thenReturn(mockPageDefinition);
+        when(mockPageDefinition.getIdentifier()).thenReturn(PAGE_ID);
         routes.add(mockRoute);
 
         runner = new RoutePageStrategyRunner(
@@ -62,7 +63,7 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        verify(mockExecutor).visit(URL);
+        verify(mockExecutor).startRoute(PAGE_ID);
     }
 
     @Test
@@ -131,7 +132,7 @@ public class RoutePageStrategyRunnerTest {
         PageContext mockOtherPageContext = mock(PageContext.class);
         when(mockPageContextFactory.createContext(mockExecutor, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
         when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
-        when(mockOtherRoute.getUrl()).thenReturn(URL);
+        when(mockOtherRoute.getRootPageClass()).thenReturn(mockPageDefinition);
         routes.add(mockOtherRoute);
         when(mockPageContext.hasNextContext()).thenReturn(true, false);
         when(mockPageContext.getNextContext()).thenThrow(new RuntimeException("Error!"));
@@ -186,7 +187,7 @@ public class RoutePageStrategyRunnerTest {
         PageContext mockOtherPageContext = mock(PageContext.class);
         when(mockPageContextFactory.createContext(mockExecutor, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
         when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
-        when(mockOtherRoute.getUrl()).thenReturn(URL);
+        when(mockOtherRoute.getRootPageClass()).thenReturn(mockPageDefinition);
         routes.add(mockOtherRoute);
 
         doThrow(new RuntimeException("Error!")).when(mockExecutor).invokeAfterRouteHandler();

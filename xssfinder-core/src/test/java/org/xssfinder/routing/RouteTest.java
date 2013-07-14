@@ -18,8 +18,6 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RouteTest {
-    private static final String ROOT_PAGE_URL = "http://localhost:8080/";
-
     @Mock
     private PageTraversal mockPageTraversal;
     @Mock
@@ -46,7 +44,6 @@ public class RouteTest {
         when(mockPageDefinition.getMethods()).thenReturn(ImmutableSet.of(mockCircularMethodDefinition, mockSubmitMethodDefinition));
 
         when(mockPageDefinition.isCrawlStartPoint()).thenReturn(true);
-        when(mockPageDefinition.getStartPointUrl()).thenReturn(ROOT_PAGE_URL);
     }
 
     @Test
@@ -71,19 +68,6 @@ public class RouteTest {
 
         // then
         assertThat(descriptor, is(mockPageDescriptor));
-    }
-
-    @Test
-    public void urlIsTakenFromRootPage() {
-        // given
-        when(mockPageDescriptor.getCrawlStartPointUrl()).thenReturn(ROOT_PAGE_URL);
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
-
-        // when
-        String url = route.getUrl();
-
-        // then
-        assertThat(url, is(ROOT_PAGE_URL));
     }
 
     @Test

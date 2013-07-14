@@ -75,11 +75,4 @@ public class PageDescriptor {
     public PageDefinition getPageDefinition() {
         return pageDefinition;
     }
-
-    public String getCrawlStartPointUrl() {
-        if (!pageDefinition.isCrawlStartPoint()) {
-            throw new NotAStartPointException();
-        }
-        return pageDefinition.getStartPointUrl();
-    }
 }

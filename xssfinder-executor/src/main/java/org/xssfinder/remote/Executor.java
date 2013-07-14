@@ -42,13 +42,13 @@ public class Executor {
     public Set<PageDefinition> getPageDefinitions(String namespaceIdentifier) throws org.apache.thrift.TException;
 
     /**
-     * Navigate the driver to given URL
+     * Navigate the driver to the URL associated with the specified PageDefinition
      * 
-     * @param url The URL to visit
+     * @param pageIdentifier The identifier of the crawlStartPoint PageDefinition to start the root at
      * 
-     * @param url
+     * @param pageIdentifier
      */
-    public void visit(String url) throws org.apache.thrift.TException;
+    public void startRoute(String pageIdentifier) throws org.apache.thrift.TException;
 
     /**
      * Put XSS attacks into all available inputs
@@ -87,7 +87,7 @@ public class Executor {
 
     public void getPageDefinitions(String namespaceIdentifier, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getPageDefinitions_call> resultHandler) throws org.apache.thrift.TException;
 
-    public void visit(String url, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.visit_call> resultHandler) throws org.apache.thrift.TException;
+    public void startRoute(String pageIdentifier, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.startRoute_call> resultHandler) throws org.apache.thrift.TException;
 
     public void putXssAttackStringsInInputs(org.apache.thrift.async.AsyncMethodCallback<AsyncClient.putXssAttackStringsInInputs_call> resultHandler) throws org.apache.thrift.TException;
 
@@ -144,23 +144,23 @@ public class Executor {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getPageDefinitions failed: unknown result");
     }
 
-    public void visit(String url) throws org.apache.thrift.TException
+    public void startRoute(String pageIdentifier) throws org.apache.thrift.TException
     {
-      send_visit(url);
-      recv_visit();
+      send_startRoute(pageIdentifier);
+      recv_startRoute();
     }
 
-    public void send_visit(String url) throws org.apache.thrift.TException
+    public void send_startRoute(String pageIdentifier) throws org.apache.thrift.TException
     {
-      visit_args args = new visit_args();
-      args.setUrl(url);
-      sendBase("visit", args);
+      startRoute_args args = new startRoute_args();
+      args.setPageIdentifier(pageIdentifier);
+      sendBase("startRoute", args);
     }
 
-    public void recv_visit() throws org.apache.thrift.TException
+    public void recv_startRoute() throws org.apache.thrift.TException
     {
-      visit_result result = new visit_result();
-      receiveBase(result, "visit");
+      startRoute_result result = new startRoute_result();
+      receiveBase(result, "startRoute");
       return;
     }
 
@@ -323,24 +323,24 @@ public class Executor {
       }
     }
 
-    public void visit(String url, org.apache.thrift.async.AsyncMethodCallback<visit_call> resultHandler) throws org.apache.thrift.TException {
+    public void startRoute(String pageIdentifier, org.apache.thrift.async.AsyncMethodCallback<startRoute_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      visit_call method_call = new visit_call(url, resultHandler, this, ___protocolFactory, ___transport);
+      startRoute_call method_call = new startRoute_call(pageIdentifier, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class visit_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private String url;
-      public visit_call(String url, org.apache.thrift.async.AsyncMethodCallback<visit_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+    public static class startRoute_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String pageIdentifier;
+      public startRoute_call(String pageIdentifier, org.apache.thrift.async.AsyncMethodCallback<startRoute_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.url = url;
+        this.pageIdentifier = pageIdentifier;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("visit", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        visit_args args = new visit_args();
-        args.setUrl(url);
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("startRoute", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        startRoute_args args = new startRoute_args();
+        args.setPageIdentifier(pageIdentifier);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -351,7 +351,7 @@ public class Executor {
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_visit();
+        (new Client(prot)).recv_startRoute();
       }
     }
 
@@ -520,7 +520,7 @@ public class Executor {
 
     private static <I extends Iface> Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> getProcessMap(Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
       processMap.put("getPageDefinitions", new getPageDefinitions());
-      processMap.put("visit", new visit());
+      processMap.put("startRoute", new startRoute());
       processMap.put("putXssAttackStringsInInputs", new putXssAttackStringsInInputs());
       processMap.put("getCurrentXssIds", new getCurrentXssIds());
       processMap.put("getFormCount", new getFormCount());
@@ -545,18 +545,18 @@ public class Executor {
       }
     }
 
-    private static class visit<I extends Iface> extends org.apache.thrift.ProcessFunction<I, visit_args> {
-      public visit() {
-        super("visit");
+    private static class startRoute<I extends Iface> extends org.apache.thrift.ProcessFunction<I, startRoute_args> {
+      public startRoute() {
+        super("startRoute");
       }
 
-      protected visit_args getEmptyArgsInstance() {
-        return new visit_args();
+      protected startRoute_args getEmptyArgsInstance() {
+        return new startRoute_args();
       }
 
-      protected visit_result getResult(I iface, visit_args args) throws org.apache.thrift.TException {
-        visit_result result = new visit_result();
-        iface.visit(args.url);
+      protected startRoute_result getResult(I iface, startRoute_args args) throws org.apache.thrift.TException {
+        startRoute_result result = new startRoute_result();
+        iface.startRoute(args.pageIdentifier);
         return result;
       }
     }
@@ -1404,22 +1404,22 @@ public class Executor {
 
   }
 
-  public static class visit_args implements org.apache.thrift.TBase<visit_args, visit_args._Fields>, java.io.Serializable, Cloneable   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("visit_args");
+  public static class startRoute_args implements org.apache.thrift.TBase<startRoute_args, startRoute_args._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("startRoute_args");
 
-    private static final org.apache.thrift.protocol.TField URL_FIELD_DESC = new org.apache.thrift.protocol.TField("url", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField PAGE_IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("pageIdentifier", org.apache.thrift.protocol.TType.STRING, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new visit_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new visit_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new startRoute_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new startRoute_argsTupleSchemeFactory());
     }
 
-    public String url; // required
+    public String pageIdentifier; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      URL((short)1, "url");
+      PAGE_IDENTIFIER((short)1, "pageIdentifier");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -1434,8 +1434,8 @@ public class Executor {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // URL
-            return URL;
+          case 1: // PAGE_IDENTIFIER
+            return PAGE_IDENTIFIER;
           default:
             return null;
         }
@@ -1479,71 +1479,71 @@ public class Executor {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.URL, new org.apache.thrift.meta_data.FieldMetaData("url", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.PAGE_IDENTIFIER, new org.apache.thrift.meta_data.FieldMetaData("pageIdentifier", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(visit_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(startRoute_args.class, metaDataMap);
     }
 
-    public visit_args() {
+    public startRoute_args() {
     }
 
-    public visit_args(
-      String url)
+    public startRoute_args(
+      String pageIdentifier)
     {
       this();
-      this.url = url;
+      this.pageIdentifier = pageIdentifier;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public visit_args(visit_args other) {
-      if (other.isSetUrl()) {
-        this.url = other.url;
+    public startRoute_args(startRoute_args other) {
+      if (other.isSetPageIdentifier()) {
+        this.pageIdentifier = other.pageIdentifier;
       }
     }
 
-    public visit_args deepCopy() {
-      return new visit_args(this);
+    public startRoute_args deepCopy() {
+      return new startRoute_args(this);
     }
 
     @Override
     public void clear() {
-      this.url = null;
+      this.pageIdentifier = null;
     }
 
-    public String getUrl() {
-      return this.url;
+    public String getPageIdentifier() {
+      return this.pageIdentifier;
     }
 
-    public visit_args setUrl(String url) {
-      this.url = url;
+    public startRoute_args setPageIdentifier(String pageIdentifier) {
+      this.pageIdentifier = pageIdentifier;
       return this;
     }
 
-    public void unsetUrl() {
-      this.url = null;
+    public void unsetPageIdentifier() {
+      this.pageIdentifier = null;
     }
 
-    /** Returns true if field url is set (has been assigned a value) and false otherwise */
-    public boolean isSetUrl() {
-      return this.url != null;
+    /** Returns true if field pageIdentifier is set (has been assigned a value) and false otherwise */
+    public boolean isSetPageIdentifier() {
+      return this.pageIdentifier != null;
     }
 
-    public void setUrlIsSet(boolean value) {
+    public void setPageIdentifierIsSet(boolean value) {
       if (!value) {
-        this.url = null;
+        this.pageIdentifier = null;
       }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case URL:
+      case PAGE_IDENTIFIER:
         if (value == null) {
-          unsetUrl();
+          unsetPageIdentifier();
         } else {
-          setUrl((String)value);
+          setPageIdentifier((String)value);
         }
         break;
 
@@ -1552,8 +1552,8 @@ public class Executor {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case URL:
-        return getUrl();
+      case PAGE_IDENTIFIER:
+        return getPageIdentifier();
 
       }
       throw new IllegalStateException();
@@ -1566,8 +1566,8 @@ public class Executor {
       }
 
       switch (field) {
-      case URL:
-        return isSetUrl();
+      case PAGE_IDENTIFIER:
+        return isSetPageIdentifier();
       }
       throw new IllegalStateException();
     }
@@ -1576,21 +1576,21 @@ public class Executor {
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof visit_args)
-        return this.equals((visit_args)that);
+      if (that instanceof startRoute_args)
+        return this.equals((startRoute_args)that);
       return false;
     }
 
-    public boolean equals(visit_args that) {
+    public boolean equals(startRoute_args that) {
       if (that == null)
         return false;
 
-      boolean this_present_url = true && this.isSetUrl();
-      boolean that_present_url = true && that.isSetUrl();
-      if (this_present_url || that_present_url) {
-        if (!(this_present_url && that_present_url))
+      boolean this_present_pageIdentifier = true && this.isSetPageIdentifier();
+      boolean that_present_pageIdentifier = true && that.isSetPageIdentifier();
+      if (this_present_pageIdentifier || that_present_pageIdentifier) {
+        if (!(this_present_pageIdentifier && that_present_pageIdentifier))
           return false;
-        if (!this.url.equals(that.url))
+        if (!this.pageIdentifier.equals(that.pageIdentifier))
           return false;
       }
 
@@ -1602,20 +1602,20 @@ public class Executor {
       return 0;
     }
 
-    public int compareTo(visit_args other) {
+    public int compareTo(startRoute_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
 
       int lastComparison = 0;
-      visit_args typedOther = (visit_args)other;
+      startRoute_args typedOther = (startRoute_args)other;
 
-      lastComparison = Boolean.valueOf(isSetUrl()).compareTo(typedOther.isSetUrl());
+      lastComparison = Boolean.valueOf(isSetPageIdentifier()).compareTo(typedOther.isSetPageIdentifier());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetUrl()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.url, typedOther.url);
+      if (isSetPageIdentifier()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.pageIdentifier, typedOther.pageIdentifier);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -1637,14 +1637,14 @@ public class Executor {
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("visit_args(");
+      StringBuilder sb = new StringBuilder("startRoute_args(");
       boolean first = true;
 
-      sb.append("url:");
-      if (this.url == null) {
+      sb.append("pageIdentifier:");
+      if (this.pageIdentifier == null) {
         sb.append("null");
       } else {
-        sb.append(this.url);
+        sb.append(this.pageIdentifier);
       }
       first = false;
       sb.append(")");
@@ -1671,15 +1671,15 @@ public class Executor {
       }
     }
 
-    private static class visit_argsStandardSchemeFactory implements SchemeFactory {
-      public visit_argsStandardScheme getScheme() {
-        return new visit_argsStandardScheme();
+    private static class startRoute_argsStandardSchemeFactory implements SchemeFactory {
+      public startRoute_argsStandardScheme getScheme() {
+        return new startRoute_argsStandardScheme();
       }
     }
 
-    private static class visit_argsStandardScheme extends StandardScheme<visit_args> {
+    private static class startRoute_argsStandardScheme extends StandardScheme<startRoute_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, visit_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, startRoute_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -1689,10 +1689,10 @@ public class Executor {
             break;
           }
           switch (schemeField.id) {
-            case 1: // URL
+            case 1: // PAGE_IDENTIFIER
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.url = iprot.readString();
-                struct.setUrlIsSet(true);
+                struct.pageIdentifier = iprot.readString();
+                struct.setPageIdentifierIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -1708,13 +1708,13 @@ public class Executor {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, visit_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, startRoute_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.url != null) {
-          oprot.writeFieldBegin(URL_FIELD_DESC);
-          oprot.writeString(struct.url);
+        if (struct.pageIdentifier != null) {
+          oprot.writeFieldBegin(PAGE_IDENTIFIER_FIELD_DESC);
+          oprot.writeString(struct.pageIdentifier);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -1723,48 +1723,48 @@ public class Executor {
 
     }
 
-    private static class visit_argsTupleSchemeFactory implements SchemeFactory {
-      public visit_argsTupleScheme getScheme() {
-        return new visit_argsTupleScheme();
+    private static class startRoute_argsTupleSchemeFactory implements SchemeFactory {
+      public startRoute_argsTupleScheme getScheme() {
+        return new startRoute_argsTupleScheme();
       }
     }
 
-    private static class visit_argsTupleScheme extends TupleScheme<visit_args> {
+    private static class startRoute_argsTupleScheme extends TupleScheme<startRoute_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, visit_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, startRoute_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetUrl()) {
+        if (struct.isSetPageIdentifier()) {
           optionals.set(0);
         }
         oprot.writeBitSet(optionals, 1);
-        if (struct.isSetUrl()) {
-          oprot.writeString(struct.url);
+        if (struct.isSetPageIdentifier()) {
+          oprot.writeString(struct.pageIdentifier);
         }
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, visit_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, startRoute_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.url = iprot.readString();
-          struct.setUrlIsSet(true);
+          struct.pageIdentifier = iprot.readString();
+          struct.setPageIdentifierIsSet(true);
         }
       }
     }
 
   }
 
-  public static class visit_result implements org.apache.thrift.TBase<visit_result, visit_result._Fields>, java.io.Serializable, Cloneable   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("visit_result");
+  public static class startRoute_result implements org.apache.thrift.TBase<startRoute_result, startRoute_result._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("startRoute_result");
 
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new visit_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new visit_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new startRoute_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new startRoute_resultTupleSchemeFactory());
     }
 
 
@@ -1827,20 +1827,20 @@ public class Executor {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(visit_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(startRoute_result.class, metaDataMap);
     }
 
-    public visit_result() {
+    public startRoute_result() {
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public visit_result(visit_result other) {
+    public startRoute_result(startRoute_result other) {
     }
 
-    public visit_result deepCopy() {
-      return new visit_result(this);
+    public startRoute_result deepCopy() {
+      return new startRoute_result(this);
     }
 
     @Override
@@ -1873,12 +1873,12 @@ public class Executor {
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof visit_result)
-        return this.equals((visit_result)that);
+      if (that instanceof startRoute_result)
+        return this.equals((startRoute_result)that);
       return false;
     }
 
-    public boolean equals(visit_result that) {
+    public boolean equals(startRoute_result that) {
       if (that == null)
         return false;
 
@@ -1890,13 +1890,13 @@ public class Executor {
       return 0;
     }
 
-    public int compareTo(visit_result other) {
+    public int compareTo(startRoute_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
 
       int lastComparison = 0;
-      visit_result typedOther = (visit_result)other;
+      startRoute_result typedOther = (startRoute_result)other;
 
       return 0;
     }
@@ -1915,7 +1915,7 @@ public class Executor {
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("visit_result(");
+      StringBuilder sb = new StringBuilder("startRoute_result(");
       boolean first = true;
 
       sb.append(")");
@@ -1942,15 +1942,15 @@ public class Executor {
       }
     }
 
-    private static class visit_resultStandardSchemeFactory implements SchemeFactory {
-      public visit_resultStandardScheme getScheme() {
-        return new visit_resultStandardScheme();
+    private static class startRoute_resultStandardSchemeFactory implements SchemeFactory {
+      public startRoute_resultStandardScheme getScheme() {
+        return new startRoute_resultStandardScheme();
       }
     }
 
-    private static class visit_resultStandardScheme extends StandardScheme<visit_result> {
+    private static class startRoute_resultStandardScheme extends StandardScheme<startRoute_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, visit_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, startRoute_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -1971,7 +1971,7 @@ public class Executor {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, visit_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, startRoute_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -1981,21 +1981,21 @@ public class Executor {
 
     }
 
-    private static class visit_resultTupleSchemeFactory implements SchemeFactory {
-      public visit_resultTupleScheme getScheme() {
-        return new visit_resultTupleScheme();
+    private static class startRoute_resultTupleSchemeFactory implements SchemeFactory {
+      public startRoute_resultTupleScheme getScheme() {
+        return new startRoute_resultTupleScheme();
       }
     }
 
-    private static class visit_resultTupleScheme extends TupleScheme<visit_result> {
+    private static class startRoute_resultTupleScheme extends TupleScheme<startRoute_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, visit_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, startRoute_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, visit_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, startRoute_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
       }
     }

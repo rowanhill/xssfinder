@@ -15,7 +15,6 @@ struct PageDefinition {
   1:string identifier,
   2:set<MethodDefinition> methods,
   3:bool crawlStartPoint,
-  4:optional string startPointUrl,
 }
 
 enum TraversalMode {
@@ -33,11 +32,11 @@ service Executor {
   set<PageDefinition> getPageDefinitions(1:string namespaceIdentifier),
 
   /**
-   * Navigate the driver to given URL
+   * Navigate the driver to the URL associated with the specified PageDefinition
    *
-   * @param url The URL to visit
+   * @param pageIdentifier The identifier of the crawlStartPoint PageDefinition to start the root at
    */
-  void visit(1:string url),
+  void startRoute(1:string pageIdentifier),
 
   /**
    * Put XSS attacks into all available inputs

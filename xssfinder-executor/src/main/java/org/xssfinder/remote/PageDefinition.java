@@ -33,7 +33,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
   private static final org.apache.thrift.protocol.TField IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("identifier", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField METHODS_FIELD_DESC = new org.apache.thrift.protocol.TField("methods", org.apache.thrift.protocol.TType.SET, (short)2);
   private static final org.apache.thrift.protocol.TField CRAWL_START_POINT_FIELD_DESC = new org.apache.thrift.protocol.TField("crawlStartPoint", org.apache.thrift.protocol.TType.BOOL, (short)3);
-  private static final org.apache.thrift.protocol.TField START_POINT_URL_FIELD_DESC = new org.apache.thrift.protocol.TField("startPointUrl", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -44,14 +43,12 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
   public String identifier; // required
   public Set<MethodDefinition> methods; // required
   public boolean crawlStartPoint; // required
-  public String startPointUrl; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     IDENTIFIER((short)1, "identifier"),
     METHODS((short)2, "methods"),
-    CRAWL_START_POINT((short)3, "crawlStartPoint"),
-    START_POINT_URL((short)4, "startPointUrl");
+    CRAWL_START_POINT((short)3, "crawlStartPoint");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -72,8 +69,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
           return METHODS;
         case 3: // CRAWL_START_POINT
           return CRAWL_START_POINT;
-        case 4: // START_POINT_URL
-          return START_POINT_URL;
         default:
           return null;
       }
@@ -116,7 +111,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
   // isset id assignments
   private static final int __CRAWLSTARTPOINT_ISSET_ID = 0;
   private BitSet __isset_bit_vector = new BitSet(1);
-  private _Fields optionals[] = {_Fields.START_POINT_URL};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -127,8 +121,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, MethodDefinition.class))));
     tmpMap.put(_Fields.CRAWL_START_POINT, new org.apache.thrift.meta_data.FieldMetaData("crawlStartPoint", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-    tmpMap.put(_Fields.START_POINT_URL, new org.apache.thrift.meta_data.FieldMetaData("startPointUrl", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(PageDefinition.class, metaDataMap);
   }
@@ -165,9 +157,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
       this.methods = __this__methods;
     }
     this.crawlStartPoint = other.crawlStartPoint;
-    if (other.isSetStartPointUrl()) {
-      this.startPointUrl = other.startPointUrl;
-    }
   }
 
   public PageDefinition deepCopy() {
@@ -180,7 +169,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
     this.methods = null;
     setCrawlStartPointIsSet(false);
     this.crawlStartPoint = false;
-    this.startPointUrl = null;
   }
 
   public String getIdentifier() {
@@ -269,30 +257,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
     __isset_bit_vector.set(__CRAWLSTARTPOINT_ISSET_ID, value);
   }
 
-  public String getStartPointUrl() {
-    return this.startPointUrl;
-  }
-
-  public PageDefinition setStartPointUrl(String startPointUrl) {
-    this.startPointUrl = startPointUrl;
-    return this;
-  }
-
-  public void unsetStartPointUrl() {
-    this.startPointUrl = null;
-  }
-
-  /** Returns true if field startPointUrl is set (has been assigned a value) and false otherwise */
-  public boolean isSetStartPointUrl() {
-    return this.startPointUrl != null;
-  }
-
-  public void setStartPointUrlIsSet(boolean value) {
-    if (!value) {
-      this.startPointUrl = null;
-    }
-  }
-
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case IDENTIFIER:
@@ -319,14 +283,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
       }
       break;
 
-    case START_POINT_URL:
-      if (value == null) {
-        unsetStartPointUrl();
-      } else {
-        setStartPointUrl((String)value);
-      }
-      break;
-
     }
   }
 
@@ -340,9 +296,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
 
     case CRAWL_START_POINT:
       return Boolean.valueOf(isCrawlStartPoint());
-
-    case START_POINT_URL:
-      return getStartPointUrl();
 
     }
     throw new IllegalStateException();
@@ -361,8 +314,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
       return isSetMethods();
     case CRAWL_START_POINT:
       return isSetCrawlStartPoint();
-    case START_POINT_URL:
-      return isSetStartPointUrl();
     }
     throw new IllegalStateException();
   }
@@ -404,15 +355,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
       if (!(this_present_crawlStartPoint && that_present_crawlStartPoint))
         return false;
       if (this.crawlStartPoint != that.crawlStartPoint)
-        return false;
-    }
-
-    boolean this_present_startPointUrl = true && this.isSetStartPointUrl();
-    boolean that_present_startPointUrl = true && that.isSetStartPointUrl();
-    if (this_present_startPointUrl || that_present_startPointUrl) {
-      if (!(this_present_startPointUrl && that_present_startPointUrl))
-        return false;
-      if (!this.startPointUrl.equals(that.startPointUrl))
         return false;
     }
 
@@ -462,16 +404,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetStartPointUrl()).compareTo(typedOther.isSetStartPointUrl());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetStartPointUrl()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.startPointUrl, typedOther.startPointUrl);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     return 0;
   }
 
@@ -511,16 +443,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
     sb.append("crawlStartPoint:");
     sb.append(this.crawlStartPoint);
     first = false;
-    if (isSetStartPointUrl()) {
-      if (!first) sb.append(", ");
-      sb.append("startPointUrl:");
-      if (this.startPointUrl == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.startPointUrl);
-      }
-      first = false;
-    }
     sb.append(")");
     return sb.toString();
   }
@@ -600,14 +522,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // START_POINT_URL
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.startPointUrl = iprot.readString();
-              struct.setStartPointUrlIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -643,13 +557,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
       oprot.writeFieldBegin(CRAWL_START_POINT_FIELD_DESC);
       oprot.writeBool(struct.crawlStartPoint);
       oprot.writeFieldEnd();
-      if (struct.startPointUrl != null) {
-        if (struct.isSetStartPointUrl()) {
-          oprot.writeFieldBegin(START_POINT_URL_FIELD_DESC);
-          oprot.writeString(struct.startPointUrl);
-          oprot.writeFieldEnd();
-        }
-      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -677,10 +584,7 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
       if (struct.isSetCrawlStartPoint()) {
         optionals.set(2);
       }
-      if (struct.isSetStartPointUrl()) {
-        optionals.set(3);
-      }
-      oprot.writeBitSet(optionals, 4);
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetIdentifier()) {
         oprot.writeString(struct.identifier);
       }
@@ -696,15 +600,12 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
       if (struct.isSetCrawlStartPoint()) {
         oprot.writeBool(struct.crawlStartPoint);
       }
-      if (struct.isSetStartPointUrl()) {
-        oprot.writeString(struct.startPointUrl);
-      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, PageDefinition struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.identifier = iprot.readString();
         struct.setIdentifierIsSet(true);
@@ -726,10 +627,6 @@ public class PageDefinition implements org.apache.thrift.TBase<PageDefinition, P
       if (incoming.get(2)) {
         struct.crawlStartPoint = iprot.readBool();
         struct.setCrawlStartPointIsSet(true);
-      }
-      if (incoming.get(3)) {
-        struct.startPointUrl = iprot.readString();
-        struct.setStartPointUrlIsSet(true);
       }
     }
   }

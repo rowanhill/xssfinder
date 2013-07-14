@@ -115,27 +115,4 @@ public class PageDescriptorTest {
         Set<MethodDefinition> expectedMethods = ImmutableSet.of(mockSubmitMethodDefinition);
         assertThat(submitMethods, is(expectedMethods));
     }
-
-    @Test
-    public void crawlStartPointUrlIsAvailable() {
-        // given
-        when(mockPageDefinition.isCrawlStartPoint()).thenReturn(true);
-        when(mockPageDefinition.getStartPointUrl()).thenReturn("http://somehost/someurl");
-        PageDescriptor descriptor = new PageDescriptor(mockPageDefinition);
-
-        // when
-        String url = descriptor.getCrawlStartPointUrl();
-
-        // then
-        assertThat(url, is("http://somehost/someurl"));
-    }
-
-    @Test(expected=NotAStartPointException.class)
-    public void gettingCrawlStartPointUrlOfNonStartPointThrowsException() throws Exception {
-        // given
-        PageDescriptor descriptor = new PageDescriptor(mockPageDefinition);
-
-        // when
-        descriptor.getCrawlStartPointUrl();
-    }
 }
