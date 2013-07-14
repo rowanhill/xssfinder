@@ -1,5 +1,7 @@
 package org.xssfinder.reporting;
 
+import org.xssfinder.remote.PageDefinition;
+
 import java.io.*;
 
 /**
@@ -61,11 +63,11 @@ public class HtmlReportWriter {
             output.write("<tr>");
             output.write("<th>Page Object</th>");
             output.write("</tr>");
-            for (Class<?> pageClass : journal.getPagesClassWithUntestedInputs()) {
+            for (PageDefinition pageClass : journal.getPagesClassWithUntestedInputs()) {
                 output.write(
                         "<tr>" +
                             "<td>" +
-                                pageClass.getCanonicalName() +
+                                pageClass.getIdentifier() +
                             "</td>" +
                         "</tr>"
                 );
@@ -86,7 +88,7 @@ public class HtmlReportWriter {
                 output.write(
                         "<tr id='" + rowId + "'>" +
                             "<td>" +
-                                errorContext.getPageClassName() +
+                                errorContext.getPageIdentifier() +
                             "</td>" +
                             "<td>" +
                                 errorContext.getPageTraversalMethodString() +

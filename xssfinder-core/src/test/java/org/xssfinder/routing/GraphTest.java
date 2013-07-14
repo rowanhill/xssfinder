@@ -5,8 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.xssfinder.CrawlStartPoint;
-import org.xssfinder.Page;
+import org.xssfinder.remote.PageDefinition;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,6 +16,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.xssfinder.testhelper.MockPageDefinitionBuilder.mockPageDefinition;
+import static org.xssfinder.testhelper.MockPageDescriptorBuilder.mockPageDescriptor;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GraphTest {
@@ -33,9 +34,16 @@ public class GraphTest {
 
     @Before
     public void setup() {
-        ordinaryPageDescriptor = new PageDescriptor(OrdinaryPage.class);
-        startPage1Descriptor = new PageDescriptor(StartPageOne.class);
-        startPage2Descriptor = new PageDescriptor(StartPageTwo.class);
+        PageDefinition mockOrdinaryPageDefinition = mockPageDefinition().build();
+        PageDefinition mockStartPage1Definition = mockPageDefinition()
+                .markedAsCrawlStartPoint()
+                .withMethod().toPage(mockOrdinaryPageDefinition).onPage()
+                .build();
+        PageDefinition mockStartPage2Definition = mockPageDefinition().markedAsCrawlStartPoint().build();
+
+        ordinaryPageDescriptor = mockPageDescriptor(mockOrdinaryPageDefinition);
+        startPage1Descriptor = mockPageDescriptor(mockStartPage1Definition);
+        startPage2Descriptor = mockPageDescriptor(mockStartPage2Definition);
     }
 
     @Test(expected=NoRootPageFoundException.class)
@@ -61,11 +69,10 @@ public class GraphTest {
     public void routesAreCreatedFromShortestPathsWithRequiredTraversalsAppended() {
         // given
         pagesDescriptors.add(startPage1Descriptor);
-        Class<?> rootClass = startPage1Descriptor.getPageClass();
         DjikstraResult mockDjikstraResult = mock(DjikstraResult.class);
         Set<GraphNode> leafNodes = new HashSet<GraphNode>();
         when(mockDjikstraResult.getLeafNodes()).thenReturn(leafNodes);
-        when(mockDjikstraRunner.computeShortestPaths(rootClass, pagesDescriptors))
+        when(mockDjikstraRunner.computeShortestPaths(startPage1Descriptor.getPageDefinition(), pagesDescriptors))
                 .thenReturn(mockDjikstraResult);
         List<Route> leafNodeRoutes = new ArrayList<Route>();
         when(mockDjikstraResult.getRoutesToLeafNodes()).thenReturn(leafNodeRoutes);
@@ -84,18 +91,4 @@ public class GraphTest {
     private Graph constructGraph() {
         return new Graph(pagesDescriptors, mockDjikstraRunner, mockRequiredTraversalAppender);
     }
-
-    @Page
-    private class OrdinaryPage {}
-
-    @SuppressWarnings("UnusedDeclaration")
-    @Page
-    @CrawlStartPoint(url="")
-    private class StartPageOne {
-        public OrdinaryPage goToOrdinaryPage() { return null; }
-    }
-
-    @Page
-    @CrawlStartPoint(url="")
-    private class StartPageTwo {}
 }

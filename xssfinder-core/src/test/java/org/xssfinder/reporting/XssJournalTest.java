@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.runner.PageContext;
 import org.xssfinder.xss.XssDescriptor;
 
@@ -23,6 +24,10 @@ import static org.mockito.Mockito.when;
 public class XssJournalTest {
     @Mock
     private XssSightingFactory mockXssSightingFactory;
+    @Mock
+    private PageDefinition mockSomeDefinition;
+    @Mock
+    private PageDefinition mockOtherDefinition;
 
     @Test
     public void noXssDescriptorForXssIdByDefault() {
@@ -99,12 +104,12 @@ public class XssJournalTest {
         XssJournal journal = new XssJournal(mockXssSightingFactory);
 
         // when
-        journal.addPageClassWithUntestedInputs(SomePage.class);
-        journal.addPageClassWithUntestedInputs(OtherPage.class);
-        Set<Class<?>> pagesWithUntestedInputs = journal.getPagesClassWithUntestedInputs();
+        journal.addPageClassWithUntestedInputs(mockSomeDefinition);
+        journal.addPageClassWithUntestedInputs(mockOtherDefinition);
+        Set<PageDefinition> pagesWithUntestedInputs = journal.getPagesClassWithUntestedInputs();
 
         // then
-        Set<Class<?>> expectedPageClasses = ImmutableSet.of(SomePage.class, OtherPage.class);
+        Set<PageDefinition> expectedPageClasses = ImmutableSet.of(mockSomeDefinition, mockOtherDefinition);
         assertThat(pagesWithUntestedInputs, is(expectedPageClasses));
     }
 
@@ -114,13 +119,13 @@ public class XssJournalTest {
         XssJournal journal = new XssJournal(mockXssSightingFactory);
 
         // when
-        journal.addPageClassWithUntestedInputs(SomePage.class);
-        journal.addPageClassWithUntestedInputs(SomePage.class);
-        Set<Class<?>> pagesWithUntestedInputs = journal.getPagesClassWithUntestedInputs();
+        journal.addPageClassWithUntestedInputs(mockSomeDefinition);
+        journal.addPageClassWithUntestedInputs(mockSomeDefinition);
+        Set<PageDefinition> pagesWithUntestedInputs = journal.getPagesClassWithUntestedInputs();
 
         // then
         assertThat(pagesWithUntestedInputs.size(), is(1));
-        assertThat(pagesWithUntestedInputs.iterator().next() == SomePage.class, is(true));
+        assertThat(pagesWithUntestedInputs.iterator().next() == mockSomeDefinition, is(true));
     }
 
     @Test
@@ -151,7 +156,4 @@ public class XssJournalTest {
         );
         assertThat(errorContexts, is(expectedContexts));
     }
-
-    private static class SomePage {}
-    private static class OtherPage {}
 }

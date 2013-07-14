@@ -4,10 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.xssfinder.CrawlStartPoint;
-import org.xssfinder.Page;
-
-import java.lang.reflect.Method;
+import org.xssfinder.remote.MethodDefinition;
+import org.xssfinder.remote.PageDefinition;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -77,14 +75,14 @@ public class GraphNodeTest {
         // given
         GraphNode node = new GraphNode(mockPageDescriptor);
         GraphNode otherNode = mock(GraphNode.class);
-        Method method = StartPointPage.class.getMethod("getOrdinaryPage");
+        MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
 
         // when
-        node.setPredecessor(otherNode, method);
+        node.setPredecessor(otherNode, mockMethodDefinition);
 
         // then
         assertThat(node.getPredecessor(), is(otherNode));
-        assertThat(node.getPredecessorTraversalMethod(), is(method));
+        assertThat(node.getPredecessorTraversalMethod(), is(mockMethodDefinition));
     }
 
     @Test
@@ -104,8 +102,8 @@ public class GraphNodeTest {
         // given
         GraphNode node = new GraphNode(mockPageDescriptor);
         GraphNode otherNode = mock(GraphNode.class);
-        Method method = StartPointPage.class.getMethod("getOrdinaryPage");
-        node.setPredecessor(otherNode, method);
+        MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
+        node.setPredecessor(otherNode, mockMethodDefinition);
 
         // when
         boolean hasPredecessor = node.hasPredecessor();
@@ -115,18 +113,17 @@ public class GraphNodeTest {
     }
 
     @Test
-    public void pageClassIsDelegatedToPageDescriptor() {
+    public void pageDefinitionIsDelegatedToPageDescriptor() {
         // given
-        Class ordinaryPageClass = OrdinaryPage.class;
-        //noinspection unchecked
-        when(mockPageDescriptor.getPageClass()).thenReturn(ordinaryPageClass);
+        PageDefinition mockPageDefinition = mock(PageDefinition.class);
+        when(mockPageDescriptor.getPageDefinition()).thenReturn(mockPageDefinition);
         GraphNode node = new GraphNode(mockPageDescriptor);
 
         // when
-        Class<?> pageClass = node.getPageClass();
+        PageDefinition pageDefinition = node.getPageDefinition();
 
         // then
-        assertThat(pageClass == ordinaryPageClass, is(true));
+        assertThat(pageDefinition, is(mockPageDefinition));
     }
 
     @Test
@@ -140,14 +137,4 @@ public class GraphNodeTest {
         // then
         assertThat(pageDescriptor, is(mockPageDescriptor));
     }
-
-    @Page
-    private static class OrdinaryPage {}
-
-    @Page
-    @CrawlStartPoint(url="")
-    private static class StartPointPage {
-        public OrdinaryPage getOrdinaryPage() { return null; }
-    }
-
 }

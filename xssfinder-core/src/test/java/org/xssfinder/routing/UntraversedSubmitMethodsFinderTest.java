@@ -7,8 +7,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.remote.MethodDefinition;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +24,8 @@ public class UntraversedSubmitMethodsFinderTest {
     private PageDescriptor mockPageDescriptor;
     @Mock
     private Route mockRoute;
+    @Mock
+    private MethodDefinition mockMethodDefinition;
 
     private final List<Route> routes = new ArrayList<Route>();
     private final Set<PageDescriptor> descriptors = new HashSet<PageDescriptor>();
@@ -39,7 +41,7 @@ public class UntraversedSubmitMethodsFinderTest {
     @Test
     public void findsNoMethodsIfPageDescriptorsHaveNoSubmitMethods() {
         // when
-        SetMultimap<PageDescriptor, Method> untraversedSubmits = finder.getUntraversedSubmitMethods(routes, descriptors);
+        SetMultimap<PageDescriptor, MethodDefinition> untraversedSubmits = finder.getUntraversedSubmitMethods(routes, descriptors);
 
         // then
         assertThat(untraversedSubmits.isEmpty(), is(true));
@@ -48,15 +50,16 @@ public class UntraversedSubmitMethodsFinderTest {
     @Test
     public void findsNoMethodsIfPageDescriptorSubmitsAreUsedInRoute() throws Exception {
         // given
+
         when(mockPageDescriptor.getSubmitMethods()).thenReturn(ImmutableSet.of(
-                SomePage.class.getMethod("submit")
+                mockMethodDefinition
         ));
         when(mockRoute.getTraversedSubmitMethods()).thenReturn(ImmutableSet.of(
-                SomePage.class.getMethod("submit")
+                mockMethodDefinition
         ));
 
         // when
-        SetMultimap<PageDescriptor, Method> untraversedSubmits = finder.getUntraversedSubmitMethods(routes, descriptors);
+        SetMultimap<PageDescriptor, MethodDefinition> untraversedSubmits = finder.getUntraversedSubmitMethods(routes, descriptors);
 
         // then
         assertThat(untraversedSubmits.isEmpty(), is(true));
@@ -66,22 +69,17 @@ public class UntraversedSubmitMethodsFinderTest {
     public void findsMethodsIfNotInRoute() throws Exception {
         // given
         when(mockPageDescriptor.getSubmitMethods()).thenReturn(ImmutableSet.of(
-                SomePage.class.getMethod("submit")
+                mockMethodDefinition
         ));
 
         // when
-        SetMultimap<PageDescriptor, Method> untraversedSubmits = finder.getUntraversedSubmitMethods(routes, descriptors);
+        SetMultimap<PageDescriptor, MethodDefinition> untraversedSubmits = finder.getUntraversedSubmitMethods(routes, descriptors);
 
         // then
         assertThat(untraversedSubmits.size(), is(1));
-        Set<Method> expectedMethods = ImmutableSet.of(
-                SomePage.class.getMethod("submit")
+        Set<MethodDefinition> expectedMethods = ImmutableSet.of(
+                mockMethodDefinition
         );
         assertThat(untraversedSubmits.get(mockPageDescriptor), is(expectedMethods));
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    private static class SomePage {
-        public SomePage submit() { return null; }
     }
 }

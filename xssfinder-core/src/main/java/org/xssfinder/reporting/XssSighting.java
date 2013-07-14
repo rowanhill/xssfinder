@@ -1,29 +1,30 @@
 package org.xssfinder.reporting;
 
+import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.xss.XssDescriptor;
 
 /**
  * A sighting of a successful a particular XSS attack on a particular page
  */
 public class XssSighting {
-    private final Object sightingPageObject;
+    private final PageDefinition sightingPageDefinition;
     private final XssDescriptor xssDescriptor;
 
-    public XssSighting(Object sightingPageObject, XssDescriptor xssDescriptor) {
-        this.sightingPageObject = sightingPageObject;
+    public XssSighting(PageDefinition sightingPageDefinition, XssDescriptor xssDescriptor) {
+        this.sightingPageDefinition = sightingPageDefinition;
         this.xssDescriptor = xssDescriptor;
     }
 
     public String getVulnerableClassName() {
-        return xssDescriptor.getSubmitMethod().getDeclaringClass().getCanonicalName();
+        return xssDescriptor.getSubmitMethod().getOwningType().getIdentifier();
     }
 
     public String getSightingClassName() {
-        return sightingPageObject.getClass().getCanonicalName();
+        return sightingPageDefinition.getIdentifier();
     }
 
     public String getSubmitMethodName() {
-        return xssDescriptor.getSubmitMethod().getName();
+        return xssDescriptor.getSubmitMethod().getIdentifier();
     }
 
     public String getInputIdentifier() {

@@ -4,30 +4,26 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.remote.ExecutorWrapper;
 import org.xssfinder.reporting.XssJournal;
+import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.routing.Route;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PageContextFactoryTest {
     @Mock
-    private PageTraverser mockPageTraverser;
-    @Mock
-    private PageInstantiator mockPageInstantiator;
-    @Mock
     private Route mockRoute;
     @Mock
     private XssJournal mockXssJournal;
     @Mock
-    private SomePage mockPage;
-    @Mock
-    private DriverWrapper mockDriverWrapper;
+    private ExecutorWrapper mockExecutor;
     @Mock
     private PageTraversal mockPageTraversal;
 
@@ -35,20 +31,19 @@ public class PageContextFactoryTest {
     @Test
     public void constructsPageContexts() {
         // given
-        PageContextFactory factory = new PageContextFactory(mockPageTraverser, mockPageInstantiator);
-        when(mockRoute.getRootPageClass()).thenReturn((Class)SomePage.class);
+        PageContextFactory factory = new PageContextFactory();
+        PageTraversal mockPageTraversal = mock(PageTraversal.class);
+        PageDescriptor mockPageDescriptor = mock(PageDescriptor.class);
         when(mockRoute.getPageTraversal()).thenReturn(mockPageTraversal);
-        when(mockPageInstantiator.instantiatePage(SomePage.class)).thenReturn(mockPage);
+        when(mockRoute.getRootPageDescriptor()).thenReturn(mockPageDescriptor);
 
         // when
-        PageContext context = factory.createContext(mockDriverWrapper, mockRoute, mockXssJournal);
+        PageContext context = factory.createContext(mockExecutor, mockRoute, mockXssJournal);
 
         // then
-        verify(mockRoute).getRootPageClass();
-        verify(mockRoute).getPageTraversal();
-        verify(mockPageInstantiator).instantiatePage(SomePage.class);
         assertThat(context, is(notNullValue()));
+        assertThat(context.getPageTraversal(), is(mockPageTraversal));
+        assertThat(context.getPageDescriptor(), is(mockPageDescriptor));
+        assertThat(context.getExecutor(), is(mockExecutor));
     }
-
-    private static class SomePage {}
 }

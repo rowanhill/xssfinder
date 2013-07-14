@@ -2,44 +2,44 @@ package org.xssfinder.routing;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
+import org.xssfinder.remote.MethodDefinition;
 
-import java.lang.reflect.Method;
 import java.util.*;
 
 class UntraversedSubmitMethodsFinder {
 
-    SetMultimap<PageDescriptor, Method> getUntraversedSubmitMethods(
+    SetMultimap<PageDescriptor, MethodDefinition> getUntraversedSubmitMethods(
             List<Route> routes,
             Set<PageDescriptor> pageDescriptors
     ) {
-        Map<Method, PageDescriptor> submitMethodsToPageDescriptor = findSubmitMethodsToPageDescriptor(pageDescriptors);
-        for (Method usedMethod : findAllUsedSubmitMethods(routes)) {
+        Map<MethodDefinition, PageDescriptor> submitMethodsToPageDescriptor = findSubmitMethodsToPageDescriptor(pageDescriptors);
+        for (MethodDefinition usedMethod : findAllUsedSubmitMethods(routes)) {
             submitMethodsToPageDescriptor.remove(usedMethod);
         }
         return invertMap(submitMethodsToPageDescriptor);
     }
 
-    private Map<Method, PageDescriptor> findSubmitMethodsToPageDescriptor(Set<PageDescriptor> pageDescriptors) {
-        Map<Method, PageDescriptor> submitMethodsToPageDescriptor = new HashMap<Method, PageDescriptor>();
+    private Map<MethodDefinition, PageDescriptor> findSubmitMethodsToPageDescriptor(Set<PageDescriptor> pageDescriptors) {
+        Map<MethodDefinition, PageDescriptor> submitMethodsToPageDescriptor = new HashMap<MethodDefinition, PageDescriptor>();
         for (PageDescriptor descriptor : pageDescriptors) {
-            for (Method submitMethod : descriptor.getSubmitMethods()) {
+            for (MethodDefinition submitMethod : descriptor.getSubmitMethods()) {
                 submitMethodsToPageDescriptor.put(submitMethod, descriptor);
             }
         }
         return submitMethodsToPageDescriptor;
     }
 
-    private Set<Method> findAllUsedSubmitMethods(List<Route> routes) {
-        Set<Method> usedMethods = new HashSet<Method>();
+    private Set<MethodDefinition> findAllUsedSubmitMethods(List<Route> routes) {
+        Set<MethodDefinition> usedMethods = new HashSet<MethodDefinition>();
         for (Route route : routes) {
             usedMethods.addAll(route.getTraversedSubmitMethods());
         }
         return usedMethods;
     }
 
-    private SetMultimap<PageDescriptor, Method> invertMap(Map<Method, PageDescriptor> map) {
-        SetMultimap<PageDescriptor, Method> invertedMap = HashMultimap.create();
-        for (Map.Entry<Method, PageDescriptor> entry : map.entrySet()) {
+    private SetMultimap<PageDescriptor, MethodDefinition> invertMap(Map<MethodDefinition, PageDescriptor> map) {
+        SetMultimap<PageDescriptor, MethodDefinition> invertedMap = HashMultimap.create();
+        for (Map.Entry<MethodDefinition, PageDescriptor> entry : map.entrySet()) {
             invertedMap.put(entry.getValue(), entry.getKey());
         }
         return invertedMap;

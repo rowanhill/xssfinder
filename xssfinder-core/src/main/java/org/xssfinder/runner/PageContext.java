@@ -1,31 +1,29 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.remote.ExecutorWrapper;
+import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.routing.PageTraversal;
+
+import java.util.Map;
 
 /**
  * Describes the current page and associated context whilst traversing through a route
  */
 public class PageContext {
-    private final PageTraverser pageTraverser;
-    private final Object page;
-    private final DriverWrapper driverWrapper;
+    private final ExecutorWrapper executor;
     private final XssJournal xssJournal;
     private final PageTraversal pageTraversal;
     private PageDescriptor pageDescriptor;
 
     public PageContext(
-            PageTraverser pageTraverser,
-            Object page,
-            DriverWrapper driverWrapper,
+            ExecutorWrapper executor,
             XssJournal xssJournal,
             PageTraversal pageTraversal,
             PageDescriptor pageDescriptor
     ) {
-        this.pageTraverser = pageTraverser;
-        this.page = page;
-        this.driverWrapper = driverWrapper;
+        this.executor = executor;
         this.xssJournal = xssJournal;
         this.pageTraversal = pageTraversal;
         this.pageDescriptor = pageDescriptor;
@@ -47,22 +45,32 @@ public class PageContext {
         if (!hasNextContext()) {
             throw new IllegalStateException();
         }
-        Object nextPage = pageTraverser.traverse(page, pageTraversal, xssJournal);
-        return new PageContext(pageTraverser, nextPage, driverWrapper, xssJournal, pageTraversal.getNextTraversal(), pageTraversal.getResultingPageDescriptor());
+        Map<String, String> inputIdsToAttackIds = executor.traverseMethod(
+                pageTraversal.getMethod(),
+                pageTraversal.getTraversalMode().convertToThrift()
+        );
+        //qq Add inputIdsToAttackIds to xssJournal
+        return new PageContext(
+                executor,
+                xssJournal,
+                pageTraversal.getNextTraversal(),
+                pageTraversal.getResultingPageDescriptor()
+        );
     }
 
     /**
-     * @return The current page object
+     * @return The current page definition
      */
-    public Object getPage() {
-        return page;
+    //qq Do we still need this method?
+    public PageDefinition getPageDefinition() {
+        return pageDescriptor.getPageDefinition();
     }
 
     /**
-     * @return The DriverWrapper used by the page objects to interact with the web site under test
+     * @return The Executor used to interact with the web site under test
      */
-    public DriverWrapper getDriverWrapper() {
-        return driverWrapper;
+    public ExecutorWrapper getExecutor() {
+        return executor;
     }
 
     /**

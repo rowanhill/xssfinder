@@ -1,6 +1,7 @@
 package org.xssfinder.routing;
 
 import org.junit.Test;
+import org.xssfinder.remote.PageDefinition;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,13 +11,12 @@ import java.util.Set;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
 public class DjikstraResultFactoryTest {
     @Test
     public void createsDjikstraResult() {
         // given
-        Map<Class<?>, GraphNode> classesToNodes = new HashMap<Class<?>, GraphNode>();
+        Map<PageDefinition, GraphNode> classesToNodes = new HashMap<PageDefinition, GraphNode>();
         Set<GraphNode> leafNodes = new HashSet<GraphNode>();
         DjikstraResultFactory factory = new DjikstraResultFactory();
 

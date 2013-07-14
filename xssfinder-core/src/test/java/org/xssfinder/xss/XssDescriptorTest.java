@@ -1,28 +1,25 @@
 package org.xssfinder.xss;
 
 import org.junit.Test;
-
-import java.lang.reflect.Method;
+import org.xssfinder.remote.MethodDefinition;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class XssDescriptorTest {
     @Test
     public void submitMethodAndInputAreRequiredAndAvailable() throws Exception {
         // given
-        XssDescriptor descriptor = new XssDescriptor(Page.class.getMethod("submit"), "input identifier");
+        MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
+        XssDescriptor descriptor = new XssDescriptor(mockMethodDefinition, "input identifier");
 
         // when
-        Method submitMethod = descriptor.getSubmitMethod();
+        MethodDefinition submitMethodDefinition = descriptor.getSubmitMethod();
         String inputIdentifier = descriptor.getInputIdentifier();
 
         // then
-        assertThat(submitMethod, is(Page.class.getMethod("submit")));
+        assertThat(submitMethodDefinition, is(mockMethodDefinition));
         assertThat(inputIdentifier, is("input identifier"));
-    }
-
-    private static class Page {
-        public Page submit() { return null; }
     }
 }

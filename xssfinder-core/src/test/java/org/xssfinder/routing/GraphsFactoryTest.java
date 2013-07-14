@@ -8,11 +8,16 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.Page;
+import org.xssfinder.remote.MethodDefinition;
+import org.xssfinder.remote.PageDefinition;
 
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.xssfinder.testhelper.MockPageDefinitionBuilder.mockPageDefinition;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GraphsFactoryTest {
@@ -27,7 +32,7 @@ public class GraphsFactoryTest {
     @Test
     public void noGraphsCreatedFromEmptySetOfPages() {
         // given
-        Set<Class<?>> pages = ImmutableSet.of();
+        Set<PageDefinition> pages = ImmutableSet.of();
 
         // when
         Set<Graph> graphs = factory.createGraphs(pages);
@@ -40,7 +45,15 @@ public class GraphsFactoryTest {
     @Test
     public void singleGraphReturnedFromSimpleSetOfPages() {
         // given
-        Set<Class<?>> pages = ImmutableSet.of(HomePage.class, SecondPage.class);
+        PageDefinition mockSecondPage = mockPageDefinition().build();
+        PageDefinition mockHomePage = mockPageDefinition()
+                .markedAsCrawlStartPoint()
+                .withMethod()
+                    .toPage(mockSecondPage)
+                    .onPage()
+                .build();
+
+        Set<PageDefinition> pages = ImmutableSet.of(mockHomePage, mockSecondPage);
 
         // when
         Set<Graph> graphs = factory.createGraphs(pages);
@@ -48,14 +61,4 @@ public class GraphsFactoryTest {
         // then
         assertThat(graphs.size(), is(1));
     }
-
-    @SuppressWarnings("UnusedDeclaration")
-    @CrawlStartPoint(url="http://localhost/")
-    @Page
-    private static class HomePage {
-        public SecondPage goToSecondPage() { return null; }
-    }
-
-    @Page
-    private static class SecondPage {}
 }

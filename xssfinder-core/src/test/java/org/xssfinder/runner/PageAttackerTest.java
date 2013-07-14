@@ -6,10 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.remote.ExecutorWrapper;
+import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.xss.XssDescriptor;
 import org.xssfinder.xss.XssDescriptorFactory;
-import org.xssfinder.xss.XssGenerator;
 
 import java.util.Map;
 
@@ -20,18 +21,16 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class PageAttackerTest {
     @Mock
-    private XssGenerator mockXssGenerator;
+    private ExecutorWrapper mockExecutor;
     @Mock
     private XssDescriptorFactory mockXssDescriptorFactory;
 
     @Mock
     private PageContext mockPageContext;
     @Mock
-    private DriverWrapper mockDriverWrapper;
-    @Mock
     private PageTraversal mockPageTraversal;
     @Mock
-    private Object mockPage;
+    private PageDefinition mockPageDefinition;
     @Mock
     private XssDescriptor mockXssDescriptor;
 
@@ -39,12 +38,11 @@ public class PageAttackerTest {
 
     @Before
     public void setUp() {
-        when(mockPageContext.getDriverWrapper()).thenReturn(mockDriverWrapper);
         when(mockPageContext.getPageTraversal()).thenReturn(mockPageTraversal);
-        when(mockPageContext.getPage()).thenReturn(mockPage);
+        when(mockPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
         when(mockPageContext.hasNextContext()).thenReturn(true, false);
 
-        pageAttacker = new PageAttacker(mockXssGenerator, mockXssDescriptorFactory);
+        pageAttacker = new PageAttacker(mockExecutor, mockXssDescriptorFactory);
     }
 
     @Test
@@ -53,7 +51,7 @@ public class PageAttackerTest {
         pageAttacker.attackIfAboutToSubmit(mockPageContext);
 
         // then
-        verifyZeroInteractions(mockDriverWrapper);
+        verifyZeroInteractions(mockExecutor);
     }
 
     @Test
@@ -62,7 +60,7 @@ public class PageAttackerTest {
         pageAttacker.attackIfAboutToSubmit(mockPageContext);
 
         // then
-        verifyZeroInteractions(mockDriverWrapper);
+        verifyZeroInteractions(mockExecutor);
     }
 
     @Test
@@ -74,14 +72,14 @@ public class PageAttackerTest {
         pageAttacker.attackIfAboutToSubmit(mockPageContext);
 
         // then
-        verify(mockDriverWrapper).putXssAttackStringsInInputs(mockXssGenerator);
+        verify(mockExecutor).putXssAttackStringsInInputs();
     }
 
     @Test
     public void descriptionsOfAttackedInputsAreReturned() {
         //given
         when(mockPageTraversal.isSubmit()).thenReturn(true);
-        when(mockDriverWrapper.putXssAttackStringsInInputs(mockXssGenerator))
+        when(mockExecutor.putXssAttackStringsInInputs())
                 .thenReturn(ImmutableMap.of("body/form[1]/input[1]", "1"));
         when(mockXssDescriptorFactory.createXssDescriptor(mockPageTraversal, "body/form[1]/input[1]"))
                 .thenReturn(mockXssDescriptor);

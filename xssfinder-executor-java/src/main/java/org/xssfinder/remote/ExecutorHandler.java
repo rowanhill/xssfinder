@@ -6,6 +6,7 @@ import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class ExecutorHandler implements Executor.Iface {
@@ -29,5 +30,25 @@ public class ExecutorHandler implements Executor.Iface {
         } catch (NoPagesFoundException e) {
             throw new TException(e);
         }
+    }
+
+    @Override
+    public void visit(String url) throws TException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Map<String, String> putXssAttackStringsInInputs() throws TException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Set<String> getCurrentXssIds() throws TException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public int getFormCount() throws TException {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

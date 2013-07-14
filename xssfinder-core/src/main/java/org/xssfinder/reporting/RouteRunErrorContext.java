@@ -23,8 +23,8 @@ public class RouteRunErrorContext {
         exception.printStackTrace(printWriter);
     }
 
-    public String getPageClassName() {
-        return pageContext.getPageDescriptor().getPageClass().getCanonicalName();
+    public String getPageIdentifier() {
+        return pageContext.getPageDescriptor().getPageDefinition().getIdentifier();
     }
 
     public String getPageTraversalMethodString() {

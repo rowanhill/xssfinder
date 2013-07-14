@@ -1,5 +1,6 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.remote.ExecutorWrapper;
 import org.xssfinder.reporting.RouteRunErrorContext;
 import org.xssfinder.reporting.RouteRunErrorContextFactory;
 import org.xssfinder.routing.Route;
@@ -8,18 +9,18 @@ import org.xssfinder.reporting.XssJournal;
 import java.util.List;
 
 class RoutePageStrategyRunner {
-    private final DriverWrapper driverWrapper;
+    private final ExecutorWrapper executor;
     private final PageContextFactory contextFactory;
     private final LifecycleEventExecutor lifecycleEventExecutor;
     private final RouteRunErrorContextFactory errorContextFactory;
 
     public RoutePageStrategyRunner(
-            DriverWrapper driverWrapper,
+            ExecutorWrapper executor,
             PageContextFactory contextFactory,
             LifecycleEventExecutor lifecycleEventExecutor,
             RouteRunErrorContextFactory errorContextFactory
     ) {
-        this.driverWrapper = driverWrapper;
+        this.executor = executor;
         this.contextFactory = contextFactory;
         this.lifecycleEventExecutor = lifecycleEventExecutor;
         this.errorContextFactory = errorContextFactory;
@@ -42,11 +43,11 @@ class RoutePageStrategyRunner {
         Object lifecycleHandler = null;
         PageContext pageContext = null;
         try {
-            driverWrapper.visit(route.getUrl());
+            executor.visit(route.getUrl());
 
             lifecycleHandler = route.createLifecycleHandler();
 
-            pageContext = contextFactory.createContext(driverWrapper, route, xssJournal);
+            pageContext = contextFactory.createContext(executor, route, xssJournal);
             while (pageContext.hasNextContext()) {
                 executePageStrategies(pageStrategies, pageContext, xssJournal);
                 pageContext = pageContext.getNextContext();
@@ -71,7 +72,7 @@ class RoutePageStrategyRunner {
             return;
         }
         try {
-            lifecycleEventExecutor.afterRoute(lifecycleHandler, pageContext.getPage());
+            lifecycleEventExecutor.afterRoute(lifecycleHandler, pageContext.getPageDefinition());
         } catch (Exception e) {
             // Do nothing... for now
         }

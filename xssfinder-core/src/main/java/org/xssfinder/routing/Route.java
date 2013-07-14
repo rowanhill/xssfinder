@@ -1,11 +1,9 @@
 package org.xssfinder.routing;
 
-import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.reflection.*;
-import org.xssfinder.reflection.InstantiationException;
-import org.xssfinder.runner.LifecycleEventException;
+import org.xssfinder.remote.MethodDefinition;
+import org.xssfinder.remote.PageDefinition;
 
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,8 +30,9 @@ public class Route {
         this.pageTraversal = pageTraversal;
     }
 
-    public Class<?> getRootPageClass() {
-        return rootPageDescriptor.getPageClass();
+    //qq Rename
+    public PageDefinition getRootPageClass() {
+        return rootPageDescriptor.getPageDefinition();
     }
 
     public String getUrl() {
@@ -57,7 +56,7 @@ public class Route {
     }
 
     public void appendTraversal(
-            Method traversalMethod,
+            MethodDefinition traversalMethod,
             PageDescriptor pageDescriptor,
             PageTraversal.TraversalMode traversalMode
     ) {
@@ -72,8 +71,9 @@ public class Route {
     }
 
     public Object createLifecycleHandler() {
-        Class<?> pageClass = getRootPageClass();
-        CrawlStartPoint startPointAnnotation = pageClass.getAnnotation(CrawlStartPoint.class);
+        //qq
+        /*
+        PageDefinition pageClass = getRootPageClass();
         Class<?> handlerClass = startPointAnnotation.lifecycleHandler();
         if (handlerClass == Object.class) {
             // Object is the default lifecycle handler; it indicates that no handler has been set, so we return null
@@ -84,10 +84,12 @@ public class Route {
         } catch (InstantiationException ex) {
             throw new LifecycleEventException(ex);
         }
+        */
+        return null;
     }
 
-    public Set<Method> getTraversedSubmitMethods() {
-        Set<Method> usedMethods = new HashSet<Method>();
+    public Set<MethodDefinition> getTraversedSubmitMethods() {
+        Set<MethodDefinition> usedMethods = new HashSet<MethodDefinition>();
         PageTraversal traversal = getPageTraversal();
         while (traversal != null && traversal.getMethod() != null) {
             if (traversal.getTraversalMode() == PageTraversal.TraversalMode.SUBMIT && traversal.isSubmit()) {

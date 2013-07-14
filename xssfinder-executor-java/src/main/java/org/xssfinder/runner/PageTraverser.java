@@ -3,6 +3,7 @@ package org.xssfinder.runner;
 import org.xssfinder.CustomSubmitter;
 import org.xssfinder.CustomTraverser;
 import org.xssfinder.LabelledXssGenerator;
+import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.PageTraversal;
 
@@ -34,7 +35,7 @@ class PageTraverser {
      * @return The page object resulting from the traversal
      */
     public Object traverse(Object page, PageTraversal traversal, XssJournal xssJournal) {
-        Method method = traversal.getMethod();
+        MethodDefinition method = traversal.getMethod();
 
         CustomTraverser customTraverser = null;
         CustomSubmitter customSubmitter = null;
@@ -47,7 +48,7 @@ class PageTraverser {
             methodMustHaveNoArgs = customSubmitter == null;
         }
 
-        if (method.getParameterTypes().length > 0 && methodMustHaveNoArgs) {
+        if (method.isParameterised() && methodMustHaveNoArgs) {
             throw new UntraversableException("Cannot traverse methods that take parameters");
         }
 

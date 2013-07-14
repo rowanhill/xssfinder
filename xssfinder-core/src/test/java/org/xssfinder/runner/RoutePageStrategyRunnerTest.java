@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.remote.ExecutorWrapper;
+import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.reporting.RouteRunErrorContext;
 import org.xssfinder.reporting.RouteRunErrorContextFactory;
 import org.xssfinder.routing.Route;
@@ -21,7 +23,7 @@ public class RoutePageStrategyRunnerTest {
     private static final String URL = "http://localhost";
 
     @Mock
-    private DriverWrapper mockDriverWrapper;
+    private ExecutorWrapper mockExecutor;
     @Mock
     private PageContextFactory mockPageContextFactory;
     @Mock
@@ -37,7 +39,7 @@ public class RoutePageStrategyRunnerTest {
     @Mock
     private RouteRunErrorContextFactory mockErrorContextFactory;
     @Mock
-    private Object mockPage;
+    private PageDefinition mockPageDefinition;
 
     private final List<Route> routes = new ArrayList<Route>();
     private final List<PageStrategy> pageStrategies = new ArrayList<PageStrategy>();
@@ -46,14 +48,14 @@ public class RoutePageStrategyRunnerTest {
 
     @Before
     public void setUp() throws Exception {
-        when(mockPageContextFactory.createContext(mockDriverWrapper, mockRoute, mockXssJournal)).thenReturn(mockPageContext);
-        when(mockPageContext.getPage()).thenReturn(mockPage);
+        when(mockPageContextFactory.createContext(mockExecutor, mockRoute, mockXssJournal)).thenReturn(mockPageContext);
+        when(mockPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
         when(mockRoute.getUrl()).thenReturn(URL);
         when(mockRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
         routes.add(mockRoute);
 
         runner = new RoutePageStrategyRunner(
-                mockDriverWrapper,
+                mockExecutor,
                 mockPageContextFactory,
                 mockLifecycleEventExecutor,
                 mockErrorContextFactory
@@ -66,7 +68,7 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        verify(mockDriverWrapper).visit(URL);
+        verify(mockExecutor).visit(URL);
     }
 
     @Test
@@ -96,7 +98,7 @@ public class RoutePageStrategyRunnerTest {
         InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockLifecycleEventExecutor);
         inOrder.verify(mockStrategy1).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
-        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPage);
+        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPageDefinition);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -110,8 +112,8 @@ public class RoutePageStrategyRunnerTest {
         PageContext mockNextContext = mock(PageContext.class);
         when(mockPageContext.hasNextContext()).thenReturn(true);
         when(mockPageContext.getNextContext()).thenReturn(mockNextContext);
-        Object mockNextPage = new Object();
-        when(mockNextContext.getPage()).thenReturn(mockNextPage);
+        PageDefinition mockNextPage = mock(PageDefinition.class);
+        when(mockNextContext.getPageDefinition()).thenReturn(mockNextPage);
 
         // when
         runner.run(routes, pageStrategies, mockXssJournal);
@@ -133,8 +135,8 @@ public class RoutePageStrategyRunnerTest {
         pageStrategies.add(mockStrategy);
         Route mockOtherRoute = mock(Route.class);
         PageContext mockOtherPageContext = mock(PageContext.class);
-        when(mockPageContextFactory.createContext(mockDriverWrapper, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
-        when(mockOtherPageContext.getPage()).thenReturn(mockPage);
+        when(mockPageContextFactory.createContext(mockExecutor, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
+        when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
         when(mockOtherRoute.getUrl()).thenReturn(URL);
         when(mockOtherRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
         routes.add(mockOtherRoute);
@@ -160,7 +162,7 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPage);
+        verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPageDefinition);
     }
 
     @Test
@@ -189,14 +191,14 @@ public class RoutePageStrategyRunnerTest {
         pageStrategies.add(mockStrategy);
         Route mockOtherRoute = mock(Route.class);
         PageContext mockOtherPageContext = mock(PageContext.class);
-        when(mockPageContextFactory.createContext(mockDriverWrapper, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
-        when(mockOtherPageContext.getPage()).thenReturn(mockPage);
+        when(mockPageContextFactory.createContext(mockExecutor, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
+        when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
         when(mockOtherRoute.getUrl()).thenReturn(URL);
         when(mockOtherRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
         routes.add(mockOtherRoute);
 
         doThrow(new RuntimeException("Error!"))
-                .when(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPage);
+                .when(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPageDefinition);
 
         // when
         runner.run(routes, pageStrategies, mockXssJournal);
@@ -208,7 +210,7 @@ public class RoutePageStrategyRunnerTest {
     @Test
     public void afterRouteNotCalledIfExceptionThrownBeforePageContextCanBeCreated() {
         // given
-        when(mockPageContextFactory.createContext(mockDriverWrapper, mockRoute, mockXssJournal))
+        when(mockPageContextFactory.createContext(mockExecutor, mockRoute, mockXssJournal))
                 .thenThrow(new RuntimeException("Error!"));
 
         // when

@@ -1,6 +1,12 @@
 package org.xssfinder.reporting;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.remote.MethodDefinition;
+import org.xssfinder.remote.PageDefinition;
+import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.xss.XssDescriptor;
 
 import static org.hamcrest.Matchers.is;
@@ -8,73 +14,70 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class XssSightingTest {
+    @Mock
+    private XssDescriptor mockDescriptor;
+    @Mock
+    private PageDefinition mockPageDefinition;
+    @Mock
+    private MethodDefinition mockMethodDefinition;
+
     @Test
     public void vulnerableClassNameIsAvailable() throws Exception {
         // given
-        Object mockPageObject = mock(Object.class);
-        XssDescriptor mockDescriptor = mock(XssDescriptor.class);
-        when(mockDescriptor.getSubmitMethod()).thenReturn(FormPage.class.getMethod("submit"));
-        XssSighting sighting = new XssSighting(mockPageObject, mockDescriptor);
+        PageDefinition mockOwningPageDefinition = mock(PageDefinition.class);
+        when(mockOwningPageDefinition.getIdentifier()).thenReturn("pageIdentifier");
+        when(mockMethodDefinition.getOwningType()).thenReturn(mockOwningPageDefinition);
+        when(mockDescriptor.getSubmitMethod()).thenReturn(mockMethodDefinition);
+        XssSighting sighting = new XssSighting(mockPageDefinition, mockDescriptor);
 
         // when
         String vulnerableClassName = sighting.getVulnerableClassName();
 
         // then
-        assertThat(vulnerableClassName, is("org.xssfinder.reporting.XssSightingTest.FormPage"));
+        assertThat(vulnerableClassName, is("pageIdentifier"));
     }
 
     @Test
     public void sightingClassNameIsAvailable() throws Exception {
         // given
-        Object dummyPageObject = new ResultsPage();
-        XssDescriptor mockDescriptor = mock(XssDescriptor.class);
-        when(mockDescriptor.getSubmitMethod()).thenReturn(FormPage.class.getMethod("submit"));
-        XssSighting sighting = new XssSighting(dummyPageObject, mockDescriptor);
+        when(mockDescriptor.getSubmitMethod()).thenReturn(mockMethodDefinition);
+        when(mockMethodDefinition.getIdentifier()).thenReturn("methodIdentifier");
+        when(mockPageDefinition.getIdentifier()).thenReturn("pageIdentifier");
+        XssSighting sighting = new XssSighting(mockPageDefinition, mockDescriptor);
 
         // when
-        String vulnerableClassName = sighting.getSightingClassName();
+        String sightingClassName = sighting.getSightingClassName();
 
         // then
-        assertThat(vulnerableClassName, is("org.xssfinder.reporting.XssSightingTest.ResultsPage"));
+        assertThat(sightingClassName, is("pageIdentifier"));
     }
 
     @Test
     public void submitMethodNameIsAvailable() throws Exception {
         // given
-        Object mockPageObject = mock(Object.class);
-        XssDescriptor mockDescriptor = mock(XssDescriptor.class);
-        when(mockDescriptor.getSubmitMethod()).thenReturn(FormPage.class.getMethod("submit"));
-        XssSighting sighting = new XssSighting(mockPageObject, mockDescriptor);
+        when(mockMethodDefinition.getIdentifier()).thenReturn("methodIdentifier");
+        when(mockDescriptor.getSubmitMethod()).thenReturn(mockMethodDefinition);
+        XssSighting sighting = new XssSighting(mockPageDefinition, mockDescriptor);
 
         // when
         String submitMethodName = sighting.getSubmitMethodName();
 
         // then
-        assertThat(submitMethodName, is("submit"));
+        assertThat(submitMethodName, is("methodIdentifier"));
     }
 
     @Test
     public void inputIdentifierIsAvailable() throws Exception {
         // given
-        Object mockPageObject = mock(Object.class);
-        XssDescriptor mockDescriptor = mock(XssDescriptor.class);
         when(mockDescriptor.getInputIdentifier()).thenReturn("/some/xpath");
-        XssSighting sighting = new XssSighting(mockPageObject, mockDescriptor);
+        XssSighting sighting = new XssSighting(mockPageDefinition, mockDescriptor);
 
         // when
         String inputIdentifier = sighting.getInputIdentifier();
 
         // then
         assertThat(inputIdentifier, is("/some/xpath"));
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    private static class FormPage {
-        public ResultsPage submit() { return null; }
-    }
-
-    private static class ResultsPage {
-
     }
 }

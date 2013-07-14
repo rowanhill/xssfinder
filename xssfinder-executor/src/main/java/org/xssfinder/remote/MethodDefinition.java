@@ -32,9 +32,10 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
 
   private static final org.apache.thrift.protocol.TField IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("identifier", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField RETURN_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("returnType", org.apache.thrift.protocol.TType.STRUCT, (short)2);
-  private static final org.apache.thrift.protocol.TField PARAMETERISED_FIELD_DESC = new org.apache.thrift.protocol.TField("parameterised", org.apache.thrift.protocol.TType.BOOL, (short)3);
-  private static final org.apache.thrift.protocol.TField SUBMIT_ANNOTATED_FIELD_DESC = new org.apache.thrift.protocol.TField("submitAnnotated", org.apache.thrift.protocol.TType.BOOL, (short)4);
-  private static final org.apache.thrift.protocol.TField CUSTOM_TRAVERSED_FIELD_DESC = new org.apache.thrift.protocol.TField("customTraversed", org.apache.thrift.protocol.TType.BOOL, (short)5);
+  private static final org.apache.thrift.protocol.TField OWNING_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("owningType", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+  private static final org.apache.thrift.protocol.TField PARAMETERISED_FIELD_DESC = new org.apache.thrift.protocol.TField("parameterised", org.apache.thrift.protocol.TType.BOOL, (short)4);
+  private static final org.apache.thrift.protocol.TField SUBMIT_ANNOTATED_FIELD_DESC = new org.apache.thrift.protocol.TField("submitAnnotated", org.apache.thrift.protocol.TType.BOOL, (short)5);
+  private static final org.apache.thrift.protocol.TField CUSTOM_TRAVERSED_FIELD_DESC = new org.apache.thrift.protocol.TField("customTraversed", org.apache.thrift.protocol.TType.BOOL, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -44,6 +45,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
 
   public String identifier; // required
   public PageDefinition returnType; // required
+  public PageDefinition owningType; // required
   public boolean parameterised; // required
   public boolean submitAnnotated; // required
   public boolean customTraversed; // required
@@ -52,9 +54,10 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     IDENTIFIER((short)1, "identifier"),
     RETURN_TYPE((short)2, "returnType"),
-    PARAMETERISED((short)3, "parameterised"),
-    SUBMIT_ANNOTATED((short)4, "submitAnnotated"),
-    CUSTOM_TRAVERSED((short)5, "customTraversed");
+    OWNING_TYPE((short)3, "owningType"),
+    PARAMETERISED((short)4, "parameterised"),
+    SUBMIT_ANNOTATED((short)5, "submitAnnotated"),
+    CUSTOM_TRAVERSED((short)6, "customTraversed");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -73,11 +76,13 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
           return IDENTIFIER;
         case 2: // RETURN_TYPE
           return RETURN_TYPE;
-        case 3: // PARAMETERISED
+        case 3: // OWNING_TYPE
+          return OWNING_TYPE;
+        case 4: // PARAMETERISED
           return PARAMETERISED;
-        case 4: // SUBMIT_ANNOTATED
+        case 5: // SUBMIT_ANNOTATED
           return SUBMIT_ANNOTATED;
-        case 5: // CUSTOM_TRAVERSED
+        case 6: // CUSTOM_TRAVERSED
           return CUSTOM_TRAVERSED;
         default:
           return null;
@@ -130,6 +135,8 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RETURN_TYPE, new org.apache.thrift.meta_data.FieldMetaData("returnType", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PageDefinition.class)));
+    tmpMap.put(_Fields.OWNING_TYPE, new org.apache.thrift.meta_data.FieldMetaData("owningType", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PageDefinition.class)));
     tmpMap.put(_Fields.PARAMETERISED, new org.apache.thrift.meta_data.FieldMetaData("parameterised", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.SUBMIT_ANNOTATED, new org.apache.thrift.meta_data.FieldMetaData("submitAnnotated", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -146,6 +153,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
   public MethodDefinition(
     String identifier,
     PageDefinition returnType,
+    PageDefinition owningType,
     boolean parameterised,
     boolean submitAnnotated,
     boolean customTraversed)
@@ -153,6 +161,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
     this();
     this.identifier = identifier;
     this.returnType = returnType;
+    this.owningType = owningType;
     this.parameterised = parameterised;
     setParameterisedIsSet(true);
     this.submitAnnotated = submitAnnotated;
@@ -173,6 +182,9 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
     if (other.isSetReturnType()) {
       this.returnType = new PageDefinition(other.returnType);
     }
+    if (other.isSetOwningType()) {
+      this.owningType = new PageDefinition(other.owningType);
+    }
     this.parameterised = other.parameterised;
     this.submitAnnotated = other.submitAnnotated;
     this.customTraversed = other.customTraversed;
@@ -186,6 +198,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
   public void clear() {
     this.identifier = null;
     this.returnType = null;
+    this.owningType = null;
     setParameterisedIsSet(false);
     this.parameterised = false;
     setSubmitAnnotatedIsSet(false);
@@ -239,6 +252,30 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
   public void setReturnTypeIsSet(boolean value) {
     if (!value) {
       this.returnType = null;
+    }
+  }
+
+  public PageDefinition getOwningType() {
+    return this.owningType;
+  }
+
+  public MethodDefinition setOwningType(PageDefinition owningType) {
+    this.owningType = owningType;
+    return this;
+  }
+
+  public void unsetOwningType() {
+    this.owningType = null;
+  }
+
+  /** Returns true if field owningType is set (has been assigned a value) and false otherwise */
+  public boolean isSetOwningType() {
+    return this.owningType != null;
+  }
+
+  public void setOwningTypeIsSet(boolean value) {
+    if (!value) {
+      this.owningType = null;
     }
   }
 
@@ -329,6 +366,14 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
       }
       break;
 
+    case OWNING_TYPE:
+      if (value == null) {
+        unsetOwningType();
+      } else {
+        setOwningType((PageDefinition)value);
+      }
+      break;
+
     case PARAMETERISED:
       if (value == null) {
         unsetParameterised();
@@ -364,6 +409,9 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
     case RETURN_TYPE:
       return getReturnType();
 
+    case OWNING_TYPE:
+      return getOwningType();
+
     case PARAMETERISED:
       return Boolean.valueOf(isParameterised());
 
@@ -388,6 +436,8 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
       return isSetIdentifier();
     case RETURN_TYPE:
       return isSetReturnType();
+    case OWNING_TYPE:
+      return isSetOwningType();
     case PARAMETERISED:
       return isSetParameterised();
     case SUBMIT_ANNOTATED:
@@ -426,6 +476,15 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
       if (!(this_present_returnType && that_present_returnType))
         return false;
       if (!this.returnType.equals(that.returnType))
+        return false;
+    }
+
+    boolean this_present_owningType = true && this.isSetOwningType();
+    boolean that_present_owningType = true && that.isSetOwningType();
+    if (this_present_owningType || that_present_owningType) {
+      if (!(this_present_owningType && that_present_owningType))
+        return false;
+      if (!this.owningType.equals(that.owningType))
         return false;
     }
 
@@ -488,6 +547,16 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
     }
     if (isSetReturnType()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.returnType, typedOther.returnType);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetOwningType()).compareTo(typedOther.isSetOwningType());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOwningType()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.owningType, typedOther.owningType);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -555,6 +624,14 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
       sb.append("null");
     } else {
       sb.append(this.returnType);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("owningType:");
+    if (this.owningType == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.owningType);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -630,7 +707,16 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // PARAMETERISED
+          case 3: // OWNING_TYPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.owningType = new PageDefinition();
+              struct.owningType.read(iprot);
+              struct.setOwningTypeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // PARAMETERISED
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.parameterised = iprot.readBool();
               struct.setParameterisedIsSet(true);
@@ -638,7 +724,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // SUBMIT_ANNOTATED
+          case 5: // SUBMIT_ANNOTATED
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.submitAnnotated = iprot.readBool();
               struct.setSubmitAnnotatedIsSet(true);
@@ -646,7 +732,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // CUSTOM_TRAVERSED
+          case 6: // CUSTOM_TRAVERSED
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.customTraversed = iprot.readBool();
               struct.setCustomTraversedIsSet(true);
@@ -677,6 +763,11 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
       if (struct.returnType != null) {
         oprot.writeFieldBegin(RETURN_TYPE_FIELD_DESC);
         struct.returnType.write(oprot);
+        oprot.writeFieldEnd();
+      }
+      if (struct.owningType != null) {
+        oprot.writeFieldBegin(OWNING_TYPE_FIELD_DESC);
+        struct.owningType.write(oprot);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldBegin(PARAMETERISED_FIELD_DESC);
@@ -712,21 +803,27 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
       if (struct.isSetReturnType()) {
         optionals.set(1);
       }
-      if (struct.isSetParameterised()) {
+      if (struct.isSetOwningType()) {
         optionals.set(2);
       }
-      if (struct.isSetSubmitAnnotated()) {
+      if (struct.isSetParameterised()) {
         optionals.set(3);
       }
-      if (struct.isSetCustomTraversed()) {
+      if (struct.isSetSubmitAnnotated()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetCustomTraversed()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetIdentifier()) {
         oprot.writeString(struct.identifier);
       }
       if (struct.isSetReturnType()) {
         struct.returnType.write(oprot);
+      }
+      if (struct.isSetOwningType()) {
+        struct.owningType.write(oprot);
       }
       if (struct.isSetParameterised()) {
         oprot.writeBool(struct.parameterised);
@@ -742,7 +839,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, MethodDefinition struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.identifier = iprot.readString();
         struct.setIdentifierIsSet(true);
@@ -753,14 +850,19 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
         struct.setReturnTypeIsSet(true);
       }
       if (incoming.get(2)) {
+        struct.owningType = new PageDefinition();
+        struct.owningType.read(iprot);
+        struct.setOwningTypeIsSet(true);
+      }
+      if (incoming.get(3)) {
         struct.parameterised = iprot.readBool();
         struct.setParameterisedIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(4)) {
         struct.submitAnnotated = iprot.readBool();
         struct.setSubmitAnnotatedIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.customTraversed = iprot.readBool();
         struct.setCustomTraversedIsSet(true);
       }

@@ -3,6 +3,7 @@ package org.xssfinder.routing;
 import com.google.common.collect.ImmutableSet;
 import org.hamcrest.Matcher;
 import org.junit.Test;
+import org.xssfinder.remote.PageDefinition;
 
 import java.util.Map;
 import java.util.Set;
@@ -14,23 +15,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class GraphNodesFactoryTest {
-    @SuppressWarnings("unchecked")
     @Test
     public void createsNodesFromPageDescriptors() {
         // given
         PageDescriptor mockPageDescriptor = mock(PageDescriptor.class);
-        when(mockPageDescriptor.getPageClass()).thenReturn((Class)SomePage.class);
+        PageDefinition mockPageDefinition = mock(PageDefinition.class);
+        when(mockPageDescriptor.getPageDefinition()).thenReturn(mockPageDefinition);
         Set<PageDescriptor> descriptors = ImmutableSet.of(mockPageDescriptor);
         GraphNodesFactory factory = new GraphNodesFactory();
 
         // when
-        Map<Class<?>, GraphNode> nodes = factory.createNodes(descriptors);
+        Map<PageDefinition, GraphNode> nodes = factory.createNodes(descriptors);
 
         // then
         assertThat(nodes.size(), is(1));
-        assertThat(nodes, (Matcher)hasKey(SomePage.class));
-        assertThat(nodes.get(SomePage.class).getPageDescriptor(), is(mockPageDescriptor));
+        assertThat(nodes, hasKey(mockPageDefinition));
+        assertThat(nodes.get(mockPageDefinition).getPageDescriptor(), is(mockPageDescriptor));
     }
-
-    private static class SomePage {}
 }

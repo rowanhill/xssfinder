@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.xssfinder.routing.PageTraversal;
+import org.xssfinder.remote.ExecutorWrapper;
 import org.xssfinder.xss.XssDetector;
 import org.xssfinder.reporting.XssJournal;
 
@@ -27,14 +27,10 @@ public class DetectSuccessfulXssPageStrategyTest {
     @Test
     public void processingPageMarksAllPresentXssIdsAsSuccessfulInJournal() {
         // given
-        Object page = new Object();
-        PageTraversal mockNextTraversal = mock(PageTraversal.class);
-        DriverWrapper mockDriverWrapper = mock(DriverWrapper.class);
-        when(mockPageContext.getPage()).thenReturn(page);
-        when(mockPageContext.getDriverWrapper()).thenReturn(mockDriverWrapper);
-        when(mockPageContext.getPageTraversal()).thenReturn(mockNextTraversal);
+        ExecutorWrapper mockExecutor = mock(ExecutorWrapper.class);
+        when(mockPageContext.getExecutor()).thenReturn(mockExecutor);
         Set<String> successfulXssIds = ImmutableSet.of("1", "2", "5");
-        when(mockXssDetector.getCurrentXssIds(mockDriverWrapper)).thenReturn(successfulXssIds);
+        when(mockXssDetector.getCurrentXssIds(mockExecutor)).thenReturn(successfulXssIds);
         DetectSuccessfulXssPageStrategy strategy = new DetectSuccessfulXssPageStrategy(mockXssDetector);
 
         // when

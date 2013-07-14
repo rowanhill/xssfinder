@@ -1,5 +1,7 @@
 package org.xssfinder.routing;
 
+import org.xssfinder.remote.PageDefinition;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +13,7 @@ public class RouteGenerator {
         this.graphsFactory = graphsFactory;
     }
 
-    public List<Route> generateRoutes(Set<Class<?>> pageClasses) {
+    public List<Route> generateRoutes(Set<PageDefinition> pageClasses) {
         Set<Graph> graphs = graphsFactory.createGraphs(pageClasses);
         List<Route> routes = new ArrayList<Route>();
 

@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.remote.PageDefinition;
 
 import java.util.*;
 
@@ -18,7 +19,10 @@ public class DjikstraResultTest {
     @Mock
     private RouteFactory mockRouteFactory;
 
-    private Map<Class<?>, GraphNode> classesToNodes = new HashMap<Class<?>, GraphNode>();
+    @Mock
+    private PageDefinition mockPageDefinition;
+
+    private Map<PageDefinition, GraphNode> classesToNodes = new HashMap<PageDefinition, GraphNode>();
     private Set<GraphNode> leafNodes = new HashSet<GraphNode>();
 
     @Test
@@ -43,11 +47,11 @@ public class DjikstraResultTest {
         // given
         DjikstraResult djikstraResult = new DjikstraResult(mockRouteFactory, classesToNodes, leafNodes);
         GraphNode mockNode = mock(GraphNode.class);
-        classesToNodes.put(SomePage.class, mockNode);
+        classesToNodes.put(mockPageDefinition, mockNode);
         Route mockRoute = mockRouteCreationForNode(mockNode);
 
         // when
-        Route route = djikstraResult.createRouteEndingAtClass(SomePage.class);
+        Route route = djikstraResult.createRouteEndingAtClass(mockPageDefinition);
 
         // then
         assertThat(route, is(mockRoute));
@@ -64,6 +68,4 @@ public class DjikstraResultTest {
         when(mockRouteFactory.createRouteEndingAtNode(mockNode)).thenReturn(mockRoute);
         return mockRoute;
     }
-
-    private static class SomePage {}
 }

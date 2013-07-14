@@ -1,5 +1,6 @@
 package org.xssfinder.reporting;
 
+import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.runner.PageContext;
 import org.xssfinder.xss.XssDescriptor;
 
@@ -11,7 +12,7 @@ import java.util.*;
 public class XssJournal {
     private final Map<String, XssDescriptor> descriptorsById = new HashMap<String, XssDescriptor>();
     private final Map<String, XssSighting> xssSightingsById = new HashMap<String, XssSighting>();
-    private final Set<Class<?>> pagesClassesWithUntestedInputs = new HashSet<Class<?>>();
+    private final Set<PageDefinition> pagesDefinitionsWithUntestedInputs = new HashSet<PageDefinition>();
     private final List<RouteRunErrorContext> errorContexts = new ArrayList<RouteRunErrorContext>();
     private final XssSightingFactory xssSightingFactory;
 
@@ -40,12 +41,12 @@ public class XssJournal {
         return new HashSet<XssSighting>(xssSightingsById.values());
     }
 
-    public void addPageClassWithUntestedInputs(Class<?> pageClass) {
-        pagesClassesWithUntestedInputs.add(pageClass);
+    public void addPageClassWithUntestedInputs(PageDefinition pageClass) {
+        pagesDefinitionsWithUntestedInputs.add(pageClass);
     }
 
-    public Set<Class<?>> getPagesClassWithUntestedInputs() {
-        return pagesClassesWithUntestedInputs;
+    public Set<PageDefinition> getPagesClassWithUntestedInputs() {
+        return pagesDefinitionsWithUntestedInputs;
     }
 
     public void addErrorContext(RouteRunErrorContext errorContext) {

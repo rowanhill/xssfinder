@@ -15,6 +15,6 @@ public class DetectSuccessfulXssPageStrategy implements PageStrategy {
 
     @Override
     public void processPage(PageContext pageContext, XssJournal xssJournal) {
-        xssJournal.markAsSuccessful(pageContext, xssDetector.getCurrentXssIds(pageContext.getDriverWrapper()));
+        xssJournal.markAsSuccessful(pageContext, xssDetector.getCurrentXssIds(pageContext.getExecutor()));
     }
 }

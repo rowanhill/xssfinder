@@ -1,5 +1,6 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.remote.ExecutorWrapper;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.PageDescriptor;
 
@@ -9,14 +10,14 @@ import org.xssfinder.routing.PageDescriptor;
 public class DetectUntestedInputsPageStrategy implements PageStrategy {
     @Override
     public void processPage(PageContext pageContext, XssJournal xssJournal) {
-        DriverWrapper driverWrapper = pageContext.getDriverWrapper();
+        ExecutorWrapper driverWrapper = pageContext.getExecutor();
         int seenForms = driverWrapper.getFormCount();
 
         PageDescriptor pageDescriptor = pageContext.getPageDescriptor();
         int submitMethods = pageDescriptor.getSubmitMethods().size();
 
         if (seenForms > submitMethods) {
-            xssJournal.addPageClassWithUntestedInputs(pageDescriptor.getPageClass());
+            xssJournal.addPageClassWithUntestedInputs(pageDescriptor.getPageDefinition());
         }
     }
 }
