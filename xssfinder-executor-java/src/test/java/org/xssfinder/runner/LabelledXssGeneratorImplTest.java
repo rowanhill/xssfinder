@@ -1,28 +1,31 @@
 package org.xssfinder.runner;
 
+import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.xss.XssAttack;
+import org.xssfinder.xss.XssGenerator;
 
-@Ignore("Need to work out how to replace LabelledXssGenerator")
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public class LabelledXssGeneratorImplTest {
     private static final String LABEL = "someLabel";
     private static final String XSS_TEXT = "some XSS";
     private static final String ATTACK_ID = "attackId";
 
-    /*
     @Mock
     private XssGenerator mockXssGenerator;
-    @Mock
-    private XssJournal mockJournal;
-    @Mock
-    private XssDescriptorFactory mockDescriptorFactory;
-    @Mock
-    private PageTraversal mockTraversal;
-    @Mock
-    private XssDescriptor mockXssDescriptor;
     @Mock
     private XssAttack mockAttack;
 
@@ -31,8 +34,6 @@ public class LabelledXssGeneratorImplTest {
 
     @Before
     public void setUp() {
-        when(mockDescriptorFactory.createXssDescriptor(mockTraversal, LABEL)).thenReturn(mockXssDescriptor);
-
         when(mockAttack.getAttackString()).thenReturn(XSS_TEXT);
         when(mockAttack.getIdentifier()).thenReturn(ATTACK_ID);
         when(mockXssGenerator.createXssAttack()).thenReturn(mockAttack);
@@ -48,12 +49,15 @@ public class LabelledXssGeneratorImplTest {
     }
 
     @Test
-    public void generatingXssAddsDescriptorToJournal() {
-        // when
+    public void generatedXssIdIsAvailableKeyedByLabel() {
+        // given
         labelledXssGenerator.getXssAttackTextForLabel(LABEL);
 
+        // when
+        Map<String,String> labelToXssId = labelledXssGenerator.getLabelsToAttackIds();
+
         // then
-        verify(mockJournal).addXssDescriptor(ATTACK_ID, mockXssDescriptor);
+        Map<String, String> expectedLabelToXssId = ImmutableMap.of(LABEL, ATTACK_ID);
+        assertThat(labelToXssId, is(expectedLabelToXssId));
     }
-    */
 }

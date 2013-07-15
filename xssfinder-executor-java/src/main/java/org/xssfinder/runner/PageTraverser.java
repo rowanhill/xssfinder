@@ -2,7 +2,6 @@ package org.xssfinder.runner;
 
 import org.xssfinder.CustomSubmitter;
 import org.xssfinder.CustomTraverser;
-import org.xssfinder.LabelledXssGenerator;
 import org.xssfinder.remote.TraversalMode;
 
 import java.lang.reflect.InvocationTargetException;
@@ -61,9 +60,10 @@ public class PageTraverser {
                 }
             } else {
                 if (customSubmitter != null) {
-                    LabelledXssGenerator generator = null;
-                            //qq labelledXssGeneratorFactory.createLabelledXssGenerator(traversal, xssJournal);
+                    LabelledXssGeneratorImpl generator =
+                            labelledXssGeneratorFactory.createLabelledXssGenerator();
                     newPage = customSubmitter.submit(page, generator);
+                    inputIdsToAttackIds.putAll(generator.getLabelsToAttackIds());
                 } else {
                     newPage = invokeNoArgsMethod(page, method);
                 }

@@ -1,31 +1,29 @@
 package org.xssfinder.runner;
 
 import org.xssfinder.LabelledXssGenerator;
+import org.xssfinder.xss.XssAttack;
+import org.xssfinder.xss.XssGenerator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LabelledXssGeneratorImpl implements LabelledXssGenerator {
-    /*private final XssGenerator xssGenerator;
-    private final XssJournal xssJournal;
-    private final XssDescriptorFactory xssDescriptorFactory;
-    private final PageTraversal pageTraversal;
+    private final XssGenerator xssGenerator;
+    private final Map<String, String> labelsToAttackIds;
 
-    public LabelledXssGeneratorImpl(
-            XssGenerator xssGenerator,
-            XssJournal xssJournal,
-            XssDescriptorFactory xssDescriptorFactory,
-            PageTraversal pageTraversal) {
+    public LabelledXssGeneratorImpl(XssGenerator xssGenerator) {
         this.xssGenerator = xssGenerator;
-        this.xssJournal = xssJournal;
-        this.xssDescriptorFactory = xssDescriptorFactory;
-        this.pageTraversal = pageTraversal;
-    }*/
+        this.labelsToAttackIds = new HashMap<String, String>();
+    }
 
     @Override
     public String getXssAttackTextForLabel(String label) {
-        /*XssAttack attack = xssGenerator.createXssAttack();
-        XssDescriptor descriptor = xssDescriptorFactory.createXssDescriptor(pageTraversal, label);
-        xssJournal.addXssDescriptor(attack.getIdentifier(), descriptor);
+        XssAttack attack = xssGenerator.createXssAttack();
+        labelsToAttackIds.put(label, attack.getIdentifier());
         return attack.getAttackString();
-        */
-        return null;
+    }
+
+    public Map<String, String> getLabelsToAttackIds() {
+        return labelsToAttackIds;
     }
 }

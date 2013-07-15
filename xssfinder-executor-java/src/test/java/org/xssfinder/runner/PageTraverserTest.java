@@ -1,5 +1,6 @@
 package org.xssfinder.runner;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,11 +8,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CustomSubmitter;
 import org.xssfinder.CustomTraverser;
-import org.xssfinder.LabelledXssGenerator;
 import org.xssfinder.Page;
 import org.xssfinder.remote.TraversalMode;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -29,7 +30,7 @@ public class PageTraverserTest {
     @Mock
     private LabelledXssGeneratorFactory mockLabelledXssGeneratorFactory;
     @Mock
-    private LabelledXssGenerator mockLabelledXssGenerator;
+    private LabelledXssGeneratorImpl mockLabelledXssGenerator;
     @Mock
     private CustomTraverser mockCustomTraverser;
     @Mock
@@ -42,8 +43,7 @@ public class PageTraverserTest {
     public void setUp() throws Exception {
         method = RootPage.class.getMethod("goToSecondPage");
 
-        //qq when(mockLabelledXssGeneratorFactory.createLabelledXssGenerator(mockTraversal, mockXssJournal))
-        //qq        .thenReturn(mockLabelledXssGenerator);
+        when(mockLabelledXssGeneratorFactory.createLabelledXssGenerator()).thenReturn(mockLabelledXssGenerator);
 
         traverser = new PageTraverser(mockTraverserInstantiator, mockSubmitterInstantiator, mockLabelledXssGeneratorFactory);
     }
@@ -108,6 +108,21 @@ public class PageTraverserTest {
         assertThat(result.getPage(), is((Object) mockSecondPage));
     }
 
+    @Test
+    public void customSubmitterReturnsLabelToAttackIdMappingFromXssAttacksGeneratedWithLabelledXssGenerator() throws Exception {
+        // given
+        RootPage page = new RootPage();
+        mockMethodAsHavingCustomSubmitter();
+        Map<String, String> expectedLabelsToAttackIds = ImmutableMap.of("label", "attack ID");
+        when(mockLabelledXssGenerator.getLabelsToAttackIds()).thenReturn(expectedLabelsToAttackIds);
+
+        // when
+        TraversalResult result = traverser.traverse(page, method, TraversalMode.SUBMIT);
+
+        // then
+        assertThat(result.getInputIdsToAttackIds(), is(expectedLabelsToAttackIds));
+    }
+
     @Test(expected=UntraversableException.class)
     public void tryingToTraverseSubmitMethodWithArgsGeneratesUntraversableException() throws Exception {
         // given
@@ -170,8 +185,7 @@ public class PageTraverserTest {
 
     private SecondPage mockCustomSubmittedSecondPage(RootPage page) {
         SecondPage mockSecondPage = mock(SecondPage.class);
-        //qq when(mockCustomSubmitter.submit(page, mockLabelledXssGenerator)).thenReturn(mockSecondPage);
-        when(mockCustomSubmitter.submit(page, null)).thenReturn(mockSecondPage);
+        when(mockCustomSubmitter.submit(page, mockLabelledXssGenerator)).thenReturn(mockSecondPage);
         return mockSecondPage;
     }
 

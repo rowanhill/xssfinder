@@ -1,14 +1,13 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.xss.XssAttackFactory;
+import org.xssfinder.xss.XssGenerator;
+
 public class LabelledXssGeneratorFactory {
-    /*
-    public LabelledXssGenerator createLabelledXssGenerator(PageTraversal pageTraversal, XssJournal xssJournal) {
+
+    public LabelledXssGeneratorImpl createLabelledXssGenerator() {
         return new LabelledXssGeneratorImpl(
-                new XssGenerator(new XssAttackFactory()),
-                xssJournal,
-                new XssDescriptorFactory(),
-                pageTraversal
+                new XssGenerator(new XssAttackFactory())
         );
     }
-    */
 }
