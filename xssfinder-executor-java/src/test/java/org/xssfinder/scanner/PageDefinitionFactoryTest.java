@@ -4,22 +4,23 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.remote.MethodDefinition;
-import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.runner.PageDefinitionMapping;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,7 +39,8 @@ public class PageDefinitionFactoryTest {
         knownPageClasses = ImmutableSet.of(
                 SomePage.class,
                 NoPageReturningPage.class,
-                LinkingPage.class
+                LinkingPage.class,
+                CircularReferencePage.class
         );
     }
 
@@ -103,6 +105,22 @@ public class PageDefinitionFactoryTest {
         assertThat(pageDefinitionMapping.getPageDefinition().isCrawlStartPoint(), is(false));
     }
 
+    @Test
+    public void pageDefinitionIsInCacheBeforeCreatingMethodDefinitions() throws Exception {
+        // when
+        factory.createPageDefinition(CircularReferencePage.class, knownPageClasses);
+
+        // then
+        //noinspection unchecked
+        ArgumentCaptor<Map<Class<?>, PageDefinitionMapping>> captor = (ArgumentCaptor)ArgumentCaptor.forClass(Map.class);
+        verify(mockMethodDefinitionFactory).createMethodDefinition(
+                eq(CircularReferencePage.class.getMethod("goToSelf")),
+                captor.capture(),
+                eq(factory),
+                eq(knownPageClasses)
+        );
+    }
+
     private static class SomePage {}
 
     @SuppressWarnings("UnusedDeclaration")
@@ -117,4 +135,10 @@ public class PageDefinitionFactoryTest {
 
     @CrawlStartPoint(url = "some-url")
     private static class HomePage {}
+
+
+    @SuppressWarnings("UnusedDeclaration")
+    private static class CircularReferencePage {
+        public CircularReferencePage goToSelf() { return null; }
+    }
 }

@@ -7,6 +7,7 @@ import org.xssfinder.runner.PageDefinitionMapping;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,9 +23,10 @@ public class PageDefinitionFactory {
     public PageDefinitionMapping createPageDefinition(Class<?> pageClass, Set<Class<?>> knownPageClasses) {
         if (!pageDefinitionCache.containsKey(pageClass)) {
             String identifier = pageClass.getCanonicalName();
-            Map<MethodDefinition, Method> methodMapping = getMethodDefinitions(pageClass, knownPageClasses);
             boolean isCrawlStartPoint = pageClass.isAnnotationPresent(CrawlStartPoint.class);
-            PageDefinition pageDefinition = new PageDefinition(identifier, methodMapping.keySet(), isCrawlStartPoint);
+            PageDefinition pageDefinition = new PageDefinition(identifier, new HashSet<MethodDefinition>(), isCrawlStartPoint);
+            Map<MethodDefinition, Method> methodMapping = getMethodDefinitions(pageClass, knownPageClasses);
+            pageDefinition.getMethods().addAll(methodMapping.keySet());
             PageDefinitionMapping mapping = new PageDefinitionMapping(
                     pageClass,
                     pageDefinition,
