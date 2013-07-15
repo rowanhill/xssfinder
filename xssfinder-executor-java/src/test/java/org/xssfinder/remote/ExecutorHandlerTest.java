@@ -8,15 +8,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.runner.ExecutorContext;
+import org.xssfinder.runner.PageDefinitionMapping;
+import org.xssfinder.runner.TraversalResult;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +31,8 @@ public class ExecutorHandlerTest {
     private PageFinder mockPageFinder;
     @Mock
     private PageDefinitionFactory mockPageDefFactory;
+    @Mock
+    private PageDefinitionMapping mockPageDefinitionMapping;
     @Mock
     private PageDefinition mockPageDefinition;
     @Mock
@@ -41,7 +47,8 @@ public class ExecutorHandlerTest {
         Set<Class<?>> pageClasses = new HashSet<Class<?>>();
         pageClasses.add(SomePage.class);
         when(mockPageFinder.findAllPages(PACKAGE_NAME)).thenReturn(pageClasses);
-        when(mockPageDefFactory.createPageDefinition(SomePage.class, pageClasses)).thenReturn(mockPageDefinition);
+        when(mockPageDefFactory.createPageDefinition(SomePage.class, pageClasses)).thenReturn(mockPageDefinitionMapping);
+        when(mockPageDefinitionMapping.getPageDefinition()).thenReturn(mockPageDefinition);
 
         // when
         Set<PageDefinition> pageDefinitions = executorHandler.getPageDefinitions(PACKAGE_NAME);
@@ -109,6 +116,22 @@ public class ExecutorHandlerTest {
         assertThat(formCount, is(givenFormCount));
     }
 
+    @Test
+    public void traversingMethodIsDelegatedToExecutorContext() throws Exception {
+        // given
+        MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
+        TraversalResult mockResult = mock(TraversalResult.class);
+        Map<String, String> expectedInputIdsToXssIds = new HashMap<String, String>();
+        when(mockResult.getInputIdsToAttackIds()).thenReturn(expectedInputIdsToXssIds);
+        when(mockExecutorContext.traverseMethod(mockMethodDefinition, TraversalMode.NORMAL)).thenReturn(mockResult);
+
+        // when
+        Map<String, String> inputIdsToXssIds = executorHandler.traverseMethod(mockMethodDefinition, TraversalMode.NORMAL);
+
+        // then
+        assertThat(inputIdsToXssIds, is(expectedInputIdsToXssIds));
+    }
+
         /*
     @Test
     public void createsLifecycleHandler() throws Exception {
@@ -151,5 +174,7 @@ public class ExecutorHandlerTest {
     }
     */
 
-    private static class SomePage {}
+    private static class SomePage {
+        public SomePage goToSomePage() { return null; }
+    }
 }

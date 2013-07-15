@@ -4,6 +4,7 @@ import org.xssfinder.SubmitAction;
 import org.xssfinder.TraverseWith;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
+import org.xssfinder.runner.PageDefinitionMapping;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -12,7 +13,7 @@ import java.util.Set;
 public class MethodDefinitionFactory {
     public MethodDefinition createMethodDefinition(
             Method method,
-            Map<Class<?>, PageDefinition> pageDefinitionCache,
+            Map<Class<?>,PageDefinitionMapping> pageDefinitionCache,
             PageDefinitionFactory pageDefinitionFactory,
             Set<Class<?>> knownPageClasses
     ) {
@@ -35,15 +36,15 @@ public class MethodDefinitionFactory {
     }
 
     private PageDefinition getPageDefinition(
-            Map<Class<?>, PageDefinition> pageDefinitionCache,
+            Map<Class<?>, PageDefinitionMapping> pageDefinitionCache,
             PageDefinitionFactory pageDefinitionFactory,
             Set<Class<?>> knownPageClasses,
             Class<?> returnTypeClass
     ) {
-        PageDefinition returnType = pageDefinitionCache.get(returnTypeClass);
-        if (returnType == null) {
-            returnType = pageDefinitionFactory.createPageDefinition(returnTypeClass, knownPageClasses);
+        PageDefinitionMapping pageDefinitionMapping = pageDefinitionCache.get(returnTypeClass);
+        if (pageDefinitionMapping == null) {
+            pageDefinitionMapping = pageDefinitionFactory.createPageDefinition(returnTypeClass, knownPageClasses);
         }
-        return returnType;
+        return pageDefinitionMapping.getPageDefinition();
     }
 }

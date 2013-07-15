@@ -1,6 +1,7 @@
 package org.xssfinder.runner;
 
 import org.xssfinder.CrawlStartPoint;
+import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.TraversalMode;
 import org.xssfinder.xss.XssGenerator;
 
@@ -15,6 +16,7 @@ public class ExecutorContext {
     private final PageTraverser pageTraverser;
     private final PageInstantiator pageInstantiator;
 
+    private final Map<MethodDefinition, Method> methodDefinitionsToMethods = new HashMap<MethodDefinition, Method>();
     private final Map<String, String> rootPageIdsToUrls = new HashMap<String, String>();
     private final Map<String, Class<?>> pageIdsToClasses = new HashMap<String, Class<?>>();
 
@@ -27,13 +29,15 @@ public class ExecutorContext {
         this.pageInstantiator = driverWrapper.getPageInstantiator();
     }
 
-    public void addPageMapping(String pageId, Class<?> pageClass) {
+    public void addPageMapping(PageDefinitionMapping pageDefinitionMapping) {
+        Class<?> pageClass = pageDefinitionMapping.getPageClass();
         if (pageClass.isAnnotationPresent(CrawlStartPoint.class)) {
             CrawlStartPoint crawlStartPoint = pageClass.getAnnotation(CrawlStartPoint.class);
             String url = crawlStartPoint.url();
-            rootPageIdsToUrls.put(pageId, url);
+            rootPageIdsToUrls.put(pageDefinitionMapping.getPageDefinition().getIdentifier(), url);
+            methodDefinitionsToMethods.putAll(pageDefinitionMapping.getMethodMapping());
         }
-        pageIdsToClasses.put(pageId, pageClass);
+        pageIdsToClasses.put(pageDefinitionMapping.getPageDefinition().getIdentifier(), pageClass);
     }
 
     public void visitUrlOfRootPage(String pageId) {
@@ -56,7 +60,8 @@ public class ExecutorContext {
         return driverWrapper.getFormCount();
     }
 
-    public TraversalResult traverseMethod(Method method, TraversalMode traversalMode) {
+    public TraversalResult traverseMethod(MethodDefinition methodDefinition, TraversalMode traversalMode) {
+        Method method = methodDefinitionsToMethods.get(methodDefinition);
         return pageTraverser.traverse(currentPage, method, traversalMode);
     }
 }

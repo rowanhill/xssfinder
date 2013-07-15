@@ -2,6 +2,8 @@ package org.xssfinder.remote;
 
 import org.apache.thrift.TException;
 import org.xssfinder.runner.ExecutorContext;
+import org.xssfinder.runner.PageDefinitionMapping;
+import org.xssfinder.runner.TraversalResult;
 import org.xssfinder.scanner.NoPagesFoundException;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
@@ -30,7 +32,9 @@ public class ExecutorHandler implements Executor.Iface {
             Set<Class<?>> pageClasses = pageFinder.findAllPages(namespaceIdentifier);
             Set<PageDefinition> pageDefinitions = new HashSet<PageDefinition>();
             for (Class<?> pageClass : pageClasses) {
-                pageDefinitions.add(pageDefinitionFactory.createPageDefinition(pageClass, pageClasses));
+                PageDefinitionMapping pageDefinitionMapping = pageDefinitionFactory.createPageDefinition(pageClass, pageClasses);
+                pageDefinitions.add(pageDefinitionMapping.getPageDefinition());
+                executorContext.addPageMapping(pageDefinitionMapping);
             }
             return pageDefinitions;
         } catch (NoPagesFoundException e) {
@@ -60,7 +64,8 @@ public class ExecutorHandler implements Executor.Iface {
 
     @Override
     public Map<String, String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        TraversalResult traversalResult = executorContext.traverseMethod(method, mode);
+        return traversalResult.getInputIdsToAttackIds();
     }
 
     @Override

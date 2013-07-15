@@ -9,6 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
+import org.xssfinder.runner.PageDefinitionMapping;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -44,28 +45,28 @@ public class PageDefinitionFactoryTest {
     @Test
     public void definitionIdentifierIsFullyQualifiedClassName() {
         // when
-        PageDefinition pageDefinition = factory.createPageDefinition(SomePage.class, knownPageClasses);
+        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(SomePage.class, knownPageClasses);
 
         // then
-        assertThat(pageDefinition.getIdentifier(), is(SomePage.class.getCanonicalName()));
+        assertThat(pageDefinitionMapping.getPageDefinition().getIdentifier(), is(SomePage.class.getCanonicalName()));
     }
 
     @Test
     public void definitionMethodsIsEmptySetIfClassHasNoMethods() {
         // when
-        PageDefinition pageDefinition = factory.createPageDefinition(SomePage.class, knownPageClasses);
+        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(SomePage.class, knownPageClasses);
 
         // then
-        assertThat(pageDefinition.getMethods(), is(empty()));
+        assertThat(pageDefinitionMapping.getPageDefinition().getMethods(), is(empty()));
     }
 
     @Test
     public void definitionMethodsIsEmptySetIfClassHasNoMethodsReturnPageObjects() {
         // when
-        PageDefinition pageDefinition = factory.createPageDefinition(NoPageReturningPage.class, knownPageClasses);
+        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(SomePage.class, knownPageClasses);
 
         // then
-        assertThat(pageDefinition.getMethods(), is(empty()));
+        assertThat(pageDefinitionMapping.getPageDefinition().getMethods(), is(empty()));
     }
 
     @SuppressWarnings("unchecked")
@@ -77,29 +78,29 @@ public class PageDefinitionFactoryTest {
                 .thenReturn(mockMethodDefinition);
 
         // when
-        PageDefinition pageDefinition = factory.createPageDefinition(LinkingPage.class, knownPageClasses);
+        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(LinkingPage.class, knownPageClasses);
 
         // then
         Set<MethodDefinition> expectedMethodDefinitions = ImmutableSet.of(mockMethodDefinition);
-        assertThat(pageDefinition.getMethods(), is(expectedMethodDefinitions));
+        assertThat(pageDefinitionMapping.getPageDefinition().getMethods(), is(expectedMethodDefinitions));
     }
 
     @Test
     public void definitionIsCrawlStartPointIfPageIsAnnotatedWithCrawlStartPoint() throws Exception {
         // when
-        PageDefinition pageDefinition = factory.createPageDefinition(HomePage.class, knownPageClasses);
+        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(HomePage.class, knownPageClasses);
 
         // then
-        assertThat(pageDefinition.isCrawlStartPoint(), is(true));
+        assertThat(pageDefinitionMapping.getPageDefinition().isCrawlStartPoint(), is(true));
     }
 
     @Test
     public void definitionIsNotCrawlStartPointIfPageIsNotAnnotatedWithCrawlStartPoint() throws Exception {
         // when
-        PageDefinition pageDefinition = factory.createPageDefinition(SomePage.class, knownPageClasses);
+        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(SomePage.class, knownPageClasses);
 
         // then
-        assertThat(pageDefinition.isCrawlStartPoint(), is(false));
+        assertThat(pageDefinitionMapping.getPageDefinition().isCrawlStartPoint(), is(false));
     }
 
     private static class SomePage {}

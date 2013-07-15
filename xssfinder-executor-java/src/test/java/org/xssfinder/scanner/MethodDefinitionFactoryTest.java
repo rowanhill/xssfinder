@@ -1,5 +1,6 @@
 package org.xssfinder.scanner;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -9,6 +10,7 @@ import org.xssfinder.SubmitAction;
 import org.xssfinder.TraverseWith;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
+import org.xssfinder.runner.PageDefinitionMapping;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -23,13 +25,21 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class MethodDefinitionFactoryTest {
     private final MethodDefinitionFactory factory = new MethodDefinitionFactory();
-    private final Map<Class<?>, PageDefinition> pageDefinitionCache = new HashMap<Class<?>, PageDefinition>();
+    private final Map<Class<?>, PageDefinitionMapping> pageDefinitionCache = new HashMap<Class<?>, PageDefinitionMapping>();
     private final Set<Class<?>> knownPageClasses = new HashSet<Class<?>>();
 
     @Mock
     private PageDefinitionFactory mockPageDefinitionFactory;
     @Mock
+    private PageDefinitionMapping mockPageDefinitionMapping;
+    @Mock
     private PageDefinition mockPageDefinition;
+
+    @Before
+    public void setUp() {
+        when(mockPageDefinitionMapping.getPageDefinition()).thenReturn(mockPageDefinition);
+        pageDefinitionCache.put(SomePage.class, mockPageDefinitionMapping);
+    }
 
     @Test
     public void definitionIdentifierIsMethodName() throws Exception {
@@ -47,7 +57,7 @@ public class MethodDefinitionFactoryTest {
     @Test
     public void returnTypeIsMethodReturnType() throws Exception {
         // given
-        pageDefinitionCache.put(SomePage.class, mockPageDefinition);
+        pageDefinitionCache.put(SomePage.class, mockPageDefinitionMapping);
         Method method = SomePage.class.getMethod("goToSomePage");
 
         // when
@@ -61,8 +71,9 @@ public class MethodDefinitionFactoryTest {
     @Test
     public void returnTypePageDefinitionIsCreatedIfNotInCache() throws Exception {
         // given
+        pageDefinitionCache.clear();
         when(mockPageDefinitionFactory.createPageDefinition(SomePage.class, knownPageClasses))
-                .thenReturn(mockPageDefinition);
+                .thenReturn(mockPageDefinitionMapping);
         Method method = SomePage.class.getMethod("goToSomePage");
 
         // when
