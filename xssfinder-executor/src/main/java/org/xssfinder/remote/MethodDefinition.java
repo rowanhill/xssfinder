@@ -31,7 +31,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("MethodDefinition");
 
   private static final org.apache.thrift.protocol.TField IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("identifier", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField RETURN_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("returnType", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+  private static final org.apache.thrift.protocol.TField RETURN_TYPE_IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("returnTypeIdentifier", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField OWNING_TYPE_IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("owningTypeIdentifier", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField PARAMETERISED_FIELD_DESC = new org.apache.thrift.protocol.TField("parameterised", org.apache.thrift.protocol.TType.BOOL, (short)4);
   private static final org.apache.thrift.protocol.TField SUBMIT_ANNOTATED_FIELD_DESC = new org.apache.thrift.protocol.TField("submitAnnotated", org.apache.thrift.protocol.TType.BOOL, (short)5);
@@ -44,7 +44,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
   }
 
   public String identifier; // required
-  public PageDefinition returnType; // required
+  public String returnTypeIdentifier; // required
   public String owningTypeIdentifier; // required
   public boolean parameterised; // required
   public boolean submitAnnotated; // required
@@ -53,7 +53,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     IDENTIFIER((short)1, "identifier"),
-    RETURN_TYPE((short)2, "returnType"),
+    RETURN_TYPE_IDENTIFIER((short)2, "returnTypeIdentifier"),
     OWNING_TYPE_IDENTIFIER((short)3, "owningTypeIdentifier"),
     PARAMETERISED((short)4, "parameterised"),
     SUBMIT_ANNOTATED((short)5, "submitAnnotated"),
@@ -74,8 +74,8 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
       switch(fieldId) {
         case 1: // IDENTIFIER
           return IDENTIFIER;
-        case 2: // RETURN_TYPE
-          return RETURN_TYPE;
+        case 2: // RETURN_TYPE_IDENTIFIER
+          return RETURN_TYPE_IDENTIFIER;
         case 3: // OWNING_TYPE_IDENTIFIER
           return OWNING_TYPE_IDENTIFIER;
         case 4: // PARAMETERISED
@@ -133,8 +133,8 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.IDENTIFIER, new org.apache.thrift.meta_data.FieldMetaData("identifier", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.RETURN_TYPE, new org.apache.thrift.meta_data.FieldMetaData("returnType", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PageDefinition.class)));
+    tmpMap.put(_Fields.RETURN_TYPE_IDENTIFIER, new org.apache.thrift.meta_data.FieldMetaData("returnTypeIdentifier", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.OWNING_TYPE_IDENTIFIER, new org.apache.thrift.meta_data.FieldMetaData("owningTypeIdentifier", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PARAMETERISED, new org.apache.thrift.meta_data.FieldMetaData("parameterised", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -152,7 +152,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
 
   public MethodDefinition(
     String identifier,
-    PageDefinition returnType,
+    String returnTypeIdentifier,
     String owningTypeIdentifier,
     boolean parameterised,
     boolean submitAnnotated,
@@ -160,7 +160,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
   {
     this();
     this.identifier = identifier;
-    this.returnType = returnType;
+    this.returnTypeIdentifier = returnTypeIdentifier;
     this.owningTypeIdentifier = owningTypeIdentifier;
     this.parameterised = parameterised;
     setParameterisedIsSet(true);
@@ -179,8 +179,8 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
     if (other.isSetIdentifier()) {
       this.identifier = other.identifier;
     }
-    if (other.isSetReturnType()) {
-      this.returnType = new PageDefinition(other.returnType);
+    if (other.isSetReturnTypeIdentifier()) {
+      this.returnTypeIdentifier = other.returnTypeIdentifier;
     }
     if (other.isSetOwningTypeIdentifier()) {
       this.owningTypeIdentifier = other.owningTypeIdentifier;
@@ -197,7 +197,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
   @Override
   public void clear() {
     this.identifier = null;
-    this.returnType = null;
+    this.returnTypeIdentifier = null;
     this.owningTypeIdentifier = null;
     setParameterisedIsSet(false);
     this.parameterised = false;
@@ -231,27 +231,27 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
     }
   }
 
-  public PageDefinition getReturnType() {
-    return this.returnType;
+  public String getReturnTypeIdentifier() {
+    return this.returnTypeIdentifier;
   }
 
-  public MethodDefinition setReturnType(PageDefinition returnType) {
-    this.returnType = returnType;
+  public MethodDefinition setReturnTypeIdentifier(String returnTypeIdentifier) {
+    this.returnTypeIdentifier = returnTypeIdentifier;
     return this;
   }
 
-  public void unsetReturnType() {
-    this.returnType = null;
+  public void unsetReturnTypeIdentifier() {
+    this.returnTypeIdentifier = null;
   }
 
-  /** Returns true if field returnType is set (has been assigned a value) and false otherwise */
-  public boolean isSetReturnType() {
-    return this.returnType != null;
+  /** Returns true if field returnTypeIdentifier is set (has been assigned a value) and false otherwise */
+  public boolean isSetReturnTypeIdentifier() {
+    return this.returnTypeIdentifier != null;
   }
 
-  public void setReturnTypeIsSet(boolean value) {
+  public void setReturnTypeIdentifierIsSet(boolean value) {
     if (!value) {
-      this.returnType = null;
+      this.returnTypeIdentifier = null;
     }
   }
 
@@ -358,11 +358,11 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
       }
       break;
 
-    case RETURN_TYPE:
+    case RETURN_TYPE_IDENTIFIER:
       if (value == null) {
-        unsetReturnType();
+        unsetReturnTypeIdentifier();
       } else {
-        setReturnType((PageDefinition)value);
+        setReturnTypeIdentifier((String)value);
       }
       break;
 
@@ -406,8 +406,8 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
     case IDENTIFIER:
       return getIdentifier();
 
-    case RETURN_TYPE:
-      return getReturnType();
+    case RETURN_TYPE_IDENTIFIER:
+      return getReturnTypeIdentifier();
 
     case OWNING_TYPE_IDENTIFIER:
       return getOwningTypeIdentifier();
@@ -434,8 +434,8 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
     switch (field) {
     case IDENTIFIER:
       return isSetIdentifier();
-    case RETURN_TYPE:
-      return isSetReturnType();
+    case RETURN_TYPE_IDENTIFIER:
+      return isSetReturnTypeIdentifier();
     case OWNING_TYPE_IDENTIFIER:
       return isSetOwningTypeIdentifier();
     case PARAMETERISED:
@@ -470,12 +470,12 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
         return false;
     }
 
-    boolean this_present_returnType = true && this.isSetReturnType();
-    boolean that_present_returnType = true && that.isSetReturnType();
-    if (this_present_returnType || that_present_returnType) {
-      if (!(this_present_returnType && that_present_returnType))
+    boolean this_present_returnTypeIdentifier = true && this.isSetReturnTypeIdentifier();
+    boolean that_present_returnTypeIdentifier = true && that.isSetReturnTypeIdentifier();
+    if (this_present_returnTypeIdentifier || that_present_returnTypeIdentifier) {
+      if (!(this_present_returnTypeIdentifier && that_present_returnTypeIdentifier))
         return false;
-      if (!this.returnType.equals(that.returnType))
+      if (!this.returnTypeIdentifier.equals(that.returnTypeIdentifier))
         return false;
     }
 
@@ -541,12 +541,12 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetReturnType()).compareTo(typedOther.isSetReturnType());
+    lastComparison = Boolean.valueOf(isSetReturnTypeIdentifier()).compareTo(typedOther.isSetReturnTypeIdentifier());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetReturnType()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.returnType, typedOther.returnType);
+    if (isSetReturnTypeIdentifier()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.returnTypeIdentifier, typedOther.returnTypeIdentifier);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -619,11 +619,11 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("returnType:");
-    if (this.returnType == null) {
+    sb.append("returnTypeIdentifier:");
+    if (this.returnTypeIdentifier == null) {
       sb.append("null");
     } else {
-      sb.append(this.returnType);
+      sb.append(this.returnTypeIdentifier);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -698,11 +698,10 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // RETURN_TYPE
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.returnType = new PageDefinition();
-              struct.returnType.read(iprot);
-              struct.setReturnTypeIsSet(true);
+          case 2: // RETURN_TYPE_IDENTIFIER
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.returnTypeIdentifier = iprot.readString();
+              struct.setReturnTypeIdentifierIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -759,9 +758,9 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
         oprot.writeString(struct.identifier);
         oprot.writeFieldEnd();
       }
-      if (struct.returnType != null) {
-        oprot.writeFieldBegin(RETURN_TYPE_FIELD_DESC);
-        struct.returnType.write(oprot);
+      if (struct.returnTypeIdentifier != null) {
+        oprot.writeFieldBegin(RETURN_TYPE_IDENTIFIER_FIELD_DESC);
+        oprot.writeString(struct.returnTypeIdentifier);
         oprot.writeFieldEnd();
       }
       if (struct.owningTypeIdentifier != null) {
@@ -799,7 +798,7 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
       if (struct.isSetIdentifier()) {
         optionals.set(0);
       }
-      if (struct.isSetReturnType()) {
+      if (struct.isSetReturnTypeIdentifier()) {
         optionals.set(1);
       }
       if (struct.isSetOwningTypeIdentifier()) {
@@ -818,8 +817,8 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
       if (struct.isSetIdentifier()) {
         oprot.writeString(struct.identifier);
       }
-      if (struct.isSetReturnType()) {
-        struct.returnType.write(oprot);
+      if (struct.isSetReturnTypeIdentifier()) {
+        oprot.writeString(struct.returnTypeIdentifier);
       }
       if (struct.isSetOwningTypeIdentifier()) {
         oprot.writeString(struct.owningTypeIdentifier);
@@ -844,9 +843,8 @@ public class MethodDefinition implements org.apache.thrift.TBase<MethodDefinitio
         struct.setIdentifierIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.returnType = new PageDefinition();
-        struct.returnType.read(iprot);
-        struct.setReturnTypeIsSet(true);
+        struct.returnTypeIdentifier = iprot.readString();
+        struct.setReturnTypeIdentifierIsSet(true);
       }
       if (incoming.get(2)) {
         struct.owningTypeIdentifier = iprot.readString();

@@ -27,7 +27,7 @@ public class MethodDefinitionFactory {
         boolean hasCustomTraverser = method.isAnnotationPresent(TraverseWith.class);
         return new MethodDefinition(
                 identifier,
-                returnType,
+                returnType.getIdentifier(),
                 owningTypeClass.getCanonicalName(),
                 hasArgs,
                 isSubmit,

@@ -21,26 +21,26 @@ public class GraphsFactory {
     }
 
     public Set<Graph> createGraphs(Set<PageDefinition> pageClasses) {
-        Map<PageDefinition, Set<PageDescriptor>> setMembership = new HashMap<PageDefinition, Set<PageDescriptor>>();
+        Map<String, Set<PageDescriptor>> setMembership = new HashMap<String, Set<PageDescriptor>>();
         Set<PageDescriptor> pageDescriptors = new HashSet<PageDescriptor>();
 
         for (PageDefinition pageDefinition : pageClasses) {
             PageDescriptor descriptor = new PageDescriptor(pageDefinition);
             Set<PageDescriptor> descriptorSet = new HashSet<PageDescriptor>();
             descriptorSet.add(descriptor);
-            setMembership.put(pageDefinition, descriptorSet);
+            setMembership.put(pageDefinition.getIdentifier(), descriptorSet);
             pageDescriptors.add(descriptor);
         }
 
         for (PageDescriptor descriptor : pageDescriptors) {
-            Set<PageDescriptor> descriptorSet = setMembership.get(descriptor.getPageDefinition());
+            Set<PageDescriptor> descriptorSet = setMembership.get(descriptor.getPageDefinition().getIdentifier());
 
             for (MethodDefinition traversalMethod : descriptor.getTraversalMethods()) {
-                PageDefinition linkedPageClass = traversalMethod.getReturnType();
-                Set<PageDescriptor> linkedDescriptorsSet = setMembership.get(linkedPageClass);
+                String linkedPageIdentifier = traversalMethod.getReturnTypeIdentifier();
+                Set<PageDescriptor> linkedDescriptorsSet = setMembership.get(linkedPageIdentifier);
                 descriptorSet.addAll(linkedDescriptorsSet);
                 for (PageDescriptor linkedDescriptor : linkedDescriptorsSet) {
-                    setMembership.put(linkedDescriptor.getPageDefinition(), descriptorSet);
+                    setMembership.put(linkedDescriptor.getPageDefinition().getIdentifier(), descriptorSet);
                 }
             }
         }

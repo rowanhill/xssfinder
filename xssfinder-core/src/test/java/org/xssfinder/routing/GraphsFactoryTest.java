@@ -40,8 +40,8 @@ public class GraphsFactoryTest {
     @Test
     public void singleGraphReturnedFromSimpleSetOfPages() {
         // given
-        PageDefinition mockSecondPage = mockPageDefinition().build();
-        PageDefinition mockHomePage = mockPageDefinition()
+        PageDefinition mockSecondPage = mockPageDefinition("Second Page").build();
+        PageDefinition mockHomePage = mockPageDefinition("Home Page")
                 .markedAsCrawlStartPoint()
                 .withMethod()
                     .toPage(mockSecondPage)

@@ -1,7 +1,6 @@
 package org.xssfinder.routing;
 
 import com.google.common.collect.ImmutableSet;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.xssfinder.remote.PageDefinition;
 
@@ -21,15 +20,16 @@ public class GraphNodesFactoryTest {
         PageDescriptor mockPageDescriptor = mock(PageDescriptor.class);
         PageDefinition mockPageDefinition = mock(PageDefinition.class);
         when(mockPageDescriptor.getPageDefinition()).thenReturn(mockPageDefinition);
+        when(mockPageDefinition.getIdentifier()).thenReturn("SomePage");
         Set<PageDescriptor> descriptors = ImmutableSet.of(mockPageDescriptor);
         GraphNodesFactory factory = new GraphNodesFactory();
 
         // when
-        Map<PageDefinition, GraphNode> nodes = factory.createNodes(descriptors);
+        Map<String, GraphNode> nodes = factory.createNodes(descriptors);
 
         // then
         assertThat(nodes.size(), is(1));
-        assertThat(nodes, hasKey(mockPageDefinition));
-        assertThat(nodes.get(mockPageDefinition).getPageDescriptor(), is(mockPageDescriptor));
+        assertThat(nodes, hasKey("SomePage"));
+        assertThat(nodes.get("SomePage").getPageDescriptor(), is(mockPageDescriptor));
     }
 }

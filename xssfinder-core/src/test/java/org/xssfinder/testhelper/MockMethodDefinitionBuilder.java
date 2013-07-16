@@ -20,7 +20,8 @@ public class MockMethodDefinitionBuilder {
     }
 
     public MockMethodDefinitionBuilder toPage(PageDefinition mockPageDefinition) {
-        when(mockMethodDefinition.getReturnType()).thenReturn(mockPageDefinition);
+        String id = mockPageDefinition.getIdentifier();
+        when(mockMethodDefinition.getReturnTypeIdentifier()).thenReturn(id);
         return this;
     }
 

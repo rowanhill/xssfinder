@@ -18,8 +18,9 @@ public class MockPageDefinitionBuilder {
         mockPageDefinition = mock(PageDefinition.class);
     }
 
-    public MockPageDefinitionBuilder(String mockName) {
-        mockPageDefinition = mock(PageDefinition.class, mockName);
+    public MockPageDefinitionBuilder(String identifier) {
+        mockPageDefinition = mock(PageDefinition.class, identifier);
+        when(mockPageDefinition.getIdentifier()).thenReturn(identifier);
     }
 
     public MockPageDefinitionBuilder withName(String name) {
@@ -49,7 +50,7 @@ public class MockPageDefinitionBuilder {
         return new MockPageDefinitionBuilder();
     }
 
-    public static MockPageDefinitionBuilder mockPageDefinition(String mockName) {
-        return new MockPageDefinitionBuilder(mockName);
+    public static MockPageDefinitionBuilder mockPageDefinition(String identifier) {
+        return new MockPageDefinitionBuilder(identifier);
     }
 }

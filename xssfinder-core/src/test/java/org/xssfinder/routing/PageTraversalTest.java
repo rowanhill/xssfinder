@@ -27,7 +27,7 @@ public class PageTraversalTest {
         when(mockMethod.getIdentifier()).thenReturn("goToPage");
         PageDefinition mockPageDefinition = mock(PageDefinition.class);
         when(mockPageDefinition.getIdentifier()).thenReturn("Page");
-        when(mockMethod.getReturnType()).thenReturn(mockPageDefinition);
+        when(mockMethod.getReturnTypeIdentifier()).thenReturn("Page");
     }
 
     @Test

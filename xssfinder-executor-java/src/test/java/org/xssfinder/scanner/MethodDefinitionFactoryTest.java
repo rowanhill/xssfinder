@@ -24,6 +24,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MethodDefinitionFactoryTest {
+    private static final String PAGE_DEF_ID = "A Page";
+
     private final MethodDefinitionFactory factory = new MethodDefinitionFactory();
     private final Map<Class<?>, PageDefinitionMapping> pageDefinitionCache = new HashMap<Class<?>, PageDefinitionMapping>();
     private final Set<Class<?>> knownPageClasses = new HashSet<Class<?>>();
@@ -37,6 +39,7 @@ public class MethodDefinitionFactoryTest {
 
     @Before
     public void setUp() {
+        when(mockPageDefinition.getIdentifier()).thenReturn(PAGE_DEF_ID);
         when(mockPageDefinitionMapping.getPageDefinition()).thenReturn(mockPageDefinition);
         pageDefinitionCache.put(SomePage.class, mockPageDefinitionMapping);
     }
@@ -65,7 +68,7 @@ public class MethodDefinitionFactoryTest {
                 factory.createMethodDefinition(method, pageDefinitionCache, mockPageDefinitionFactory, knownPageClasses);
 
         // then
-        assertThat(methodDefinition.getReturnType(), is(mockPageDefinition));
+        assertThat(methodDefinition.getReturnTypeIdentifier(), is(PAGE_DEF_ID));
     }
 
     @Test
@@ -81,7 +84,7 @@ public class MethodDefinitionFactoryTest {
                 factory.createMethodDefinition(method, pageDefinitionCache, mockPageDefinitionFactory, knownPageClasses);
 
         // then
-        assertThat(methodDefinition.getReturnType(), is(mockPageDefinition));
+        assertThat(methodDefinition.getReturnTypeIdentifier(), is(PAGE_DEF_ID));
     }
 
     @Test

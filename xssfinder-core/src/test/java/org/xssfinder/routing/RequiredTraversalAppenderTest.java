@@ -39,7 +39,7 @@ public class RequiredTraversalAppenderTest {
     @Mock
     private PageDescriptor mockAnotherPageDescriptor;
     @Mock
-    private PageDefinition mockOtherPgeDefinition;
+    private PageDefinition mockOtherPageDefinition;
     @Mock
     private PageDefinition mockYetAnotherPageDefinition;
     @Mock
@@ -78,12 +78,16 @@ public class RequiredTraversalAppenderTest {
         pageDescriptors.add(mockOtherPageDescriptor);
         pageDescriptors.add(mockAnotherPageDescriptor);
 
+        when(mockSomePageDefinition.getIdentifier()).thenReturn("SomePage");
+        when(mockOtherPageDefinition.getIdentifier()).thenReturn("OtherPage");
+        when(mockYetAnotherPageDefinition.getIdentifier()).thenReturn("AnotherPage");
+
         when(mockSomePageDescriptor.getPageDefinition()).thenReturn(mockSomePageDefinition);
-        when(mockOtherPageDescriptor.getPageDefinition()).thenReturn(mockOtherPgeDefinition);
+        when(mockOtherPageDescriptor.getPageDefinition()).thenReturn(mockOtherPageDefinition);
         when(mockAnotherPageDescriptor.getPageDefinition()).thenReturn(mockYetAnotherPageDefinition);
 
-        when(mockGoToSomeOtherPageMethodDefinition.getReturnType()).thenReturn(mockOtherPgeDefinition);
-        when(mockGoToYetAnotherPageMethodDefinition.getReturnType()).thenReturn(mockYetAnotherPageDefinition);
+        when(mockGoToSomeOtherPageMethodDefinition.getReturnTypeIdentifier()).thenReturn("OtherPage");
+        when(mockGoToYetAnotherPageMethodDefinition.getReturnTypeIdentifier()).thenReturn("AnotherPage");
         when(mockSomePageDefinition.getMethods()).thenReturn(ImmutableSet.of(
                 mockGoToSomeOtherPageMethodDefinition, mockGoToYetAnotherPageMethodDefinition
         ));

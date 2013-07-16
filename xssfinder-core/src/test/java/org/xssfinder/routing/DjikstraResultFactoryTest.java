@@ -16,7 +16,7 @@ public class DjikstraResultFactoryTest {
     @Test
     public void createsDjikstraResult() {
         // given
-        Map<PageDefinition, GraphNode> classesToNodes = new HashMap<PageDefinition, GraphNode>();
+        Map<String, GraphNode> classesToNodes = new HashMap<String, GraphNode>();
         Set<GraphNode> leafNodes = new HashSet<GraphNode>();
         DjikstraResultFactory factory = new DjikstraResultFactory();
 

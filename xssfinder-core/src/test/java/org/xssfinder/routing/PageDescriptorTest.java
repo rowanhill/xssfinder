@@ -74,8 +74,10 @@ public class PageDescriptorTest {
     public void traversalMethodsHasPagesReturnedByMethodsForNonLeafPage() throws Exception {
         // given
         MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
+        when(mockMethodDefinition.getReturnTypeIdentifier()).thenReturn("Some Page");
         Set<MethodDefinition> methodDefinitions = ImmutableSet.of(mockMethodDefinition);
         when(mockPageDefinition.getMethods()).thenReturn(methodDefinitions);
+        when(mockPageDefinition.getIdentifier()).thenReturn("Other Page");
         PageDescriptor descriptor = new PageDescriptor(mockPageDefinition);
 
         // when
@@ -102,8 +104,11 @@ public class PageDescriptorTest {
     public void submitMethodsContainsSubmitMethodButNotOtherTraversals() throws Exception {
         // given
         MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
+        when(mockMethodDefinition.getReturnTypeIdentifier()).thenReturn("Some Page");
         MethodDefinition mockSubmitMethodDefinition = mock(MethodDefinition.class);
+        when(mockSubmitMethodDefinition.getReturnTypeIdentifier()).thenReturn("Some Page");
         when(mockSubmitMethodDefinition.isSubmitAnnotated()).thenReturn(true);
+        when(mockPageDefinition.getIdentifier()).thenReturn("Other Page");
         Set<MethodDefinition> methodDefinitions = ImmutableSet.of(mockMethodDefinition, mockSubmitMethodDefinition);
         when(mockPageDefinition.getMethods()).thenReturn(methodDefinitions);
         PageDescriptor descriptor = new PageDescriptor(mockPageDefinition);

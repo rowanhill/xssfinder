@@ -1,5 +1,6 @@
 package org.xssfinder.routing;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -16,14 +17,20 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DjikstraResultTest {
+    public static final String PAGE_DEF_ID = "A Page";
     @Mock
     private RouteFactory mockRouteFactory;
 
     @Mock
     private PageDefinition mockPageDefinition;
 
-    private Map<PageDefinition, GraphNode> classesToNodes = new HashMap<PageDefinition, GraphNode>();
+    private Map<String, GraphNode> classesToNodes = new HashMap<String, GraphNode>();
     private Set<GraphNode> leafNodes = new HashSet<GraphNode>();
+
+    @Before
+    public void setUp() {
+        when(mockPageDefinition.getIdentifier()).thenReturn(PAGE_DEF_ID);
+    }
 
     @Test
     public void routesAreCreatedFromLeafNodes() {
@@ -47,7 +54,7 @@ public class DjikstraResultTest {
         // given
         DjikstraResult djikstraResult = new DjikstraResult(mockRouteFactory, classesToNodes, leafNodes);
         GraphNode mockNode = mock(GraphNode.class);
-        classesToNodes.put(mockPageDefinition, mockNode);
+        classesToNodes.put(PAGE_DEF_ID, mockNode);
         Route mockRoute = mockRouteCreationForNode(mockNode);
 
         // when

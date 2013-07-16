@@ -84,7 +84,7 @@ public class PageTraversal {
                 "{%s, %s} -> %s%s",
                 this.getMethod().getIdentifier(),
                 this.traversalMode.getDescription(),
-                this.getMethod().getReturnType().getIdentifier(),
+                this.getMethod().getReturnTypeIdentifier(),
                 childString
         );
     }

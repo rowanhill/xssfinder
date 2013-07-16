@@ -4,7 +4,7 @@ struct PageDefinition {}
 
 struct MethodDefinition {
   1:string identifier,
-  2:PageDefinition returnType,
+  2:string returnTypeIdentifier,
   3:string owningTypeIdentifier,
   4:bool parameterised,
   5:bool submitAnnotated,

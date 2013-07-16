@@ -15,9 +15,9 @@ class DjikstraRunner {
     }
 
     DjikstraResult computeShortestPaths(PageDefinition rootPageClass, Set<PageDescriptor> pageDescriptors) {
-        Map<PageDefinition, GraphNode> nodes = graphNodesFactory.createNodes(pageDescriptors);
+        Map<String, GraphNode> nodes = graphNodesFactory.createNodes(pageDescriptors);
 
-        nodes.get(rootPageClass).setDistance(0);
+        nodes.get(rootPageClass.getIdentifier()).setDistance(0);
         PriorityQueue<GraphNode> nodeQueue = new PriorityQueue<GraphNode>(nodes.size(), new NodeDistanceComparator());
         nodeQueue.addAll(nodes.values());
 
@@ -29,7 +29,7 @@ class DjikstraRunner {
             }
             int nextDistance = nearestNode.getDistance()+1;
             for (MethodDefinition traversalMethod : nearestNode.getTraversalMethods()) {
-                GraphNode neighbour = nodes.get(traversalMethod.getReturnType());
+                GraphNode neighbour = nodes.get(traversalMethod.getReturnTypeIdentifier());
                 if (neighbour.getDistance() > nextDistance) {
                     leafNodes.remove(nearestNode);
                     neighbour.setDistance(nextDistance);

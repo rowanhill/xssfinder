@@ -9,10 +9,10 @@ import java.util.Set;
 
 public class DjikstraResult {
     private final RouteFactory routeFactory;
-    private final Map<PageDefinition, GraphNode> classesToNodes;
+    private final Map<String, GraphNode> classesToNodes;
     private final Set<GraphNode> leafNodes;
 
-    public DjikstraResult(RouteFactory routeFactory, Map<PageDefinition, GraphNode> classesToNodes, Set<GraphNode> leafNodes) {
+    public DjikstraResult(RouteFactory routeFactory, Map<String, GraphNode> classesToNodes, Set<GraphNode> leafNodes) {
         this.routeFactory = routeFactory;
         this.classesToNodes = classesToNodes;
         this.leafNodes = leafNodes;
@@ -27,7 +27,7 @@ public class DjikstraResult {
     }
 
     public Route createRouteEndingAtClass(PageDefinition pageClass) {
-        GraphNode node = classesToNodes.get(pageClass);
+        GraphNode node = classesToNodes.get(pageClass.getIdentifier());
         return routeFactory.createRouteEndingAtNode(node);
     }
 

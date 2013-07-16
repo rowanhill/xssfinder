@@ -26,8 +26,8 @@ public class PageDescriptor {
     private Set<MethodDefinition> findTraversalMethods(PageDefinition pageDefinition) {
         Set<MethodDefinition> traversalMethods = new HashSet<MethodDefinition>();
         for (MethodDefinition method : pageDefinition.getMethods()) {
-            PageDefinition returnType = method.getReturnType();
-            if (returnType != this.getPageDefinition()) {
+            String returnTypeIdentifier = method.getReturnTypeIdentifier();
+            if (!returnTypeIdentifier.equals(this.getPageDefinition().getIdentifier())) {
                 traversalMethods.add(method);
             }
         }

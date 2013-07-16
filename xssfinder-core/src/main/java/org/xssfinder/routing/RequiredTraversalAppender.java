@@ -32,8 +32,10 @@ public class RequiredTraversalAppender {
         List<Route> newRoutes = new ArrayList<Route>();
         for (Route route : routes) {
             PageTraversal lastTraversal = route.getLastPageTraversal();
-            PageDefinition endClass = lastTraversal == null ? route.getRootPageClass() : lastTraversal.getMethod().getReturnType();
-            Set<MethodDefinition> unusedMethods = getUnusedSubmitMethodsOnPage(endClass, methodsByPage);
+            String endPageIdentifier = lastTraversal == null ?
+                    route.getRootPageClass().getIdentifier() :
+                    lastTraversal.getMethod().getReturnTypeIdentifier();
+            Set<MethodDefinition> unusedMethods = getUnusedSubmitMethodsOnPage(endPageIdentifier, methodsByPage);
             if (unusedMethods.isEmpty()) {
                 newRoutes.add(route);
             } else {
@@ -41,7 +43,7 @@ public class RequiredTraversalAppender {
                     Route routeToAugment = route.clone();
                     appendMethodToRouteAndAddToList(unusedMethod, routeToAugment, newRoutes, pageDescriptors);
                 }
-                methodsByPage.removeAll(getPageDescriptorForClass(endClass, pageDescriptors));
+                methodsByPage.removeAll(getPageDescriptorForClass(endPageIdentifier, pageDescriptors));
             }
         }
         for (Map.Entry<PageDescriptor, MethodDefinition> unusedMethodByPage : methodsByPage.entries()) {
@@ -60,27 +62,27 @@ public class RequiredTraversalAppender {
             Set<PageDescriptor> pageDescriptors
     ) {
         PageDescriptor resultingPageDescriptor =
-                getPageDescriptorForClass(unusedMethod.getReturnType(), pageDescriptors);
+                getPageDescriptorForClass(unusedMethod.getReturnTypeIdentifier(), pageDescriptors);
         routeToAugment.appendTraversal(
                 unusedMethod, resultingPageDescriptor, PageTraversal.TraversalMode.SUBMIT);
         newRoutes.add(routeToAugment);
     }
 
     private Set<MethodDefinition> getUnusedSubmitMethodsOnPage(
-            PageDefinition pageDefinition,
+            String pageDefinitionIdentifier,
             SetMultimap<PageDescriptor, MethodDefinition> methodsByPage
     ) {
         for (PageDescriptor descriptor : methodsByPage.keySet()) {
-            if (descriptor.getPageDefinition() == pageDefinition) {
+            if (descriptor.getPageDefinition().getIdentifier().equals(pageDefinitionIdentifier)) {
                 return methodsByPage.get(descriptor);
             }
         }
         return Collections.emptySet();
     }
 
-    private PageDescriptor getPageDescriptorForClass(PageDefinition pageDefinition, Set<PageDescriptor> pageDescriptors) {
+    private PageDescriptor getPageDescriptorForClass(String pageDefinitionIdentifier, Set<PageDescriptor> pageDescriptors) {
         for (PageDescriptor pageDescriptor : pageDescriptors) {
-            if (pageDescriptor.getPageDefinition() == pageDefinition) {
+            if (pageDescriptor.getPageDefinition().getIdentifier().equals(pageDefinitionIdentifier)) {
                 return pageDescriptor;
             }
         }

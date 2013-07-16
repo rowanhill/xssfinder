@@ -18,6 +18,8 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RouteTest {
+    private static final String PAGE_DEF_ID = "A Page";
+
     @Mock
     private PageTraversal mockPageTraversal;
     @Mock
@@ -38,8 +40,8 @@ public class RouteTest {
     public void setUp() {
         when(mockPageDescriptor.getPageDefinition()).thenReturn(mockPageDefinition);
 
-        when(mockCircularMethodDefinition.getReturnType()).thenReturn(mockPageDefinition);
-        when(mockSubmitMethodDefinition.getReturnType()).thenReturn(mockPageDefinition);
+        when(mockCircularMethodDefinition.getReturnTypeIdentifier()).thenReturn(PAGE_DEF_ID);
+        when(mockSubmitMethodDefinition.getReturnTypeIdentifier()).thenReturn(PAGE_DEF_ID);
         when(mockSubmitMethodDefinition.isSubmitAnnotated()).thenReturn(true);
         when(mockPageDefinition.getMethods()).thenReturn(ImmutableSet.of(mockCircularMethodDefinition, mockSubmitMethodDefinition));
 
