@@ -1,11 +1,18 @@
 package org.xssfinder.testsite.simple;
 
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TTransportException;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.xssfinder.reflection.Instantiator;
+import org.xssfinder.remote.*;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.reporting.XssSighting;
 import org.xssfinder.reporting.XssSightingFactory;
@@ -13,6 +20,11 @@ import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
 import org.xssfinder.routing.RouteGeneratorFactory;
 import org.xssfinder.runner.*;
+import org.xssfinder.scanner.MethodDefinitionFactory;
+import org.xssfinder.scanner.PageDefinitionFactory;
+import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.xss.XssAttackFactory;
+import org.xssfinder.xss.XssGenerator;
 
 import java.io.File;
 import java.util.List;
@@ -50,35 +62,68 @@ public class XssFinderIT {
     }
 
     @Test
-    @Ignore("TODO: Fix integration test once remote works end to end")
+    @Ignore("java.lang.NoClassDefFoundError: org/apache/http/pool/ConnPoolControl")
     public void runXssFinder() throws Exception {
-        /*
-        // Find all the page classes
-        Set<Class<?>> pageClasses = new PageFinder("org.xssfinder.testsite.simple").findAllPages();
+        // Set up the remote executor
+        ExecutorHandler executorHandler = new ExecutorHandler(
+                new PageFinder(),
+                new PageDefinitionFactory(
+                        new MethodDefinitionFactory()
+                ),
+                new ExecutorContext(
+                        new DefaultHtmlUnitDriverWrapper(),
+                        new XssGenerator(new XssAttackFactory()),
+                        new PageTraverser(
+                                new CustomTraverserInstantiator(new Instantiator()),
+                                new CustomSubmitterInstantiator(new Instantiator()),
+                                new LabelledXssGeneratorFactory()
+                        )
+                )
+        );
+        final ExecutorServer executorServer = new ExecutorServer(9091, executorHandler);
 
-        // Generate routes from the page object network
-        RouteGeneratorFactory routeGeneratorFactory = new RouteGeneratorFactory();
-        RouteGenerator routeGenerator = routeGeneratorFactory.createRouteGenerator();
-        List<Route> routes = routeGenerator.generateRoutes(pageClasses);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                executorServer.serve();
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
 
-        // Create a runner using HtmlUnitDriver
+        // TODO: Encapsulate creating the coordinator & getting the routes into a new class. Should be a one-liner.
+        // Set up the coordinator
         RouteRunnerFactory runnerFactory = new RouteRunnerFactory();
-        DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
-        XssJournal journal = new XssJournal(new XssSightingFactory());
-        RouteRunner runner = runnerFactory.createRouteRunner(driverWrapper, OUTPUT_FILE);
+        TTransport transport = new TSocket("localhost", 9091, 5000);
+        Executor.Client client;
+        try {
+            transport.open();
+            TProtocol protocol = new TBinaryProtocol(transport);
+            client = new Executor.Client(protocol);
+            ExecutorWrapper executorWrapper = new ExecutorWrapper(client);
+            XssJournal journal = new XssJournal(new XssSightingFactory());
+            RouteRunner runner = runnerFactory.createRouteRunner(executorWrapper, OUTPUT_FILE);
 
-        // Run!
-        runner.run(routes, journal);
+            // Get the routes
+            Set<PageDefinition> pageDefinitions = client.getPageDefinitions("org.xssfinder.testsite.simple");
+            RouteGeneratorFactory routeGeneratorFactory = new RouteGeneratorFactory();
+            RouteGenerator routeGenerator = routeGeneratorFactory.createRouteGenerator();
+            List<Route> routes = routeGenerator.generateRoutes(pageDefinitions);
 
-        assertThat(routes.size(), is(4));
-        assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
-        assertThat(journal.getXssSightings().size(), is(1));
-        assertThat(journal.getErrorContexts().size(), is(2)); // throwException is called on both runs (attack / observe)
-        XssSighting sighting = journal.getXssSightings().iterator().next();
-        assertThat(sighting.getSubmitMethodName(), is("unsafeSubmit"));
-        assertThat(sighting.getInputIdentifier(), is("//form[@id=\"unsafeForm\"]/input[1]"));
-        assertThat(journal.getPagesClassWithUntestedInputs().size(), is(1));
-        assertThat(new File(OUTPUT_FILE).exists(), is(true));
-        */
+            // Run!
+            runner.run(routes, journal);
+
+            assertThat(routes.size(), is(4));
+            assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
+            assertThat(journal.getXssSightings().size(), is(1));
+            assertThat(journal.getErrorContexts().size(), is(2)); // throwException is called on both runs (attack / observe)
+            XssSighting sighting = journal.getXssSightings().iterator().next();
+            assertThat(sighting.getSubmitMethodName(), is("unsafeSubmit"));
+            assertThat(sighting.getInputIdentifier(), is("//form[@id=\"unsafeForm\"]/input[1]"));
+            assertThat(journal.getPagesClassWithUntestedInputs().size(), is(1));
+            assertThat(new File(OUTPUT_FILE).exists(), is(true));
+        } finally {
+            transport.close();
+        }
     }
 }
