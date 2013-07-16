@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
@@ -18,10 +18,9 @@ import java.util.Set;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+import static org.xssfinder.scanner.PageDefinitionFactoryTest.ClassMappingMatcher.mapsSingleClass;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PageDefinitionFactoryTest {
@@ -111,14 +110,43 @@ public class PageDefinitionFactoryTest {
         factory.createPageDefinition(CircularReferencePage.class, knownPageClasses);
 
         // then
-        //noinspection unchecked
-        ArgumentCaptor<Map<Class<?>, PageDefinitionMapping>> captor = (ArgumentCaptor)ArgumentCaptor.forClass(Map.class);
-        verify(mockMethodDefinitionFactory).createMethodDefinition(
+        verify(mockMethodDefinitionFactory, times(1)).createMethodDefinition(
                 eq(CircularReferencePage.class.getMethod("goToSelf")),
-                captor.capture(),
+                argThat(mapsSingleClass(CircularReferencePage.class)),
                 eq(factory),
                 eq(knownPageClasses)
         );
+        verifyNoMoreInteractions(mockMethodDefinitionFactory);
+    }
+
+    static class ClassMappingMatcher extends ArgumentMatcher<Map<Class<?>, PageDefinitionMapping>> {
+        private final Class<?> expectedClass;
+
+        private ClassMappingMatcher(Class<?> expectedClass) {
+            this.expectedClass = expectedClass;
+        }
+
+        public static ClassMappingMatcher mapsSingleClass(Class<?> expectedClass) {
+            return new ClassMappingMatcher(expectedClass);
+        }
+
+        @Override
+        public boolean matches(Object argument) {
+            if (!(argument instanceof Map)) {
+                return false;
+            }
+            Map map = (Map)argument;
+            if (map.size() != 1) {
+                return false;
+            }
+            Object key = map.keySet().iterator().next();
+            if (!(key instanceof Class<?>)) {
+                return false;
+            }
+            Class<?> actualClass = (Class<?>)key;
+
+            return actualClass == expectedClass;
+        }
     }
 
     private static class SomePage {}

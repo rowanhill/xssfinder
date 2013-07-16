@@ -7,7 +7,6 @@ import org.xssfinder.runner.PageDefinitionMapping;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,15 +23,18 @@ public class PageDefinitionFactory {
         if (!pageDefinitionCache.containsKey(pageClass)) {
             String identifier = pageClass.getCanonicalName();
             boolean isCrawlStartPoint = pageClass.isAnnotationPresent(CrawlStartPoint.class);
-            PageDefinition pageDefinition = new PageDefinition(identifier, new HashSet<MethodDefinition>(), isCrawlStartPoint);
-            Map<MethodDefinition, Method> methodMapping = getMethodDefinitions(pageClass, knownPageClasses);
-            pageDefinition.getMethods().addAll(methodMapping.keySet());
+            Map<MethodDefinition, Method> methodMapping = new HashMap<MethodDefinition, Method>();
+            PageDefinition pageDefinition = new PageDefinition(identifier, methodMapping.keySet(), isCrawlStartPoint);
             PageDefinitionMapping mapping = new PageDefinitionMapping(
                     pageClass,
                     pageDefinition,
                     methodMapping
             );
             pageDefinitionCache.put(pageClass, mapping);
+
+            // Add the methods after creating the page & putting the mapping in the cache, in case any of the methods
+            // are circular (i.e. return the type they're defined on).
+            methodMapping.putAll(getMethodDefinitions(pageClass, knownPageClasses));
         }
         return pageDefinitionCache.get(pageClass);
     }
@@ -43,7 +45,8 @@ public class PageDefinitionFactory {
             if (knownPageClasses.contains(method.getReturnType())) {
                 MethodDefinition methodDefinition = methodDefinitionFactory.createMethodDefinition(
                         method,
-                        pageDefinitionCache,
+                        //TODO This "new" is purely for testing; there must be a way to achieve the same thing without it
+                        new HashMap<Class<?>, PageDefinitionMapping>(pageDefinitionCache),
                         this,
                         knownPageClasses
                 );
