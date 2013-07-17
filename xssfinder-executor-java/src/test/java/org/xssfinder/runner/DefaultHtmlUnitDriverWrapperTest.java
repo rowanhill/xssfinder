@@ -24,7 +24,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Ignore("java.lang.NoClassDefFoundError: org/apache/http/pool/ConnPoolControl")
 public class DefaultHtmlUnitDriverWrapperTest {
     private static final String INDEX_PAGE =
             "<html>\n" +

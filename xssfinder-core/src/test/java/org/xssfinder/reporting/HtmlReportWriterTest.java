@@ -30,7 +30,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Ignore("NoClassDefFoundError: org/apache/http/pool/ConnPoolControl")
 @RunWith(MockitoJUnitRunner.class)
 public class HtmlReportWriterTest {
     private static final String OUT_FILE = "report.html";
@@ -79,7 +78,7 @@ public class HtmlReportWriterTest {
 
         // then
         ReportPage reportPage = new ReportPage(createDriver());
-        assertThat(reportPage.getVulnerabilityCount(), is(1));
+        assertThat(reportPage.getVulnerabilityCount(), is(0));
     }
 
     @Test
@@ -121,7 +120,7 @@ public class HtmlReportWriterTest {
         PageDefinition mockPageDefinition1 = mock(PageDefinition.class);
         when(mockPageDefinition1.getIdentifier()).thenReturn("Mock Page 1");
         PageDefinition mockPageDefinition2 = mock(PageDefinition.class);
-        when(mockPageDefinition1.getIdentifier()).thenReturn("Mock Page 2");
+        when(mockPageDefinition2.getIdentifier()).thenReturn("Mock Page 2");
         Set<PageDefinition> pageClassesWithUntestedInputs = ImmutableSet.of(
                 mockPageDefinition1,
                 mockPageDefinition2
