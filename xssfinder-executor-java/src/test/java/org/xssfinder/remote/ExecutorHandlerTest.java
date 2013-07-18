@@ -2,16 +2,18 @@ package org.xssfinder.remote;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.runner.ExecutorContext;
-import org.xssfinder.runner.PageDefinitionMapping;
 import org.xssfinder.runner.TraversalResult;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.scanner.ThriftToReflectionLookup;
+import org.xssfinder.scanner.ThriftToReflectionLookupFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,9 +22,7 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExecutorHandlerTest {
@@ -32,14 +32,21 @@ public class ExecutorHandlerTest {
     @Mock
     private PageDefinitionFactory mockPageDefFactory;
     @Mock
-    private PageDefinitionMapping mockPageDefinitionMapping;
+    private ThriftToReflectionLookupFactory mockThriftToReflectionLookupFactory;
+    @Mock
+    private ExecutorContext mockExecutorContext;
     @Mock
     private PageDefinition mockPageDefinition;
     @Mock
-    private ExecutorContext mockExecutorContext;
+    private final ThriftToReflectionLookup mockLookup = new ThriftToReflectionLookup();
 
     @InjectMocks
     private ExecutorHandler executorHandler;
+
+    @Before
+    public void setUp() {
+        when(mockThriftToReflectionLookupFactory.createLookup()).thenReturn(mockLookup);
+    }
 
     @Test
     public void gettingPageDefinitionsDelegatesToPageFinderAndPageDefinitionFactory() throws Exception {
@@ -47,8 +54,7 @@ public class ExecutorHandlerTest {
         Set<Class<?>> pageClasses = new HashSet<Class<?>>();
         pageClasses.add(SomePage.class);
         when(mockPageFinder.findAllPages(PACKAGE_NAME)).thenReturn(pageClasses);
-        when(mockPageDefFactory.createPageDefinition(SomePage.class, pageClasses)).thenReturn(mockPageDefinitionMapping);
-        when(mockPageDefinitionMapping.getPageDefinition()).thenReturn(mockPageDefinition);
+        when(mockPageDefFactory.createPageDefinition(SomePage.class, pageClasses, mockLookup)).thenReturn(mockPageDefinition);
 
         // when
         Set<PageDefinition> pageDefinitions = executorHandler.getPageDefinitions(PACKAGE_NAME);
@@ -56,6 +62,15 @@ public class ExecutorHandlerTest {
         // then
         Set<PageDefinition> expectedDefinitions = ImmutableSet.of(mockPageDefinition);
         assertThat(pageDefinitions, is(expectedDefinitions));
+    }
+
+    @Test
+    public void gettingPageDefinitionsSetsContextLookup() throws Exception {
+        // when
+        executorHandler.getPageDefinitions(PACKAGE_NAME);
+
+        // then
+        verify(mockExecutorContext).setThriftToReflectionLookup(mockLookup);
     }
 
     @Test

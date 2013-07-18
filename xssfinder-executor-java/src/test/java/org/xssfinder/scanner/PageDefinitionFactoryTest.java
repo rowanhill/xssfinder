@@ -4,23 +4,22 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.remote.MethodDefinition;
-import org.xssfinder.runner.PageDefinitionMapping;
+import org.xssfinder.remote.PageDefinition;
 
 import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
-import static org.xssfinder.scanner.PageDefinitionFactoryTest.ClassMappingMatcher.mapsSingleClass;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PageDefinitionFactoryTest {
@@ -28,13 +27,15 @@ public class PageDefinitionFactoryTest {
     private MethodDefinitionFactory mockMethodDefinitionFactory;
     @Mock
     private MethodDefinition mockMethodDefinition;
+    @Mock
+    private ThriftToReflectionLookup mockLookup;
     private Set<Class<?>> knownPageClasses;
 
     private PageDefinitionFactory factory;
 
     @Before
     public void setUp() {
-        factory = new PageDefinitionFactory(mockMethodDefinitionFactory);
+        factory = new PageDefinitionFactory(mockMethodDefinitionFactory, new HashMap<Class<?>, PageDefinition>());
         knownPageClasses = ImmutableSet.of(
                 SomePage.class,
                 NoPageReturningPage.class,
@@ -46,107 +47,117 @@ public class PageDefinitionFactoryTest {
     @Test
     public void definitionIdentifierIsFullyQualifiedClassName() {
         // when
-        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(SomePage.class, knownPageClasses);
+        PageDefinition pageDefinition = factory.createPageDefinition(SomePage.class, knownPageClasses, mockLookup);
 
         // then
-        assertThat(pageDefinitionMapping.getPageDefinition().getIdentifier(), is(SomePage.class.getCanonicalName()));
+        assertThat(pageDefinition.getIdentifier(), is(SomePage.class.getCanonicalName()));
+    }
+
+    @Test
+    public void definitionIsAddedToLookup() {
+        // when
+        PageDefinition pageDefinition = factory.createPageDefinition(SomePage.class, knownPageClasses, mockLookup);
+
+        // then
+        verify(mockLookup).putPageClass(pageDefinition.getIdentifier(), SomePage.class);
     }
 
     @Test
     public void definitionMethodsIsEmptySetIfClassHasNoMethods() {
         // when
-        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(SomePage.class, knownPageClasses);
+        PageDefinition pageDefinition = factory.createPageDefinition(SomePage.class, knownPageClasses, mockLookup);
 
         // then
-        assertThat(pageDefinitionMapping.getPageDefinition().getMethods(), is(empty()));
+        assertThat(pageDefinition.getMethods(), is(empty()));
     }
 
     @Test
-    public void definitionMethodsIsEmptySetIfClassHasNoMethodsReturnPageObjects() {
+    public void definitionMethodsIsEmptySetIfClassHasNoMethodsReturningPageObjects() {
         // when
-        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(SomePage.class, knownPageClasses);
+        PageDefinition pageDefinition = factory.createPageDefinition(NoPageReturningPage.class, knownPageClasses, mockLookup);
 
         // then
-        assertThat(pageDefinitionMapping.getPageDefinition().getMethods(), is(empty()));
+        assertThat(pageDefinition.getMethods(), is(empty()));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void definitionMethodsHasMethodDefinitionForMethodsOnClassWhichReturnPageObjects() throws Exception {
         // given
         Method method = LinkingPage.class.getMethod("goToSomePage");
-        when(mockMethodDefinitionFactory.createMethodDefinition(eq(method), anyMap(), eq(factory), eq(knownPageClasses)))
-                .thenReturn(mockMethodDefinition);
+        setUpMockForMethod(method);
 
         // when
-        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(LinkingPage.class, knownPageClasses);
+        PageDefinition pageDefinition = factory.createPageDefinition(LinkingPage.class, knownPageClasses, mockLookup);
 
         // then
         Set<MethodDefinition> expectedMethodDefinitions = ImmutableSet.of(mockMethodDefinition);
-        assertThat(pageDefinitionMapping.getPageDefinition().getMethods(), is(expectedMethodDefinitions));
+        assertThat(pageDefinition.getMethods(), is(expectedMethodDefinitions));
+    }
+
+    @Test
+    public void methodDefinitionsFromPageAreAddedToLookup() throws Exception {
+        // given
+        Method method = LinkingPage.class.getMethod("goToSomePage");
+        setUpMockForMethod(method);
+        when(mockMethodDefinition.getIdentifier()).thenReturn("mockGoToSomePage");
+
+        // when
+        factory.createPageDefinition(LinkingPage.class, knownPageClasses, mockLookup);
+
+        // then
+        verify(mockLookup).putMethod("mockGoToSomePage", method);
     }
 
     @Test
     public void definitionIsCrawlStartPointIfPageIsAnnotatedWithCrawlStartPoint() throws Exception {
         // when
-        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(HomePage.class, knownPageClasses);
+        PageDefinition pageDefinition = factory.createPageDefinition(HomePage.class, knownPageClasses, mockLookup);
 
         // then
-        assertThat(pageDefinitionMapping.getPageDefinition().isCrawlStartPoint(), is(true));
+        assertThat(pageDefinition.isCrawlStartPoint(), is(true));
     }
 
     @Test
     public void definitionIsNotCrawlStartPointIfPageIsNotAnnotatedWithCrawlStartPoint() throws Exception {
         // when
-        PageDefinitionMapping pageDefinitionMapping = factory.createPageDefinition(SomePage.class, knownPageClasses);
+        PageDefinition pageDefinition = factory.createPageDefinition(SomePage.class, knownPageClasses, mockLookup);
 
         // then
-        assertThat(pageDefinitionMapping.getPageDefinition().isCrawlStartPoint(), is(false));
+        assertThat(pageDefinition.isCrawlStartPoint(), is(false));
     }
 
     @Test
     public void pageDefinitionIsInCacheBeforeCreatingMethodDefinitions() throws Exception {
+        //given
+        //noinspection unchecked
+        HashMap<Class<?>, PageDefinition> mockPageDefinitionCache = mock(HashMap.class);
+        factory = new PageDefinitionFactory(mockMethodDefinitionFactory, mockPageDefinitionCache);
+        Method method = CircularReferencePage.class.getMethod("goToSelf");
+        setUpMockForMethod(method);
+
         // when
-        factory.createPageDefinition(CircularReferencePage.class, knownPageClasses);
+        factory.createPageDefinition(CircularReferencePage.class, knownPageClasses, mockLookup);
 
         // then
-        verify(mockMethodDefinitionFactory, times(1)).createMethodDefinition(
-                eq(CircularReferencePage.class.getMethod("goToSelf")),
-                argThat(mapsSingleClass(CircularReferencePage.class)),
+        InOrder inOrder = inOrder(mockMethodDefinitionFactory, mockPageDefinitionCache);
+        inOrder.verify(mockPageDefinitionCache).put(eq(CircularReferencePage.class), any(PageDefinition.class));
+        inOrder.verify(mockMethodDefinitionFactory, times(1)).createMethodDefinition(
+                eq(method),
                 eq(factory),
-                eq(knownPageClasses)
+                eq(knownPageClasses),
+                eq(mockLookup)
         );
         verifyNoMoreInteractions(mockMethodDefinitionFactory);
     }
 
-    static class ClassMappingMatcher extends ArgumentMatcher<Map<Class<?>, PageDefinitionMapping>> {
-        private final Class<?> expectedClass;
-
-        private ClassMappingMatcher(Class<?> expectedClass) {
-            this.expectedClass = expectedClass;
-        }
-
-        public static ClassMappingMatcher mapsSingleClass(Class<?> expectedClass) {
-            return new ClassMappingMatcher(expectedClass);
-        }
-
-        @Override
-        public boolean matches(Object argument) {
-            if (!(argument instanceof Map)) {
-                return false;
-            }
-            Map map = (Map)argument;
-            if (map.size() != 1) {
-                return false;
-            }
-            Object key = map.keySet().iterator().next();
-            if (!(key instanceof Class<?>)) {
-                return false;
-            }
-            Class<?> actualClass = (Class<?>)key;
-
-            return actualClass == expectedClass;
-        }
+    private void setUpMockForMethod(Method method) {
+        //noinspection unchecked
+        when(mockMethodDefinitionFactory.createMethodDefinition(
+                eq(method),
+                eq(factory),
+                eq(knownPageClasses),
+                eq(mockLookup)
+        )).thenReturn(mockMethodDefinition);
     }
 
     private static class SomePage {}

@@ -11,6 +11,7 @@ import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.remote.TraversalMode;
+import org.xssfinder.scanner.ThriftToReflectionLookup;
 import org.xssfinder.xss.XssGenerator;
 
 import java.lang.reflect.Method;
@@ -39,9 +40,8 @@ public class ExecutorContextTest {
     @Mock
     private HomePage mockHomePage;
     @Mock
-    private PageDefinitionMapping mockPageDefinitionMapping;
-    @Mock
     private PageDefinition mockHomePageDefinition;
+    private ThriftToReflectionLookup lookup;
 
     private Set<MethodDefinition> homePageMethods = new HashSet<MethodDefinition>();
 
@@ -49,21 +49,18 @@ public class ExecutorContextTest {
 
     @Before
     public void setUp() {
-        when(mockPageDefinitionMapping.getPageDefinition()).thenReturn(mockHomePageDefinition);
-        //noinspection unchecked
-        when(mockPageDefinitionMapping.getPageClass()).thenReturn((Class)HomePage.class);
         when(mockHomePageDefinition.getIdentifier()).thenReturn(HOME_PAGE_ID);
         when(mockHomePageDefinition.getMethods()).thenReturn(homePageMethods);
         when(mockDriverWrapper.getPageInstantiator()).thenReturn(mockPageInstantiator);
         when(mockPageInstantiator.instantiatePage(HomePage.class)).thenReturn(mockHomePage);
+        lookup = new ThriftToReflectionLookup();
+        lookup.putPageClass(HOME_PAGE_ID, HomePage.class);
         context = new ExecutorContext(mockDriverWrapper, mockXssGenerator, mockPageTraverser);
+        context.setThriftToReflectionLookup(lookup);
     }
 
     @Test
     public void visitingUrlOfRootPageIsDelegatedToDriverWrapper() {
-        // given
-        context.addPageMapping(mockPageDefinitionMapping);
-
         // when
         context.visitUrlOfRootPage(HOME_PAGE_ID);
 
@@ -73,9 +70,6 @@ public class ExecutorContextTest {
 
     @Test
     public void visitingRootPageInstantiatesPage() {
-        // given
-        context.addPageMapping(mockPageDefinitionMapping);
-
         // when
         context.visitUrlOfRootPage(HOME_PAGE_ID);
 
@@ -127,9 +121,9 @@ public class ExecutorContextTest {
         // given
         MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
         Method method = HomePage.class.getMethod("goToSecondPage");
+        when(mockMethodDefinition.getIdentifier()).thenReturn("goToSecondPage");
+        lookup.putMethod("goToSecondPage", method);
         TraversalResult mockTraversalResult = mock(TraversalResult.class);
-        Map<MethodDefinition, Method> methodMapping = ImmutableMap.of(mockMethodDefinition, method);
-        when(mockPageDefinitionMapping.getMethodMapping()).thenReturn(methodMapping);
         when(mockPageTraverser.traverse(mockHomePage, method, TraversalMode.NORMAL)).thenReturn(mockTraversalResult);
         visitHomePage();
 
@@ -141,7 +135,6 @@ public class ExecutorContextTest {
     }
 
     private void visitHomePage() {
-        context.addPageMapping(mockPageDefinitionMapping);
         context.visitUrlOfRootPage(HOME_PAGE_ID);
     }
 

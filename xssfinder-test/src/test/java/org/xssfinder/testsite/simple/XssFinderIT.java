@@ -4,7 +4,6 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
-import org.apache.thrift.transport.TTransportException;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.After;
@@ -23,10 +22,12 @@ import org.xssfinder.runner.*;
 import org.xssfinder.scanner.MethodDefinitionFactory;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.scanner.ThriftToReflectionLookupFactory;
 import org.xssfinder.xss.XssAttackFactory;
 import org.xssfinder.xss.XssGenerator;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -68,8 +69,10 @@ public class XssFinderIT {
         ExecutorHandler executorHandler = new ExecutorHandler(
                 new PageFinder(),
                 new PageDefinitionFactory(
-                        new MethodDefinitionFactory()
+                        new MethodDefinitionFactory(),
+                        new HashMap<Class<?>, PageDefinition>()
                 ),
+                new ThriftToReflectionLookupFactory(),
                 new ExecutorContext(
                         new DefaultHtmlUnitDriverWrapper(),
                         new XssGenerator(new XssAttackFactory()),

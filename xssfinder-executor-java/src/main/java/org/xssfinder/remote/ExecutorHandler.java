@@ -2,11 +2,8 @@ package org.xssfinder.remote;
 
 import org.apache.thrift.TException;
 import org.xssfinder.runner.ExecutorContext;
-import org.xssfinder.runner.PageDefinitionMapping;
 import org.xssfinder.runner.TraversalResult;
-import org.xssfinder.scanner.NoPagesFoundException;
-import org.xssfinder.scanner.PageDefinitionFactory;
-import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.scanner.*;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -15,14 +12,18 @@ import java.util.Set;
 public class ExecutorHandler implements Executor.Iface {
     private final PageFinder pageFinder;
     private final PageDefinitionFactory pageDefinitionFactory;
+    private final ThriftToReflectionLookupFactory thriftToReflectionLookupFactory;
     private final ExecutorContext executorContext;
 
     public ExecutorHandler(
             PageFinder pageFinder,
             PageDefinitionFactory pageDefinitionFactory,
-            ExecutorContext executorContext) {
+            ThriftToReflectionLookupFactory thriftToReflectionLookupFactory,
+            ExecutorContext executorContext
+    ) {
         this.pageFinder = pageFinder;
         this.pageDefinitionFactory = pageDefinitionFactory;
+        this.thriftToReflectionLookupFactory = thriftToReflectionLookupFactory;
         this.executorContext = executorContext;
     }
 
@@ -31,11 +32,12 @@ public class ExecutorHandler implements Executor.Iface {
         try {
             Set<Class<?>> pageClasses = pageFinder.findAllPages(namespaceIdentifier);
             Set<PageDefinition> pageDefinitions = new HashSet<PageDefinition>();
+            ThriftToReflectionLookup lookup = thriftToReflectionLookupFactory.createLookup();
             for (Class<?> pageClass : pageClasses) {
-                PageDefinitionMapping pageDefinitionMapping = pageDefinitionFactory.createPageDefinition(pageClass, pageClasses);
-                pageDefinitions.add(pageDefinitionMapping.getPageDefinition());
-                executorContext.addPageMapping(pageDefinitionMapping);
+                PageDefinition pageDefinition = pageDefinitionFactory.createPageDefinition(pageClass, pageClasses, lookup);
+                pageDefinitions.add(pageDefinition);
             }
+            executorContext.setThriftToReflectionLookup(lookup);
             return pageDefinitions;
         } catch (NoPagesFoundException e) {
             throw new TException(e);

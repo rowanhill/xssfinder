@@ -1,6 +1,5 @@
 package org.xssfinder.reporting;
 
-import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.runner.PageContext;
 
 import java.io.PrintWriter;

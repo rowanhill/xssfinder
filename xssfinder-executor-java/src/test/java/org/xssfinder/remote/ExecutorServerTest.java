@@ -13,9 +13,11 @@ import org.xssfinder.runner.*;
 import org.xssfinder.scanner.MethodDefinitionFactory;
 import org.xssfinder.scanner.PageDefinitionFactory;
 import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.scanner.ThriftToReflectionLookupFactory;
 import org.xssfinder.xss.XssAttackFactory;
 import org.xssfinder.xss.XssGenerator;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
@@ -31,8 +33,10 @@ public class ExecutorServerTest {
         handler = new ExecutorHandler(
                 new PageFinder(),
                 new PageDefinitionFactory(
-                        new MethodDefinitionFactory()
+                        new MethodDefinitionFactory(),
+                        new HashMap<Class<?>, PageDefinition>()
                 ),
+                new ThriftToReflectionLookupFactory(),
                 new ExecutorContext(
                         new DefaultHtmlUnitDriverWrapper(),
                         new XssGenerator(

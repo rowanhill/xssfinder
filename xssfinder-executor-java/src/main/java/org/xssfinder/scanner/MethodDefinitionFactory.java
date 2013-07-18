@@ -4,23 +4,21 @@ import org.xssfinder.SubmitAction;
 import org.xssfinder.TraverseWith;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
-import org.xssfinder.runner.PageDefinitionMapping;
 
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.Set;
 
 public class MethodDefinitionFactory {
     public MethodDefinition createMethodDefinition(
             Method method,
-            Map<Class<?>,PageDefinitionMapping> pageDefinitionCache,
             PageDefinitionFactory pageDefinitionFactory,
-            Set<Class<?>> knownPageClasses
+            Set<Class<?>> knownPageClasses,
+            ThriftToReflectionLookup lookup
     ) {
         String identifier = method.getName();
         Class<?> returnTypeClass = method.getReturnType();
         PageDefinition returnType = getPageDefinition(
-                pageDefinitionCache, pageDefinitionFactory, knownPageClasses, returnTypeClass);
+                pageDefinitionFactory, knownPageClasses, returnTypeClass, lookup);
         Class<?> owningTypeClass = method.getDeclaringClass();
         boolean hasArgs = method.getParameterTypes().length > 0;
         boolean isSubmit = method.isAnnotationPresent(SubmitAction.class);
@@ -36,15 +34,11 @@ public class MethodDefinitionFactory {
     }
 
     private PageDefinition getPageDefinition(
-            Map<Class<?>, PageDefinitionMapping> pageDefinitionCache,
             PageDefinitionFactory pageDefinitionFactory,
             Set<Class<?>> knownPageClasses,
-            Class<?> returnTypeClass
+            Class<?> returnTypeClass,
+            ThriftToReflectionLookup lookup
     ) {
-        PageDefinitionMapping pageDefinitionMapping = pageDefinitionCache.get(returnTypeClass);
-        if (pageDefinitionMapping == null) {
-            pageDefinitionMapping = pageDefinitionFactory.createPageDefinition(returnTypeClass, knownPageClasses);
-        }
-        return pageDefinitionMapping.getPageDefinition();
+        return pageDefinitionFactory.createPageDefinition(returnTypeClass, knownPageClasses, lookup);
     }
 }

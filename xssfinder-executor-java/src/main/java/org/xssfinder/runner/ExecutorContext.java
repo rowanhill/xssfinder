@@ -3,10 +3,10 @@ package org.xssfinder.runner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.TraversalMode;
+import org.xssfinder.scanner.ThriftToReflectionLookup;
 import org.xssfinder.xss.XssGenerator;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,9 +16,7 @@ public class ExecutorContext {
     private final PageTraverser pageTraverser;
     private final PageInstantiator pageInstantiator;
 
-    private final Map<MethodDefinition, Method> methodDefinitionsToMethods = new HashMap<MethodDefinition, Method>();
-    private final Map<String, String> rootPageIdsToUrls = new HashMap<String, String>();
-    private final Map<String, Class<?>> pageIdsToClasses = new HashMap<String, Class<?>>();
+    private ThriftToReflectionLookup lookup;
 
     private Object currentPage;
 
@@ -29,23 +27,17 @@ public class ExecutorContext {
         this.pageInstantiator = driverWrapper.getPageInstantiator();
     }
 
-    public void addPageMapping(PageDefinitionMapping pageDefinitionMapping) {
-        Class<?> pageClass = pageDefinitionMapping.getPageClass();
-        if (pageClass.isAnnotationPresent(CrawlStartPoint.class)) {
-            CrawlStartPoint crawlStartPoint = pageClass.getAnnotation(CrawlStartPoint.class);
-            String url = crawlStartPoint.url();
-            rootPageIdsToUrls.put(pageDefinitionMapping.getPageDefinition().getIdentifier(), url);
-            methodDefinitionsToMethods.putAll(pageDefinitionMapping.getMethodMapping());
-        }
-        pageIdsToClasses.put(pageDefinitionMapping.getPageDefinition().getIdentifier(), pageClass);
+    public void setThriftToReflectionLookup(ThriftToReflectionLookup lookup) {
+        this.lookup = lookup;
     }
 
     public void visitUrlOfRootPage(String pageId) {
-        String url = rootPageIdsToUrls.get(pageId);
+        Class<?> rootPageClass = lookup.getPageClass(pageId);
+        CrawlStartPoint crawlStartPoint = rootPageClass.getAnnotation(CrawlStartPoint.class);
+        String url = crawlStartPoint.url();
         driverWrapper.visit(url);
 
-        Class<?> pageClass = pageIdsToClasses.get(pageId);
-        currentPage = pageInstantiator.instantiatePage(pageClass);
+        currentPage = pageInstantiator.instantiatePage(rootPageClass);
     }
 
     public Map<String, String> putXssAttackStringsInInputs() {
@@ -61,7 +53,7 @@ public class ExecutorContext {
     }
 
     public TraversalResult traverseMethod(MethodDefinition methodDefinition, TraversalMode traversalMode) {
-        Method method = methodDefinitionsToMethods.get(methodDefinition);
+        Method method = lookup.getMethod(methodDefinition.getIdentifier());
         return pageTraverser.traverse(currentPage, method, traversalMode);
     }
 }

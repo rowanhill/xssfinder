@@ -10,12 +10,9 @@ import org.xssfinder.SubmitAction;
 import org.xssfinder.TraverseWith;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
-import org.xssfinder.runner.PageDefinitionMapping;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
@@ -27,21 +24,19 @@ public class MethodDefinitionFactoryTest {
     private static final String PAGE_DEF_ID = "A Page";
 
     private final MethodDefinitionFactory factory = new MethodDefinitionFactory();
-    private final Map<Class<?>, PageDefinitionMapping> pageDefinitionCache = new HashMap<Class<?>, PageDefinitionMapping>();
     private final Set<Class<?>> knownPageClasses = new HashSet<Class<?>>();
+    private final ThriftToReflectionLookup lookup = new ThriftToReflectionLookup();
 
     @Mock
     private PageDefinitionFactory mockPageDefinitionFactory;
-    @Mock
-    private PageDefinitionMapping mockPageDefinitionMapping;
     @Mock
     private PageDefinition mockPageDefinition;
 
     @Before
     public void setUp() {
         when(mockPageDefinition.getIdentifier()).thenReturn(PAGE_DEF_ID);
-        when(mockPageDefinitionMapping.getPageDefinition()).thenReturn(mockPageDefinition);
-        pageDefinitionCache.put(SomePage.class, mockPageDefinitionMapping);
+        when(mockPageDefinitionFactory.createPageDefinition(SomePage.class, knownPageClasses, lookup))
+                .thenReturn(mockPageDefinition);
     }
 
     @Test
@@ -51,7 +46,7 @@ public class MethodDefinitionFactoryTest {
 
         // when
         MethodDefinition methodDefinition =
-                factory.createMethodDefinition(method, pageDefinitionCache, mockPageDefinitionFactory, knownPageClasses);
+                createMethodDefinitionFromFactory(method);
 
         // then
         assertThat(methodDefinition.getIdentifier(), is(method.getName()));
@@ -60,28 +55,11 @@ public class MethodDefinitionFactoryTest {
     @Test
     public void returnTypeIsMethodReturnType() throws Exception {
         // given
-        pageDefinitionCache.put(SomePage.class, mockPageDefinitionMapping);
         Method method = SomePage.class.getMethod("goToSomePage");
 
         // when
         MethodDefinition methodDefinition =
-                factory.createMethodDefinition(method, pageDefinitionCache, mockPageDefinitionFactory, knownPageClasses);
-
-        // then
-        assertThat(methodDefinition.getReturnTypeIdentifier(), is(PAGE_DEF_ID));
-    }
-
-    @Test
-    public void returnTypePageDefinitionIsCreatedIfNotInCache() throws Exception {
-        // given
-        pageDefinitionCache.clear();
-        when(mockPageDefinitionFactory.createPageDefinition(SomePage.class, knownPageClasses))
-                .thenReturn(mockPageDefinitionMapping);
-        Method method = SomePage.class.getMethod("goToSomePage");
-
-        // when
-        MethodDefinition methodDefinition =
-                factory.createMethodDefinition(method, pageDefinitionCache, mockPageDefinitionFactory, knownPageClasses);
+                createMethodDefinitionFromFactory(method);
 
         // then
         assertThat(methodDefinition.getReturnTypeIdentifier(), is(PAGE_DEF_ID));
@@ -94,7 +72,7 @@ public class MethodDefinitionFactoryTest {
 
         // when
         MethodDefinition methodDefinition =
-                factory.createMethodDefinition(method, pageDefinitionCache, mockPageDefinitionFactory, knownPageClasses);
+                createMethodDefinitionFromFactory(method);
 
         // then
         assertThat(methodDefinition.isParameterised(), is(true));
@@ -107,7 +85,7 @@ public class MethodDefinitionFactoryTest {
 
         // when
         MethodDefinition methodDefinition =
-                factory.createMethodDefinition(method, pageDefinitionCache, mockPageDefinitionFactory, knownPageClasses);
+                createMethodDefinitionFromFactory(method);
 
         // then
         assertThat(methodDefinition.isParameterised(), is(false));
@@ -120,7 +98,7 @@ public class MethodDefinitionFactoryTest {
 
         // when
         MethodDefinition methodDefinition =
-                factory.createMethodDefinition(method, pageDefinitionCache, mockPageDefinitionFactory, knownPageClasses);
+                createMethodDefinitionFromFactory(method);
 
         // then
         assertThat(methodDefinition.isSubmitAnnotated(), is(true));
@@ -133,7 +111,7 @@ public class MethodDefinitionFactoryTest {
 
         // when
         MethodDefinition methodDefinition =
-                factory.createMethodDefinition(method, pageDefinitionCache, mockPageDefinitionFactory, knownPageClasses);
+                createMethodDefinitionFromFactory(method);
 
         // then
         assertThat(methodDefinition.isSubmitAnnotated(), is(false));
@@ -146,7 +124,7 @@ public class MethodDefinitionFactoryTest {
 
         // when
         MethodDefinition methodDefinition =
-                factory.createMethodDefinition(method, pageDefinitionCache, mockPageDefinitionFactory, knownPageClasses);
+                createMethodDefinitionFromFactory(method);
 
         // then
         assertThat(methodDefinition.isCustomTraversed(), is(true));
@@ -159,10 +137,19 @@ public class MethodDefinitionFactoryTest {
 
         // when
         MethodDefinition methodDefinition =
-                factory.createMethodDefinition(method, pageDefinitionCache, mockPageDefinitionFactory, knownPageClasses);
+                createMethodDefinitionFromFactory(method);
 
         // then
         assertThat(methodDefinition.isCustomTraversed(), is(false));
+    }
+    
+    private MethodDefinition createMethodDefinitionFromFactory(Method method) {
+        return factory.createMethodDefinition(
+                method,
+                mockPageDefinitionFactory,
+                knownPageClasses,
+                lookup
+        );
     }
 
     @SuppressWarnings("UnusedDeclaration")
