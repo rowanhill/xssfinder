@@ -54,6 +54,8 @@ public class ExecutorContext {
 
     public TraversalResult traverseMethod(MethodDefinition methodDefinition, TraversalMode traversalMode) {
         Method method = lookup.getMethod(methodDefinition.getIdentifier());
-        return pageTraverser.traverse(currentPage, method, traversalMode);
+        TraversalResult traversalResult = pageTraverser.traverse(currentPage, method, traversalMode);
+        currentPage = traversalResult.getPage();
+        return traversalResult;
     }
 }

@@ -119,10 +119,8 @@ public class ExecutorContextTest {
     @Test
     public void traversingMethodDelegatesToPageTraverser() throws Exception {
         // given
-        MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
         Method method = HomePage.class.getMethod("goToSecondPage");
-        when(mockMethodDefinition.getIdentifier()).thenReturn("goToSecondPage");
-        lookup.putMethod("goToSecondPage", method);
+        MethodDefinition mockMethodDefinition = mockMethodDefinition(method);
         TraversalResult mockTraversalResult = mock(TraversalResult.class);
         when(mockPageTraverser.traverse(mockHomePage, method, TraversalMode.NORMAL)).thenReturn(mockTraversalResult);
         visitHomePage();
@@ -134,6 +132,38 @@ public class ExecutorContextTest {
         assertThat(traversalResult, is(mockTraversalResult));
     }
 
+    @Test
+    public void traversingASecondTimeTraversesFromResultingPageObjectOfFirstTraversal() throws Exception {
+        // given
+        Method goToSecondPage = HomePage.class.getMethod("goToSecondPage");
+        MethodDefinition mockGoToSecondPageDef = mockMethodDefinition(goToSecondPage);
+        Method goToThirdPage = SecondPage.class.getMethod("goToThirdPage");
+        MethodDefinition mockGoToThirdPageDef = mockMethodDefinition(goToThirdPage);
+        TraversalResult mockTraversalResult1 = mock(TraversalResult.class);
+        when(mockPageTraverser.traverse(mockHomePage, goToSecondPage, TraversalMode.NORMAL))
+                .thenReturn(mockTraversalResult1);
+        SecondPage mockSecondPage = mock(SecondPage.class);
+        when(mockTraversalResult1.getPage()).thenReturn(mockSecondPage);
+        TraversalResult mockTraversalResult2 = mock(TraversalResult.class);
+        when(mockPageTraverser.traverse(mockSecondPage, goToThirdPage, TraversalMode.NORMAL))
+                .thenReturn(mockTraversalResult2);
+        visitHomePage();
+
+        // when
+        context.traverseMethod(mockGoToSecondPageDef, TraversalMode.NORMAL);
+        TraversalResult traversalResult = context.traverseMethod(mockGoToThirdPageDef, TraversalMode.NORMAL);
+
+        // then
+        assertThat(traversalResult, is(mockTraversalResult2));
+    }
+
+    private MethodDefinition mockMethodDefinition(Method method) {
+        MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
+        when(mockMethodDefinition.getIdentifier()).thenReturn(method.getName());
+        lookup.putMethod(method.getName(), method);
+        return  mockMethodDefinition;
+    }
+
     private void visitHomePage() {
         context.visitUrlOfRootPage(HOME_PAGE_ID);
     }
@@ -143,5 +173,9 @@ public class ExecutorContextTest {
         public SecondPage goToSecondPage() { return null; }
     }
 
-    private static class SecondPage {}
+    private static class SecondPage {
+        public ThirdPage goToThirdPage() { return null; }
+    }
+
+    private static class ThirdPage {}
 }
