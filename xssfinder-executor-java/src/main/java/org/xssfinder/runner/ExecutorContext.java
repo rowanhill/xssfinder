@@ -2,6 +2,7 @@ package org.xssfinder.runner;
 
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.remote.MethodDefinition;
+import org.xssfinder.remote.TUntraversableException;
 import org.xssfinder.remote.TraversalMode;
 import org.xssfinder.scanner.ThriftToReflectionLookup;
 import org.xssfinder.xss.XssGenerator;
@@ -52,7 +53,7 @@ public class ExecutorContext {
         return driverWrapper.getFormCount();
     }
 
-    public TraversalResult traverseMethod(MethodDefinition methodDefinition, TraversalMode traversalMode) {
+    public TraversalResult traverseMethod(MethodDefinition methodDefinition, TraversalMode traversalMode) throws TUntraversableException {
         Method method = lookup.getMethod(methodDefinition.getIdentifier());
         TraversalResult traversalResult = pageTraverser.traverse(currentPage, method, traversalMode);
         currentPage = traversalResult.getPage();

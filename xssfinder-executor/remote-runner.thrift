@@ -22,6 +22,10 @@ enum TraversalMode {
   SUBMIT
 }
 
+exception TUntraversableException {
+  1:string message
+}
+
 service Executor {
   /**
    * Gets definitions of all page objects in the given namespace
@@ -62,7 +66,7 @@ service Executor {
    * @param mode   The mode in which to traverse the method
    * @return A map of input identifiers -> attack identifiers
    */
-  map<string, string> traverseMethod(1:MethodDefinition method, 2:TraversalMode mode),
+  map<string, string> traverseMethod(1:MethodDefinition method, 2:TraversalMode mode) throws (1:TUntraversableException untraversable),
 
   void invokeAfterRouteHandler()
 }

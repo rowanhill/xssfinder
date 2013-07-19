@@ -65,7 +65,7 @@ public class ExecutorHandler implements Executor.Iface {
     }
 
     @Override
-    public Map<String, String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TException {
+    public Map<String, String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TException, TUntraversableException {
         TraversalResult traversalResult = executorContext.traverseMethod(method, mode);
         return traversalResult.getInputIdsToAttackIds();
     }

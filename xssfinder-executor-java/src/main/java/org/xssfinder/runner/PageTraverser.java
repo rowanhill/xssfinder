@@ -2,6 +2,7 @@ package org.xssfinder.runner;
 
 import org.xssfinder.CustomSubmitter;
 import org.xssfinder.CustomTraverser;
+import org.xssfinder.remote.TUntraversableException;
 import org.xssfinder.remote.TraversalMode;
 
 import java.lang.reflect.InvocationTargetException;
@@ -33,7 +34,7 @@ public class PageTraverser {
      * @param traversalMode The mode in which the traversal should be made - controls which annotations are observed
      * @return A result object containing the page object resulting from the traversal plus any XSS attacks made
      */
-    public TraversalResult traverse(Object page, Method method, TraversalMode traversalMode) {
+    public TraversalResult traverse(Object page, Method method, TraversalMode traversalMode) throws TUntraversableException {
         CustomTraverser customTraverser = null;
         CustomSubmitter customSubmitter = null;
         boolean methodMustHaveNoArgs;
@@ -46,7 +47,7 @@ public class PageTraverser {
         }
 
         if (method.getParameterTypes().length > 0 && methodMustHaveNoArgs) {
-            throw new UntraversableException("Cannot traverse methods that take parameters");
+            throw new TUntraversableException("Cannot traverse methods that take parameters");
         }
 
         try {
@@ -70,7 +71,7 @@ public class PageTraverser {
             }
             return new TraversalResult(newPage, inputIdsToAttackIds);
         } catch (Exception e) {
-            throw new UntraversableException(e);
+            throw new TUntraversableException("Error when traversing: " + e.getMessage());
         }
     }
 

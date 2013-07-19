@@ -77,7 +77,7 @@ public class Executor {
      * @param method
      * @param mode
      */
-    public Map<String,String> traverseMethod(MethodDefinition method, TraversalMode mode) throws org.apache.thrift.TException;
+    public Map<String,String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TUntraversableException, org.apache.thrift.TException;
 
     public void invokeAfterRouteHandler() throws org.apache.thrift.TException;
 
@@ -230,7 +230,7 @@ public class Executor {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getFormCount failed: unknown result");
     }
 
-    public Map<String,String> traverseMethod(MethodDefinition method, TraversalMode mode) throws org.apache.thrift.TException
+    public Map<String,String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TUntraversableException, org.apache.thrift.TException
     {
       send_traverseMethod(method, mode);
       return recv_traverseMethod();
@@ -244,12 +244,15 @@ public class Executor {
       sendBase("traverseMethod", args);
     }
 
-    public Map<String,String> recv_traverseMethod() throws org.apache.thrift.TException
+    public Map<String,String> recv_traverseMethod() throws TUntraversableException, org.apache.thrift.TException
     {
       traverseMethod_result result = new traverseMethod_result();
       receiveBase(result, "traverseMethod");
       if (result.isSetSuccess()) {
         return result.success;
+      }
+      if (result.untraversable != null) {
+        throw result.untraversable;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "traverseMethod failed: unknown result");
     }
@@ -467,7 +470,7 @@ public class Executor {
         prot.writeMessageEnd();
       }
 
-      public Map<String,String> getResult() throws org.apache.thrift.TException {
+      public Map<String,String> getResult() throws TUntraversableException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -621,7 +624,11 @@ public class Executor {
 
       protected traverseMethod_result getResult(I iface, traverseMethod_args args) throws org.apache.thrift.TException {
         traverseMethod_result result = new traverseMethod_result();
-        result.success = iface.traverseMethod(args.method, args.mode);
+        try {
+          result.success = iface.traverseMethod(args.method, args.mode);
+        } catch (TUntraversableException untraversable) {
+          result.untraversable = untraversable;
+        }
         return result;
       }
     }
@@ -4385,6 +4392,7 @@ public class Executor {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("traverseMethod_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.MAP, (short)0);
+    private static final org.apache.thrift.protocol.TField UNTRAVERSABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("untraversable", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4393,10 +4401,12 @@ public class Executor {
     }
 
     public Map<String,String> success; // required
+    public TUntraversableException untraversable; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      UNTRAVERSABLE((short)1, "untraversable");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4413,6 +4423,8 @@ public class Executor {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // UNTRAVERSABLE
+            return UNTRAVERSABLE;
           default:
             return null;
         }
@@ -4460,6 +4472,8 @@ public class Executor {
           new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+      tmpMap.put(_Fields.UNTRAVERSABLE, new org.apache.thrift.meta_data.FieldMetaData("untraversable", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(traverseMethod_result.class, metaDataMap);
     }
@@ -4468,10 +4482,12 @@ public class Executor {
     }
 
     public traverseMethod_result(
-      Map<String,String> success)
+      Map<String,String> success,
+      TUntraversableException untraversable)
     {
       this();
       this.success = success;
+      this.untraversable = untraversable;
     }
 
     /**
@@ -4493,6 +4509,9 @@ public class Executor {
         }
         this.success = __this__success;
       }
+      if (other.isSetUntraversable()) {
+        this.untraversable = new TUntraversableException(other.untraversable);
+      }
     }
 
     public traverseMethod_result deepCopy() {
@@ -4502,6 +4521,7 @@ public class Executor {
     @Override
     public void clear() {
       this.success = null;
+      this.untraversable = null;
     }
 
     public int getSuccessSize() {
@@ -4539,6 +4559,30 @@ public class Executor {
       }
     }
 
+    public TUntraversableException getUntraversable() {
+      return this.untraversable;
+    }
+
+    public traverseMethod_result setUntraversable(TUntraversableException untraversable) {
+      this.untraversable = untraversable;
+      return this;
+    }
+
+    public void unsetUntraversable() {
+      this.untraversable = null;
+    }
+
+    /** Returns true if field untraversable is set (has been assigned a value) and false otherwise */
+    public boolean isSetUntraversable() {
+      return this.untraversable != null;
+    }
+
+    public void setUntraversableIsSet(boolean value) {
+      if (!value) {
+        this.untraversable = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -4549,6 +4593,14 @@ public class Executor {
         }
         break;
 
+      case UNTRAVERSABLE:
+        if (value == null) {
+          unsetUntraversable();
+        } else {
+          setUntraversable((TUntraversableException)value);
+        }
+        break;
+
       }
     }
 
@@ -4556,6 +4608,9 @@ public class Executor {
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case UNTRAVERSABLE:
+        return getUntraversable();
 
       }
       throw new IllegalStateException();
@@ -4570,6 +4625,8 @@ public class Executor {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case UNTRAVERSABLE:
+        return isSetUntraversable();
       }
       throw new IllegalStateException();
     }
@@ -4593,6 +4650,15 @@ public class Executor {
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_untraversable = true && this.isSetUntraversable();
+      boolean that_present_untraversable = true && that.isSetUntraversable();
+      if (this_present_untraversable || that_present_untraversable) {
+        if (!(this_present_untraversable && that_present_untraversable))
+          return false;
+        if (!this.untraversable.equals(that.untraversable))
           return false;
       }
 
@@ -4622,6 +4688,16 @@ public class Executor {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetUntraversable()).compareTo(typedOther.isSetUntraversable());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUntraversable()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.untraversable, typedOther.untraversable);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -4647,6 +4723,14 @@ public class Executor {
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("untraversable:");
+      if (this.untraversable == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.untraversable);
       }
       first = false;
       sb.append(")");
@@ -4711,6 +4795,15 @@ public class Executor {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // UNTRAVERSABLE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.untraversable = new TUntraversableException();
+                struct.untraversable.read(iprot);
+                struct.setUntraversableIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -4739,6 +4832,11 @@ public class Executor {
           }
           oprot.writeFieldEnd();
         }
+        if (struct.untraversable != null) {
+          oprot.writeFieldBegin(UNTRAVERSABLE_FIELD_DESC);
+          struct.untraversable.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -4760,7 +4858,10 @@ public class Executor {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetUntraversable()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
@@ -4771,12 +4872,15 @@ public class Executor {
             }
           }
         }
+        if (struct.isSetUntraversable()) {
+          struct.untraversable.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, traverseMethod_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
             org.apache.thrift.protocol.TMap _map40 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
@@ -4791,6 +4895,11 @@ public class Executor {
             }
           }
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.untraversable = new TUntraversableException();
+          struct.untraversable.read(iprot);
+          struct.setUntraversableIsSet(true);
         }
       }
     }
