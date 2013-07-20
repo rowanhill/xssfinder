@@ -88,6 +88,23 @@ public class PageDescriptorTest {
     }
 
     @Test
+    public void traversalMethodsIncludeMethodsThatReturnTheSamePage() throws Exception {
+        // given
+        MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
+        when(mockMethodDefinition.getReturnTypeIdentifier()).thenReturn("Some Page");
+        Set<MethodDefinition> methodDefinitions = ImmutableSet.of(mockMethodDefinition);
+        when(mockPageDefinition.getMethods()).thenReturn(methodDefinitions);
+        when(mockPageDefinition.getIdentifier()).thenReturn("Some Page");
+        PageDescriptor descriptor = new PageDescriptor(mockPageDefinition);
+
+        // when
+        Set<MethodDefinition> traversalMethods = descriptor.getTraversalMethods();
+
+        // then
+        assertThat(traversalMethods, is(methodDefinitions));
+    }
+
+    @Test
     public void submitMethodsIsEmptyForLeafNode() throws Exception {
         // given
         PageDescriptor descriptor = new PageDescriptor(mockPageDefinition);
