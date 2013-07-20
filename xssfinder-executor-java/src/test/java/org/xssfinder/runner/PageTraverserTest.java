@@ -9,6 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.CustomSubmitter;
 import org.xssfinder.CustomTraverser;
 import org.xssfinder.Page;
+import org.xssfinder.remote.TUntraversableException;
 import org.xssfinder.remote.TraversalMode;
 
 import java.lang.reflect.Method;
@@ -60,7 +61,7 @@ public class PageTraverserTest {
         assertThat(result.getPage(), is(instanceOf(SecondPage.class)));
     }
 
-    @Test(expected=UntraversableException.class)
+    @Test(expected=TUntraversableException.class)
     public void exceptionInvokingTraversalMethodGeneratesUntraversableException() throws Exception {
         // given
         setTraversalMethodThatRaisesException();
@@ -70,7 +71,7 @@ public class PageTraverserTest {
         traverser.traverse(page, method, TraversalMode.NORMAL);
     }
 
-    @Test(expected=UntraversableException.class)
+    @Test(expected=TUntraversableException.class)
     public void tryingToTraverseMethodWithArgsGeneratesUntraversableException() throws Exception {
         // given
         setTraversalMethodThatHasParameter();
@@ -123,7 +124,7 @@ public class PageTraverserTest {
         assertThat(result.getInputIdsToAttackIds(), is(expectedLabelsToAttackIds));
     }
 
-    @Test(expected=UntraversableException.class)
+    @Test(expected=TUntraversableException.class)
     public void tryingToTraverseSubmitMethodWithArgsGeneratesUntraversableException() throws Exception {
         // given
         setTraversalMethodThatHasParameter();
