@@ -8,7 +8,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.xssfinder.reflection.Instantiator;
 import org.xssfinder.remote.*;
@@ -63,7 +62,6 @@ public class XssFinderIT {
     }
 
     @Test
-    @Ignore("java.lang.NoClassDefFoundError: org/apache/http/pool/ConnPoolControl")
     public void runXssFinder() throws Exception {
         // Set up the remote executor
         ExecutorHandler executorHandler = new ExecutorHandler(
