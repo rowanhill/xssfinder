@@ -1,6 +1,7 @@
 package org.xssfinder.runner;
 
 import org.xssfinder.remote.ExecutorWrapper;
+import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.reporting.RouteRunErrorContext;
 import org.xssfinder.reporting.RouteRunErrorContextFactory;
 import org.xssfinder.routing.Route;
@@ -51,7 +52,7 @@ class RoutePageStrategyRunner {
             RouteRunErrorContext errorContext = errorContextFactory.createErrorContext(e, pageContext);
             xssJournal.addErrorContext(errorContext);
         } finally {
-            invokeAfterRouteIfNeeded(pageContext);
+            invokeAfterRouteIfNeeded(pageContext, route.getRootPageClass());
         }
     }
 
@@ -61,12 +62,12 @@ class RoutePageStrategyRunner {
         }
     }
 
-    private void invokeAfterRouteIfNeeded(PageContext pageContext) {
+    private void invokeAfterRouteIfNeeded(PageContext pageContext, PageDefinition rootPageDefinition) {
         if (pageContext == null) {
             return;
         }
         try {
-            executor.invokeAfterRouteHandler();
+            executor.invokeAfterRouteHandler(rootPageDefinition.getIdentifier());
         } catch (Exception e) {
             // Do nothing... for now
         }

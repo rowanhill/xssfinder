@@ -26,7 +26,9 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExecutorHandlerTest {
-    public static final String PACKAGE_NAME = "some.namespace";
+    private static final String PACKAGE_NAME = "some.namespace";
+    private static final String PAGE_ID = "Page ID";
+
     @Mock
     private PageFinder mockPageFinder;
     @Mock
@@ -38,7 +40,7 @@ public class ExecutorHandlerTest {
     @Mock
     private PageDefinition mockPageDefinition;
     @Mock
-    private final ThriftToReflectionLookup mockLookup = new ThriftToReflectionLookup();
+    private ThriftToReflectionLookup mockLookup = new ThriftToReflectionLookup();
 
     @InjectMocks
     private ExecutorHandler executorHandler;
@@ -147,49 +149,17 @@ public class ExecutorHandlerTest {
         assertThat(inputIdsToXssIds, is(expectedInputIdsToXssIds));
     }
 
-        /*
     @Test
-    public void createsLifecycleHandler() throws Exception {
-        // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
-        LifecycleHandler mockHandler = mock(LifecycleHandler.class);
-        when(mockInstantiator.instantiate(LifecycleHandler.class)).thenReturn(mockHandler);
-
+    public void invokingAfterRouteHandlerDelegatesToExecutorContext() throws Exception {
         // when
-        Object handler = route.createLifecycleHandler();
+        executorHandler.invokeAfterRouteHandler(PAGE_ID);
 
         // then
-        assertThat(handler, is((Object)mockHandler));
+        verify(mockExecutorContext).invokeAfterRouteHandler(PAGE_ID);
     }
-
-    @Test(expected=LifecycleEventException.class)
-    public void throwsExceptionIfCreatingLifecycleHandlerFails() throws Exception {
-        // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
-        when(mockInstantiator.instantiate(LifecycleHandler.class)).thenThrow(new InstantiationException(null));
-
-        // when
-        route.createLifecycleHandler();
-    }
-
-    @Test
-    public void createsNullLifecycleHandlerIfNoneSpecified() throws Exception {
-        // given
-        //noinspection unchecked
-        when(mockPageDescriptor.getPageClass()).thenReturn((Class) PageWithoutLifecycleHandler.class);
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
-
-        // when
-        Object handler = route.createLifecycleHandler();
-
-        // then
-        assertThat(handler, is(nullValue()));
-        //noinspection unchecked
-        verify(never()).instantiate(any(Class.class));
-    }
-    */
 
     private static class SomePage {
+        @SuppressWarnings("UnusedDeclaration")
         public SomePage goToSomePage() { return null; }
     }
 }

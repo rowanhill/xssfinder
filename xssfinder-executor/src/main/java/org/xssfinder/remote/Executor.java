@@ -79,7 +79,14 @@ public class Executor {
      */
     public Map<String,String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TUntraversableException, org.apache.thrift.TException;
 
-    public void invokeAfterRouteHandler() throws org.apache.thrift.TException;
+    /**
+     * Invoke the 'after route' event handler for a route starting at the identified page
+     * 
+     * @param rootPageIdentifier The root page of the route that has just finished
+     * 
+     * @param rootPageIdentifier
+     */
+    public void invokeAfterRouteHandler(String rootPageIdentifier) throws org.apache.thrift.TException;
 
   }
 
@@ -97,7 +104,7 @@ public class Executor {
 
     public void traverseMethod(MethodDefinition method, TraversalMode mode, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.traverseMethod_call> resultHandler) throws org.apache.thrift.TException;
 
-    public void invokeAfterRouteHandler(org.apache.thrift.async.AsyncMethodCallback<AsyncClient.invokeAfterRouteHandler_call> resultHandler) throws org.apache.thrift.TException;
+    public void invokeAfterRouteHandler(String rootPageIdentifier, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.invokeAfterRouteHandler_call> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -257,15 +264,16 @@ public class Executor {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "traverseMethod failed: unknown result");
     }
 
-    public void invokeAfterRouteHandler() throws org.apache.thrift.TException
+    public void invokeAfterRouteHandler(String rootPageIdentifier) throws org.apache.thrift.TException
     {
-      send_invokeAfterRouteHandler();
+      send_invokeAfterRouteHandler(rootPageIdentifier);
       recv_invokeAfterRouteHandler();
     }
 
-    public void send_invokeAfterRouteHandler() throws org.apache.thrift.TException
+    public void send_invokeAfterRouteHandler(String rootPageIdentifier) throws org.apache.thrift.TException
     {
       invokeAfterRouteHandler_args args = new invokeAfterRouteHandler_args();
+      args.setRootPageIdentifier(rootPageIdentifier);
       sendBase("invokeAfterRouteHandler", args);
     }
 
@@ -480,21 +488,24 @@ public class Executor {
       }
     }
 
-    public void invokeAfterRouteHandler(org.apache.thrift.async.AsyncMethodCallback<invokeAfterRouteHandler_call> resultHandler) throws org.apache.thrift.TException {
+    public void invokeAfterRouteHandler(String rootPageIdentifier, org.apache.thrift.async.AsyncMethodCallback<invokeAfterRouteHandler_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      invokeAfterRouteHandler_call method_call = new invokeAfterRouteHandler_call(resultHandler, this, ___protocolFactory, ___transport);
+      invokeAfterRouteHandler_call method_call = new invokeAfterRouteHandler_call(rootPageIdentifier, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class invokeAfterRouteHandler_call extends org.apache.thrift.async.TAsyncMethodCall {
-      public invokeAfterRouteHandler_call(org.apache.thrift.async.AsyncMethodCallback<invokeAfterRouteHandler_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String rootPageIdentifier;
+      public invokeAfterRouteHandler_call(String rootPageIdentifier, org.apache.thrift.async.AsyncMethodCallback<invokeAfterRouteHandler_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.rootPageIdentifier = rootPageIdentifier;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("invokeAfterRouteHandler", org.apache.thrift.protocol.TMessageType.CALL, 0));
         invokeAfterRouteHandler_args args = new invokeAfterRouteHandler_args();
+        args.setRootPageIdentifier(rootPageIdentifier);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -644,7 +655,7 @@ public class Executor {
 
       protected invokeAfterRouteHandler_result getResult(I iface, invokeAfterRouteHandler_args args) throws org.apache.thrift.TException {
         invokeAfterRouteHandler_result result = new invokeAfterRouteHandler_result();
-        iface.invokeAfterRouteHandler();
+        iface.invokeAfterRouteHandler(args.rootPageIdentifier);
         return result;
       }
     }
@@ -4909,6 +4920,7 @@ public class Executor {
   public static class invokeAfterRouteHandler_args implements org.apache.thrift.TBase<invokeAfterRouteHandler_args, invokeAfterRouteHandler_args._Fields>, java.io.Serializable, Cloneable   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("invokeAfterRouteHandler_args");
 
+    private static final org.apache.thrift.protocol.TField ROOT_PAGE_IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("rootPageIdentifier", org.apache.thrift.protocol.TType.STRING, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4916,10 +4928,11 @@ public class Executor {
       schemes.put(TupleScheme.class, new invokeAfterRouteHandler_argsTupleSchemeFactory());
     }
 
+    public String rootPageIdentifier; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-;
+      ROOT_PAGE_IDENTIFIER((short)1, "rootPageIdentifier");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4934,6 +4947,8 @@ public class Executor {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 1: // ROOT_PAGE_IDENTIFIER
+            return ROOT_PAGE_IDENTIFIER;
           default:
             return null;
         }
@@ -4972,9 +4987,13 @@ public class Executor {
         return _fieldName;
       }
     }
+
+    // isset id assignments
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.ROOT_PAGE_IDENTIFIER, new org.apache.thrift.meta_data.FieldMetaData("rootPageIdentifier", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(invokeAfterRouteHandler_args.class, metaDataMap);
     }
@@ -4982,10 +5001,20 @@ public class Executor {
     public invokeAfterRouteHandler_args() {
     }
 
+    public invokeAfterRouteHandler_args(
+      String rootPageIdentifier)
+    {
+      this();
+      this.rootPageIdentifier = rootPageIdentifier;
+    }
+
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public invokeAfterRouteHandler_args(invokeAfterRouteHandler_args other) {
+      if (other.isSetRootPageIdentifier()) {
+        this.rootPageIdentifier = other.rootPageIdentifier;
+      }
     }
 
     public invokeAfterRouteHandler_args deepCopy() {
@@ -4994,15 +5023,51 @@ public class Executor {
 
     @Override
     public void clear() {
+      this.rootPageIdentifier = null;
+    }
+
+    public String getRootPageIdentifier() {
+      return this.rootPageIdentifier;
+    }
+
+    public invokeAfterRouteHandler_args setRootPageIdentifier(String rootPageIdentifier) {
+      this.rootPageIdentifier = rootPageIdentifier;
+      return this;
+    }
+
+    public void unsetRootPageIdentifier() {
+      this.rootPageIdentifier = null;
+    }
+
+    /** Returns true if field rootPageIdentifier is set (has been assigned a value) and false otherwise */
+    public boolean isSetRootPageIdentifier() {
+      return this.rootPageIdentifier != null;
+    }
+
+    public void setRootPageIdentifierIsSet(boolean value) {
+      if (!value) {
+        this.rootPageIdentifier = null;
+      }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case ROOT_PAGE_IDENTIFIER:
+        if (value == null) {
+          unsetRootPageIdentifier();
+        } else {
+          setRootPageIdentifier((String)value);
+        }
+        break;
+
       }
     }
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case ROOT_PAGE_IDENTIFIER:
+        return getRootPageIdentifier();
+
       }
       throw new IllegalStateException();
     }
@@ -5014,6 +5079,8 @@ public class Executor {
       }
 
       switch (field) {
+      case ROOT_PAGE_IDENTIFIER:
+        return isSetRootPageIdentifier();
       }
       throw new IllegalStateException();
     }
@@ -5031,6 +5098,15 @@ public class Executor {
       if (that == null)
         return false;
 
+      boolean this_present_rootPageIdentifier = true && this.isSetRootPageIdentifier();
+      boolean that_present_rootPageIdentifier = true && that.isSetRootPageIdentifier();
+      if (this_present_rootPageIdentifier || that_present_rootPageIdentifier) {
+        if (!(this_present_rootPageIdentifier && that_present_rootPageIdentifier))
+          return false;
+        if (!this.rootPageIdentifier.equals(that.rootPageIdentifier))
+          return false;
+      }
+
       return true;
     }
 
@@ -5047,6 +5123,16 @@ public class Executor {
       int lastComparison = 0;
       invokeAfterRouteHandler_args typedOther = (invokeAfterRouteHandler_args)other;
 
+      lastComparison = Boolean.valueOf(isSetRootPageIdentifier()).compareTo(typedOther.isSetRootPageIdentifier());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetRootPageIdentifier()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.rootPageIdentifier, typedOther.rootPageIdentifier);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -5067,6 +5153,13 @@ public class Executor {
       StringBuilder sb = new StringBuilder("invokeAfterRouteHandler_args(");
       boolean first = true;
 
+      sb.append("rootPageIdentifier:");
+      if (this.rootPageIdentifier == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.rootPageIdentifier);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -5109,6 +5202,14 @@ public class Executor {
             break;
           }
           switch (schemeField.id) {
+            case 1: // ROOT_PAGE_IDENTIFIER
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.rootPageIdentifier = iprot.readString();
+                struct.setRootPageIdentifierIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -5124,6 +5225,11 @@ public class Executor {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.rootPageIdentifier != null) {
+          oprot.writeFieldBegin(ROOT_PAGE_IDENTIFIER_FIELD_DESC);
+          oprot.writeString(struct.rootPageIdentifier);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -5141,11 +5247,24 @@ public class Executor {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, invokeAfterRouteHandler_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetRootPageIdentifier()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetRootPageIdentifier()) {
+          oprot.writeString(struct.rootPageIdentifier);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, invokeAfterRouteHandler_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.rootPageIdentifier = iprot.readString();
+          struct.setRootPageIdentifierIsSet(true);
+        }
       }
     }
 

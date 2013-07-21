@@ -70,9 +70,9 @@ public class ExecutorWrapper implements Executor.Iface {
     }
 
     @Override
-    public void invokeAfterRouteHandler() {
+    public void invokeAfterRouteHandler(String rootPageId) {
         try {
-            innerExecutor.invokeAfterRouteHandler();
+            innerExecutor.invokeAfterRouteHandler(rootPageId);
         } catch (TException e) {
             throw new CommunicationsException(e);
         }

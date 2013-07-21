@@ -5,9 +5,13 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.AfterRoute;
 import org.xssfinder.CrawlStartPoint;
+import org.xssfinder.reflection.*;
+import org.xssfinder.reflection.InstantiationException;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.remote.TraversalMode;
@@ -19,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
@@ -36,6 +41,10 @@ public class ExecutorContextTest {
     private PageTraverser mockPageTraverser;
     @Mock
     private PageInstantiator mockPageInstantiator;
+    @Mock
+    private Instantiator mockInstantiator;
+    @Mock
+    private LifecycleEventExecutor mockLifecycleEventExecutor;
 
     @Mock
     private HomePage mockHomePage;
@@ -55,7 +64,7 @@ public class ExecutorContextTest {
         when(mockPageInstantiator.instantiatePage(HomePage.class)).thenReturn(mockHomePage);
         lookup = new ThriftToReflectionLookup();
         lookup.putPageClass(HOME_PAGE_ID, HomePage.class);
-        context = new ExecutorContext(mockDriverWrapper, mockXssGenerator, mockPageTraverser);
+        context = new ExecutorContext(mockDriverWrapper, mockXssGenerator, mockPageTraverser, mockInstantiator, mockLifecycleEventExecutor);
         context.setThriftToReflectionLookup(lookup);
     }
 
@@ -157,6 +166,57 @@ public class ExecutorContextTest {
         assertThat(traversalResult, is(mockTraversalResult2));
     }
 
+
+    @Test
+    public void invokingAfterRouteHandlerDelegatesToLifecycleEventExecutor() throws Exception {
+        // given
+        HomeLifecycleHandler mockLifecycleHandler = mock(HomeLifecycleHandler.class);
+        when(mockInstantiator.instantiate(HomeLifecycleHandler.class)).thenReturn(mockLifecycleHandler);
+
+        // when
+        context.invokeAfterRouteHandler(HOME_PAGE_ID);
+
+        // then
+        verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, null);
+    }
+
+    @Test
+    public void invokingAfterRouteHandlerPassesCurrentPageToLifecycleEventExecutor() throws Exception {
+        // given
+        HomeLifecycleHandler mockLifecycleHandler = mock(HomeLifecycleHandler.class);
+        when(mockInstantiator.instantiate(HomeLifecycleHandler.class)).thenReturn(mockLifecycleHandler);
+        context.visitUrlOfRootPage(HOME_PAGE_ID);
+
+        // when
+        context.invokeAfterRouteHandler(HOME_PAGE_ID);
+
+        // then
+        verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockHomePage);
+    }
+
+    @Test(expected=LifecycleEventException.class)
+    public void invokingAfterRouteHandlerThrowsExceptionIfCreatingLifecycleHandlerFails() throws Exception {
+        // given
+        when(mockInstantiator.instantiate(HomeLifecycleHandler.class)).thenThrow(new InstantiationException(null));
+
+        // when
+        context.invokeAfterRouteHandler(HOME_PAGE_ID);
+    }
+
+    @Test
+    public void invokingAfterRouteHandlerDoesNothingIfRootPageClassSpecifiesNoHandler() throws Exception {
+        // given
+        lookup.putPageClass(HOME_PAGE_ID, HomePageWithoutLifecycleHandler.class);
+
+        // when
+        context.invokeAfterRouteHandler(HOME_PAGE_ID);
+
+        // then
+        //noinspection unchecked
+        verify(mockInstantiator, never()).instantiate(Matchers.any(Class.class));
+        verify(mockLifecycleEventExecutor, never()).afterRoute(any(Object.class), any(Object.class));
+    }
+
     private MethodDefinition mockMethodDefinition(Method method) {
         MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
         when(mockMethodDefinition.getIdentifier()).thenReturn(method.getName());
@@ -168,14 +228,26 @@ public class ExecutorContextTest {
         context.visitUrlOfRootPage(HOME_PAGE_ID);
     }
 
-    @CrawlStartPoint(url=HOME_PAGE_URL)
+    @CrawlStartPoint(url=HOME_PAGE_URL, lifecycleHandler=HomeLifecycleHandler.class)
     private static class HomePage {
         public SecondPage goToSecondPage() { return null; }
     }
 
     private static class SecondPage {
+        @SuppressWarnings("UnusedDeclaration")
         public ThirdPage goToThirdPage() { return null; }
     }
 
     private static class ThirdPage {}
+
+    private static class HomeLifecycleHandler {
+        @AfterRoute
+        public void foo(Object page) {
+
+        }
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    @CrawlStartPoint(url=HOME_PAGE_URL)
+    private static class HomePageWithoutLifecycleHandler {}
 }

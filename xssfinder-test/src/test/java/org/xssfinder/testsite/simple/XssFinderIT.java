@@ -80,7 +80,9 @@ public class XssFinderIT {
                                 new CustomTraverserInstantiator(new Instantiator()),
                                 new CustomSubmitterInstantiator(new Instantiator()),
                                 new LabelledXssGeneratorFactory()
-                        )
+                        ),
+                        new Instantiator(),
+                        new LifecycleEventExecutor()
                 )
         );
         final ExecutorServer executorServer = new ExecutorServer(9091, executorHandler);

@@ -1,6 +1,8 @@
 package org.xssfinder.runner;
 
 import org.xssfinder.CrawlStartPoint;
+import org.xssfinder.reflection.*;
+import org.xssfinder.reflection.InstantiationException;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.TUntraversableException;
 import org.xssfinder.remote.TraversalMode;
@@ -15,16 +17,26 @@ public class ExecutorContext {
     private final DriverWrapper driverWrapper;
     private final XssGenerator xssGenerator;
     private final PageTraverser pageTraverser;
+    private final Instantiator instantiator;
+    private final LifecycleEventExecutor lifecycleEventExecutor;
     private final PageInstantiator pageInstantiator;
 
     private ThriftToReflectionLookup lookup;
 
     private Object currentPage;
 
-    public ExecutorContext(DriverWrapper driverWrapper, XssGenerator xssGenerator, PageTraverser pageTraverser) {
+    public ExecutorContext(
+            DriverWrapper driverWrapper,
+            XssGenerator xssGenerator,
+            PageTraverser pageTraverser,
+            Instantiator instantiator,
+            LifecycleEventExecutor lifecycleEventExecutor
+    ) {
         this.driverWrapper = driverWrapper;
         this.xssGenerator = xssGenerator;
         this.pageTraverser = pageTraverser;
+        this.instantiator = instantiator;
+        this.lifecycleEventExecutor = lifecycleEventExecutor;
         this.pageInstantiator = driverWrapper.getPageInstantiator();
     }
 
@@ -58,5 +70,27 @@ public class ExecutorContext {
         TraversalResult traversalResult = pageTraverser.traverse(currentPage, method, traversalMode);
         currentPage = traversalResult.getPage();
         return traversalResult;
+    }
+
+    public void invokeAfterRouteHandler(String rootPageId) {
+        Class<?> rootClass = lookup.getPageClass(rootPageId);
+        Object lifecycleHandler = createLifecycleEventHandler(rootClass);
+        if (lifecycleHandler != null) {
+            lifecycleEventExecutor.afterRoute(lifecycleHandler, currentPage);
+        }
+    }
+
+    private Object createLifecycleEventHandler(Class<?> rootClass) {
+        CrawlStartPoint crawlStartPoint = rootClass.getAnnotation(CrawlStartPoint.class);
+        Class<?> handlerClass = crawlStartPoint.lifecycleHandler();
+        if (handlerClass == Object.class) {
+            // Object is the default lifecycle handler; it indicates that no handler has been set, so we return null
+            return null;
+        }
+        try {
+            return instantiator.instantiate(handlerClass);
+        } catch (InstantiationException ex) {
+            throw new LifecycleEventException(ex);
+        }
     }
 }

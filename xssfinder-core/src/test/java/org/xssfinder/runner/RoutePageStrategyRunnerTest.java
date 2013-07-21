@@ -93,7 +93,7 @@ public class RoutePageStrategyRunnerTest {
         InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockExecutor);
         inOrder.verify(mockStrategy1).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
-        inOrder.verify(mockExecutor).invokeAfterRouteHandler();
+        inOrder.verify(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -119,7 +119,7 @@ public class RoutePageStrategyRunnerTest {
         inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy1).processPage(mockNextContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockNextContext, mockXssJournal);
-        inOrder.verify(mockExecutor).invokeAfterRouteHandler();
+        inOrder.verify(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -156,7 +156,7 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        verify(mockExecutor).invokeAfterRouteHandler();
+        verify(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
     }
 
     @Test
@@ -190,7 +190,7 @@ public class RoutePageStrategyRunnerTest {
         when(mockOtherRoute.getRootPageClass()).thenReturn(mockPageDefinition);
         routes.add(mockOtherRoute);
 
-        doThrow(new RuntimeException("Error!")).when(mockExecutor).invokeAfterRouteHandler();
+        doThrow(new RuntimeException("Error!")).when(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
 
         // when
         runner.run(routes, pageStrategies, mockXssJournal);
@@ -209,6 +209,6 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        verify(mockExecutor, never()).invokeAfterRouteHandler();
+        verify(mockExecutor, never()).invokeAfterRouteHandler(PAGE_ID);
     }
 }

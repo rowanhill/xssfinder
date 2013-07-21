@@ -68,5 +68,10 @@ service Executor {
    */
   map<string, string> traverseMethod(1:MethodDefinition method, 2:TraversalMode mode) throws (1:TUntraversableException untraversable),
 
-  void invokeAfterRouteHandler()
+  /**
+   * Invoke the 'after route' event handler for a route starting at the identified page
+   *
+   * @param rootPageIdentifier The root page of the route that has just finished
+   */
+  void invokeAfterRouteHandler(1:string rootPageIdentifier)
 }

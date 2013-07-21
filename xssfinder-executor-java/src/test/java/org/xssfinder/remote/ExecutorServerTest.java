@@ -50,7 +50,9 @@ public class ExecutorServerTest {
                                         new Instantiator()
                                 ),
                                 null
-                        )
+                        ),
+                        new Instantiator(),
+                        new LifecycleEventExecutor()
                 )
         );
     }

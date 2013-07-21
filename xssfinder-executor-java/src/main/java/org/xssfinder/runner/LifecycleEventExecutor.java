@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 /**
  * Executes route lifecycle event handlers as appropriate on lifecycle handlers
  */
-class LifecycleEventExecutor {
+public class LifecycleEventExecutor {
     public void afterRoute(Object lifecycleHandler, Object page) {
         if (lifecycleHandler == null) {
             return;
