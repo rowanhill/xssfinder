@@ -129,14 +129,6 @@ public class PageContextTest {
         assertThat(nextPage, is(mockNextPageDefinition));
     }
 
-    private PageDefinition mockResultingPageDefinition(PageTraversal mockPageTraversal) {
-        PageDefinition mockNextPageDefinition = mock(PageDefinition.class);
-        PageDescriptor mockNextPageDescriptor = mock(PageDescriptor.class);
-        when(mockNextPageDescriptor.getPageDefinition()).thenReturn(mockNextPageDefinition);
-        when(mockPageTraversal.getResultingPageDescriptor()).thenReturn(mockNextPageDescriptor);
-        return mockNextPageDefinition;
-    }
-
     @Test
     public void nextButOnePageIsGeneratedFromSecondTraversal() throws Exception {
         // given
@@ -153,5 +145,13 @@ public class PageContextTest {
 
         // then
         assertThat(nextButOnePageDefinition, is(mockNextButOnePageDefinition));
+    }
+
+    private PageDefinition mockResultingPageDefinition(PageTraversal mockPageTraversal) {
+        PageDefinition mockNextPageDefinition = mock(PageDefinition.class);
+        PageDescriptor mockNextPageDescriptor = mock(PageDescriptor.class);
+        when(mockNextPageDescriptor.getPageDefinition()).thenReturn(mockNextPageDefinition);
+        when(mockPageTraversal.getResultingPageDescriptor()).thenReturn(mockNextPageDescriptor);
+        return mockNextPageDefinition;
     }
 }
