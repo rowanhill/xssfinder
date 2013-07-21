@@ -23,14 +23,14 @@ public class RouteRunErrorContext {
     }
 
     public String getPageIdentifier() {
-        return pageContext.getPageDescriptor().getPageDefinition().getIdentifier();
+        return pageContext == null ? null : pageContext.getPageDescriptor().getPageDefinition().getIdentifier();
     }
 
     public String getPageTraversalMethodString() {
-        return pageContext.getPageTraversal().getMethod().toString();
+        return pageContext == null ? null : pageContext.getPageTraversal().getMethod().toString();
     }
 
     public String getTraversalModeName() {
-        return pageContext.getPageTraversal().getTraversalMode().getDescription();
+        return pageContext == null ? null : pageContext.getPageTraversal().getTraversalMode().getDescription();
     }
 }

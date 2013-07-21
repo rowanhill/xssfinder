@@ -14,6 +14,7 @@ import org.xssfinder.runner.PageContext;
 import java.io.PrintWriter;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
@@ -104,5 +105,41 @@ public class RouteRunErrorContextTest {
 
         // then
         assertThat(modeName, is(PageTraversal.TraversalMode.SUBMIT.getDescription()));
+    }
+
+    @Test
+    public void pageIdentifierIsNullIfPageContextIsNull() {
+        // given
+        errorContext = new RouteRunErrorContext(mockException, null);
+
+        // when
+        String pageId = errorContext.getPageIdentifier();
+
+        // then
+        assertThat(pageId, is(nullValue()));
+    }
+
+    @Test
+    public void pageTraversalMethodStringIsNullIfPageContextIsNull() {
+        // given
+        errorContext = new RouteRunErrorContext(mockException, null);
+
+        // when
+        String traversalMethodString = errorContext.getPageTraversalMethodString();
+
+        // then
+        assertThat(traversalMethodString, is(nullValue()));
+    }
+
+    @Test
+    public void traversalModeNameIsNullIfPageContextIsNull() {
+        // given
+        errorContext = new RouteRunErrorContext(mockException, null);
+
+        // when
+        String traversalModeName = errorContext.getTraversalModeName();
+
+        // then
+        assertThat(traversalModeName, is(nullValue()));
     }
 }
