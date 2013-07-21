@@ -25,7 +25,7 @@ public class DetectSuccessfulXssPageStrategyTest {
     private XssJournal mockXssJournal;
 
     @Test
-    public void processingPageMarksAllPresentXssIdsAsSuccessfulInJournal() {
+    public void processingPageMarksAllPresentXssIdsAsSuccessfulInJournal() throws Exception {
         // given
         ExecutorWrapper mockExecutor = mock(ExecutorWrapper.class);
         when(mockPageContext.getExecutor()).thenReturn(mockExecutor);

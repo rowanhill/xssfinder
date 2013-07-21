@@ -1,5 +1,6 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.xss.XssDetector;
 import org.xssfinder.reporting.XssJournal;
 
@@ -14,7 +15,7 @@ public class DetectSuccessfulXssPageStrategy implements PageStrategy {
     }
 
     @Override
-    public void processPage(PageContext pageContext, XssJournal xssJournal) {
+    public void processPage(PageContext pageContext, XssJournal xssJournal) throws TWebInteractionException {
         xssJournal.markAsSuccessful(pageContext, xssDetector.getCurrentXssIds(pageContext.getExecutor()));
     }
 }

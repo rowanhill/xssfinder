@@ -14,6 +14,7 @@ import org.xssfinder.reflection.*;
 import org.xssfinder.reflection.InstantiationException;
 import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
+import org.xssfinder.remote.TLifecycleEventHandlerException;
 import org.xssfinder.remote.TraversalMode;
 import org.xssfinder.scanner.ThriftToReflectionLookup;
 import org.xssfinder.xss.XssGenerator;
@@ -194,7 +195,7 @@ public class ExecutorContextTest {
         verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockHomePage);
     }
 
-    @Test(expected=LifecycleEventException.class)
+    @Test(expected=TLifecycleEventHandlerException.class)
     public void invokingAfterRouteHandlerThrowsExceptionIfCreatingLifecycleHandlerFails() throws Exception {
         // given
         when(mockInstantiator.instantiate(HomeLifecycleHandler.class)).thenThrow(new InstantiationException(null));

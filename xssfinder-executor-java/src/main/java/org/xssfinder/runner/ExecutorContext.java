@@ -3,9 +3,7 @@ package org.xssfinder.runner;
 import org.xssfinder.CrawlStartPoint;
 import org.xssfinder.reflection.*;
 import org.xssfinder.reflection.InstantiationException;
-import org.xssfinder.remote.MethodDefinition;
-import org.xssfinder.remote.TUntraversableException;
-import org.xssfinder.remote.TraversalMode;
+import org.xssfinder.remote.*;
 import org.xssfinder.scanner.ThriftToReflectionLookup;
 import org.xssfinder.xss.XssGenerator;
 
@@ -65,14 +63,18 @@ public class ExecutorContext {
         return driverWrapper.getFormCount();
     }
 
-    public TraversalResult traverseMethod(MethodDefinition methodDefinition, TraversalMode traversalMode) throws TUntraversableException {
+    public TraversalResult traverseMethod(MethodDefinition methodDefinition, TraversalMode traversalMode)
+            throws TUntraversableException, TWebInteractionException
+    {
         Method method = lookup.getMethod(methodDefinition.getIdentifier());
         TraversalResult traversalResult = pageTraverser.traverse(currentPage, method, traversalMode);
         currentPage = traversalResult.getPage();
         return traversalResult;
     }
 
-    public void invokeAfterRouteHandler(String rootPageId) {
+    public void invokeAfterRouteHandler(String rootPageId)
+            throws TWebInteractionException, TLifecycleEventHandlerException
+    {
         Class<?> rootClass = lookup.getPageClass(rootPageId);
         Object lifecycleHandler = createLifecycleEventHandler(rootClass);
         if (lifecycleHandler != null) {
@@ -80,7 +82,7 @@ public class ExecutorContext {
         }
     }
 
-    private Object createLifecycleEventHandler(Class<?> rootClass) {
+    private Object createLifecycleEventHandler(Class<?> rootClass) throws TLifecycleEventHandlerException {
         CrawlStartPoint crawlStartPoint = rootClass.getAnnotation(CrawlStartPoint.class);
         Class<?> handlerClass = crawlStartPoint.lifecycleHandler();
         if (handlerClass == Object.class) {
@@ -90,7 +92,8 @@ public class ExecutorContext {
         try {
             return instantiator.instantiate(handlerClass);
         } catch (InstantiationException ex) {
-            throw new LifecycleEventException(ex);
+            throw new TLifecycleEventHandlerException("Could not instantiate " + handlerClass.getSimpleName() + " : "
+                    + ex.getMessage());
         }
     }
 }

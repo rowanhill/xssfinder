@@ -23,7 +23,7 @@ public class ExecutorWrapper implements Executor.Iface {
     }
 
     @Override
-    public void startRoute(String pageIdentifier) {
+    public void startRoute(String pageIdentifier) throws TWebInteractionException {
         try {
             innerExecutor.startRoute(pageIdentifier);
         } catch (TException e) {
@@ -32,7 +32,7 @@ public class ExecutorWrapper implements Executor.Iface {
     }
 
     @Override
-    public Map<String, String> putXssAttackStringsInInputs() {
+    public Map<String, String> putXssAttackStringsInInputs() throws TWebInteractionException {
         try {
             return innerExecutor.putXssAttackStringsInInputs();
         } catch (TException e) {
@@ -41,7 +41,7 @@ public class ExecutorWrapper implements Executor.Iface {
     }
 
     @Override
-    public Set<String> getCurrentXssIds() {
+    public Set<String> getCurrentXssIds() throws TWebInteractionException {
         try {
             return innerExecutor.getCurrentXssIds();
         } catch (TException e) {
@@ -50,7 +50,7 @@ public class ExecutorWrapper implements Executor.Iface {
     }
 
     @Override
-    public int getFormCount() {
+    public int getFormCount() throws TWebInteractionException {
         try {
             return innerExecutor.getFormCount();
         } catch (TException e) {
@@ -59,7 +59,9 @@ public class ExecutorWrapper implements Executor.Iface {
     }
 
     @Override
-    public Map<String, String> traverseMethod(MethodDefinition method, TraversalMode mode) {
+    public Map<String, String> traverseMethod(MethodDefinition method, TraversalMode mode)
+            throws TWebInteractionException
+    {
         try {
             return innerExecutor.traverseMethod(method, mode);
         } catch (TException e) {
@@ -70,7 +72,7 @@ public class ExecutorWrapper implements Executor.Iface {
     }
 
     @Override
-    public void invokeAfterRouteHandler(String rootPageId) {
+    public void invokeAfterRouteHandler(String rootPageId) throws TWebInteractionException, TLifecycleEventHandlerException {
         try {
             innerExecutor.invokeAfterRouteHandler(rootPageId);
         } catch (TException e) {

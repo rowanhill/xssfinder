@@ -5,6 +5,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.AfterRoute;
+import org.xssfinder.remote.TLifecycleEventHandlerException;
+import org.xssfinder.remote.TWebInteractionException;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -15,8 +17,8 @@ public class LifecycleEventExecutorTest {
     @Mock
     private SomePage mockPage;
 
-    @Test(expected=LifecycleEventException.class)
-    public void throwsExceptionIfMultipleAfterRouteMethodsDefined() {
+    @Test(expected=TLifecycleEventHandlerException.class)
+    public void throwsExceptionIfMultipleAfterRouteMethodsDefined() throws Exception {
         // given
         LifecycleEventExecutor eventExecutor = new LifecycleEventExecutor();
         Object handler = new MultipleAfterRouteHandler();
@@ -25,8 +27,8 @@ public class LifecycleEventExecutorTest {
         eventExecutor.afterRoute(handler, mockPage);
     }
 
-    @Test(expected=LifecycleEventException.class)
-    public void throwsExceptionIfSignatureIsIncorrect() {
+    @Test(expected=TLifecycleEventHandlerException.class)
+    public void throwsExceptionIfSignatureIsIncorrect() throws Exception {
         // given
         LifecycleEventExecutor eventExecutor = new LifecycleEventExecutor();
         BadSignatureHandler handler = new BadSignatureHandler();
@@ -35,8 +37,8 @@ public class LifecycleEventExecutorTest {
         eventExecutor.afterRoute(handler, mockPage);
     }
 
-    @Test(expected=LifecycleEventException.class)
-    public void throwsExceptionIfWrongPageIsInSignature() {
+    @Test(expected=TLifecycleEventHandlerException.class)
+    public void throwsExceptionIfWrongPageIsInSignature() throws Exception {
         // given
         LifecycleEventExecutor eventExecutor = new LifecycleEventExecutor();
         WrongClassSignatureHandler handler = new WrongClassSignatureHandler();
@@ -45,8 +47,28 @@ public class LifecycleEventExecutorTest {
         eventExecutor.afterRoute(handler, mockPage);
     }
 
+    @Test(expected=TLifecycleEventHandlerException.class)
+    public void throwsExceptionIfAfterRouteMethodIsPrivate() throws Exception {
+        // given
+        LifecycleEventExecutor eventExecutor = new LifecycleEventExecutor();
+        PrivateLifecycleHandler handler = new PrivateLifecycleHandler();
+
+        // when
+        eventExecutor.afterRoute(handler, mockPage);
+    }
+
+    @Test(expected=TWebInteractionException.class)
+    public void throwsExceptionIfHandlerThrowsException() throws Exception {
+        // given
+        LifecycleEventExecutor eventExecutor = new LifecycleEventExecutor();
+        ErrorThrowingLifecycleHandler handler = new ErrorThrowingLifecycleHandler();
+
+        // when
+        eventExecutor.afterRoute(handler, mockPage);
+    }
+
     @Test
-    public void invokesAnnotatedMethodOnHandler() {
+    public void invokesAnnotatedMethodOnHandler() throws Exception {
         // given
         LifecycleEventExecutor eventExecutor = new LifecycleEventExecutor();
         // Note: we have to use a real object rather than a mock, as annotations
@@ -61,7 +83,7 @@ public class LifecycleEventExecutorTest {
     }
 
     @Test
-    public void invokingAfterRouteDoesNothingIfLifecycleHandlerIsNull() {
+    public void invokingAfterRouteDoesNothingIfLifecycleHandlerIsNull() throws Exception {
         // given
         LifecycleEventExecutor eventExecutor = new LifecycleEventExecutor();
 
@@ -101,5 +123,17 @@ public class LifecycleEventExecutorTest {
                 afterRouteInvoked = true;
             }
         }
+    }
+
+    private static class ErrorThrowingLifecycleHandler {
+        @AfterRoute
+        public void afterRoute(SomePage page) {
+            throw new RuntimeException("It went wrong");
+        }
+    }
+
+    private static class PrivateLifecycleHandler {
+        @AfterRoute
+        private void afterRoute(SomeOtherPage page) {}
     }
 }

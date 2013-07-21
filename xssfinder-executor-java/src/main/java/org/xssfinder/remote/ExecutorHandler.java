@@ -65,13 +65,17 @@ public class ExecutorHandler implements Executor.Iface {
     }
 
     @Override
-    public Map<String, String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TException, TUntraversableException {
+    public Map<String, String> traverseMethod(MethodDefinition method, TraversalMode mode)
+            throws TException, TUntraversableException, TWebInteractionException
+    {
         TraversalResult traversalResult = executorContext.traverseMethod(method, mode);
         return traversalResult.getInputIdsToAttackIds();
     }
 
     @Override
-    public void invokeAfterRouteHandler(String rootPageIdentifier) throws TException {
+    public void invokeAfterRouteHandler(String rootPageIdentifier)
+            throws TException, TWebInteractionException, TLifecycleEventHandlerException
+    {
         executorContext.invokeAfterRouteHandler(rootPageIdentifier);
     }
 }

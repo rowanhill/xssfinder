@@ -10,6 +10,7 @@ import org.xssfinder.CustomSubmitter;
 import org.xssfinder.CustomTraverser;
 import org.xssfinder.Page;
 import org.xssfinder.remote.TUntraversableException;
+import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.remote.TraversalMode;
 
 import java.lang.reflect.Method;
@@ -61,7 +62,7 @@ public class PageTraverserTest {
         assertThat(result.getPage(), is(instanceOf(SecondPage.class)));
     }
 
-    @Test(expected=TUntraversableException.class)
+    @Test(expected=TWebInteractionException.class)
     public void exceptionInvokingTraversalMethodGeneratesUntraversableException() throws Exception {
         // given
         setTraversalMethodThatRaisesException();

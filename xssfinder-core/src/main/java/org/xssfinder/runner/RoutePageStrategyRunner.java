@@ -2,6 +2,7 @@ package org.xssfinder.runner;
 
 import org.xssfinder.remote.ExecutorWrapper;
 import org.xssfinder.remote.PageDefinition;
+import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.reporting.RouteRunErrorContext;
 import org.xssfinder.reporting.RouteRunErrorContextFactory;
 import org.xssfinder.routing.Route;
@@ -56,7 +57,9 @@ class RoutePageStrategyRunner {
         }
     }
 
-    private void executePageStrategies(List<PageStrategy> pageStrategies, PageContext context, XssJournal xssJournal) {
+    private void executePageStrategies(List<PageStrategy> pageStrategies, PageContext context, XssJournal xssJournal)
+            throws TWebInteractionException
+    {
         for (PageStrategy pageStrategy : pageStrategies) {
             pageStrategy.processPage(context, xssJournal);
         }
@@ -69,7 +72,7 @@ class RoutePageStrategyRunner {
         try {
             executor.invokeAfterRouteHandler(rootPageDefinition.getIdentifier());
         } catch (Exception e) {
-            // Do nothing... for now
+            //TODO Log exception in XSS Journal
         }
     }
 }

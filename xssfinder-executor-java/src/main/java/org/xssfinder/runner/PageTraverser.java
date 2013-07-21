@@ -3,6 +3,7 @@ package org.xssfinder.runner;
 import org.xssfinder.CustomSubmitter;
 import org.xssfinder.CustomTraverser;
 import org.xssfinder.remote.TUntraversableException;
+import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.remote.TraversalMode;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +35,9 @@ public class PageTraverser {
      * @param traversalMode The mode in which the traversal should be made - controls which annotations are observed
      * @return A result object containing the page object resulting from the traversal plus any XSS attacks made
      */
-    public TraversalResult traverse(Object page, Method method, TraversalMode traversalMode) throws TUntraversableException {
+    public TraversalResult traverse(Object page, Method method, TraversalMode traversalMode)
+            throws TUntraversableException, TWebInteractionException
+    {
         CustomTraverser customTraverser = null;
         CustomSubmitter customSubmitter = null;
         boolean methodMustHaveNoArgs;
@@ -71,7 +74,7 @@ public class PageTraverser {
             }
             return new TraversalResult(newPage, inputIdsToAttackIds);
         } catch (Exception e) {
-            throw new TUntraversableException("Error when traversing: " + e.getMessage());
+            throw new TWebInteractionException("Error when traversing: " + e.getMessage());
         }
     }
 

@@ -48,24 +48,24 @@ public class Executor {
      * 
      * @param pageIdentifier
      */
-    public void startRoute(String pageIdentifier) throws org.apache.thrift.TException;
+    public void startRoute(String pageIdentifier) throws TWebInteractionException, org.apache.thrift.TException;
 
     /**
      * Put XSS attacks into all available inputs
      * 
      * @return A map of input identifiers -> attack identifiers
      */
-    public Map<String,String> putXssAttackStringsInInputs() throws org.apache.thrift.TException;
+    public Map<String,String> putXssAttackStringsInInputs() throws TWebInteractionException, org.apache.thrift.TException;
 
     /**
      * @return The set of currently XSS attack identifiers observable on the current page
      */
-    public Set<String> getCurrentXssIds() throws org.apache.thrift.TException;
+    public Set<String> getCurrentXssIds() throws TWebInteractionException, org.apache.thrift.TException;
 
     /**
      * @return The number of forms observable on the current page
      */
-    public int getFormCount() throws org.apache.thrift.TException;
+    public int getFormCount() throws TWebInteractionException, org.apache.thrift.TException;
 
     /**
      * Traverse the given method on the current page object in the given mode
@@ -77,7 +77,7 @@ public class Executor {
      * @param method
      * @param mode
      */
-    public Map<String,String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TUntraversableException, org.apache.thrift.TException;
+    public Map<String,String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TUntraversableException, TWebInteractionException, org.apache.thrift.TException;
 
     /**
      * Invoke the 'after route' event handler for a route starting at the identified page
@@ -86,7 +86,7 @@ public class Executor {
      * 
      * @param rootPageIdentifier
      */
-    public void invokeAfterRouteHandler(String rootPageIdentifier) throws org.apache.thrift.TException;
+    public void invokeAfterRouteHandler(String rootPageIdentifier) throws TWebInteractionException, TLifecycleEventHandlerException, org.apache.thrift.TException;
 
   }
 
@@ -151,7 +151,7 @@ public class Executor {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getPageDefinitions failed: unknown result");
     }
 
-    public void startRoute(String pageIdentifier) throws org.apache.thrift.TException
+    public void startRoute(String pageIdentifier) throws TWebInteractionException, org.apache.thrift.TException
     {
       send_startRoute(pageIdentifier);
       recv_startRoute();
@@ -164,14 +164,17 @@ public class Executor {
       sendBase("startRoute", args);
     }
 
-    public void recv_startRoute() throws org.apache.thrift.TException
+    public void recv_startRoute() throws TWebInteractionException, org.apache.thrift.TException
     {
       startRoute_result result = new startRoute_result();
       receiveBase(result, "startRoute");
+      if (result.webInteraction != null) {
+        throw result.webInteraction;
+      }
       return;
     }
 
-    public Map<String,String> putXssAttackStringsInInputs() throws org.apache.thrift.TException
+    public Map<String,String> putXssAttackStringsInInputs() throws TWebInteractionException, org.apache.thrift.TException
     {
       send_putXssAttackStringsInInputs();
       return recv_putXssAttackStringsInInputs();
@@ -183,17 +186,20 @@ public class Executor {
       sendBase("putXssAttackStringsInInputs", args);
     }
 
-    public Map<String,String> recv_putXssAttackStringsInInputs() throws org.apache.thrift.TException
+    public Map<String,String> recv_putXssAttackStringsInInputs() throws TWebInteractionException, org.apache.thrift.TException
     {
       putXssAttackStringsInInputs_result result = new putXssAttackStringsInInputs_result();
       receiveBase(result, "putXssAttackStringsInInputs");
       if (result.isSetSuccess()) {
         return result.success;
       }
+      if (result.webInteraction != null) {
+        throw result.webInteraction;
+      }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "putXssAttackStringsInInputs failed: unknown result");
     }
 
-    public Set<String> getCurrentXssIds() throws org.apache.thrift.TException
+    public Set<String> getCurrentXssIds() throws TWebInteractionException, org.apache.thrift.TException
     {
       send_getCurrentXssIds();
       return recv_getCurrentXssIds();
@@ -205,17 +211,20 @@ public class Executor {
       sendBase("getCurrentXssIds", args);
     }
 
-    public Set<String> recv_getCurrentXssIds() throws org.apache.thrift.TException
+    public Set<String> recv_getCurrentXssIds() throws TWebInteractionException, org.apache.thrift.TException
     {
       getCurrentXssIds_result result = new getCurrentXssIds_result();
       receiveBase(result, "getCurrentXssIds");
       if (result.isSetSuccess()) {
         return result.success;
       }
+      if (result.webInteraction != null) {
+        throw result.webInteraction;
+      }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getCurrentXssIds failed: unknown result");
     }
 
-    public int getFormCount() throws org.apache.thrift.TException
+    public int getFormCount() throws TWebInteractionException, org.apache.thrift.TException
     {
       send_getFormCount();
       return recv_getFormCount();
@@ -227,17 +236,20 @@ public class Executor {
       sendBase("getFormCount", args);
     }
 
-    public int recv_getFormCount() throws org.apache.thrift.TException
+    public int recv_getFormCount() throws TWebInteractionException, org.apache.thrift.TException
     {
       getFormCount_result result = new getFormCount_result();
       receiveBase(result, "getFormCount");
       if (result.isSetSuccess()) {
         return result.success;
       }
+      if (result.webInteraction != null) {
+        throw result.webInteraction;
+      }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getFormCount failed: unknown result");
     }
 
-    public Map<String,String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TUntraversableException, org.apache.thrift.TException
+    public Map<String,String> traverseMethod(MethodDefinition method, TraversalMode mode) throws TUntraversableException, TWebInteractionException, org.apache.thrift.TException
     {
       send_traverseMethod(method, mode);
       return recv_traverseMethod();
@@ -251,7 +263,7 @@ public class Executor {
       sendBase("traverseMethod", args);
     }
 
-    public Map<String,String> recv_traverseMethod() throws TUntraversableException, org.apache.thrift.TException
+    public Map<String,String> recv_traverseMethod() throws TUntraversableException, TWebInteractionException, org.apache.thrift.TException
     {
       traverseMethod_result result = new traverseMethod_result();
       receiveBase(result, "traverseMethod");
@@ -261,10 +273,13 @@ public class Executor {
       if (result.untraversable != null) {
         throw result.untraversable;
       }
+      if (result.webInteraction != null) {
+        throw result.webInteraction;
+      }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "traverseMethod failed: unknown result");
     }
 
-    public void invokeAfterRouteHandler(String rootPageIdentifier) throws org.apache.thrift.TException
+    public void invokeAfterRouteHandler(String rootPageIdentifier) throws TWebInteractionException, TLifecycleEventHandlerException, org.apache.thrift.TException
     {
       send_invokeAfterRouteHandler(rootPageIdentifier);
       recv_invokeAfterRouteHandler();
@@ -277,10 +292,16 @@ public class Executor {
       sendBase("invokeAfterRouteHandler", args);
     }
 
-    public void recv_invokeAfterRouteHandler() throws org.apache.thrift.TException
+    public void recv_invokeAfterRouteHandler() throws TWebInteractionException, TLifecycleEventHandlerException, org.apache.thrift.TException
     {
       invokeAfterRouteHandler_result result = new invokeAfterRouteHandler_result();
       receiveBase(result, "invokeAfterRouteHandler");
+      if (result.webInteraction != null) {
+        throw result.webInteraction;
+      }
+      if (result.lifecycleEventHandler != null) {
+        throw result.lifecycleEventHandler;
+      }
       return;
     }
 
@@ -356,7 +377,7 @@ public class Executor {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.thrift.TException {
+      public void getResult() throws TWebInteractionException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -385,7 +406,7 @@ public class Executor {
         prot.writeMessageEnd();
       }
 
-      public Map<String,String> getResult() throws org.apache.thrift.TException {
+      public Map<String,String> getResult() throws TWebInteractionException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -414,7 +435,7 @@ public class Executor {
         prot.writeMessageEnd();
       }
 
-      public Set<String> getResult() throws org.apache.thrift.TException {
+      public Set<String> getResult() throws TWebInteractionException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -443,7 +464,7 @@ public class Executor {
         prot.writeMessageEnd();
       }
 
-      public int getResult() throws org.apache.thrift.TException {
+      public int getResult() throws TWebInteractionException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -478,7 +499,7 @@ public class Executor {
         prot.writeMessageEnd();
       }
 
-      public Map<String,String> getResult() throws TUntraversableException, org.apache.thrift.TException {
+      public Map<String,String> getResult() throws TUntraversableException, TWebInteractionException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -510,7 +531,7 @@ public class Executor {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.thrift.TException {
+      public void getResult() throws TWebInteractionException, TLifecycleEventHandlerException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -570,7 +591,11 @@ public class Executor {
 
       protected startRoute_result getResult(I iface, startRoute_args args) throws org.apache.thrift.TException {
         startRoute_result result = new startRoute_result();
-        iface.startRoute(args.pageIdentifier);
+        try {
+          iface.startRoute(args.pageIdentifier);
+        } catch (TWebInteractionException webInteraction) {
+          result.webInteraction = webInteraction;
+        }
         return result;
       }
     }
@@ -586,7 +611,11 @@ public class Executor {
 
       protected putXssAttackStringsInInputs_result getResult(I iface, putXssAttackStringsInInputs_args args) throws org.apache.thrift.TException {
         putXssAttackStringsInInputs_result result = new putXssAttackStringsInInputs_result();
-        result.success = iface.putXssAttackStringsInInputs();
+        try {
+          result.success = iface.putXssAttackStringsInInputs();
+        } catch (TWebInteractionException webInteraction) {
+          result.webInteraction = webInteraction;
+        }
         return result;
       }
     }
@@ -602,7 +631,11 @@ public class Executor {
 
       protected getCurrentXssIds_result getResult(I iface, getCurrentXssIds_args args) throws org.apache.thrift.TException {
         getCurrentXssIds_result result = new getCurrentXssIds_result();
-        result.success = iface.getCurrentXssIds();
+        try {
+          result.success = iface.getCurrentXssIds();
+        } catch (TWebInteractionException webInteraction) {
+          result.webInteraction = webInteraction;
+        }
         return result;
       }
     }
@@ -618,8 +651,12 @@ public class Executor {
 
       protected getFormCount_result getResult(I iface, getFormCount_args args) throws org.apache.thrift.TException {
         getFormCount_result result = new getFormCount_result();
-        result.success = iface.getFormCount();
-        result.setSuccessIsSet(true);
+        try {
+          result.success = iface.getFormCount();
+          result.setSuccessIsSet(true);
+        } catch (TWebInteractionException webInteraction) {
+          result.webInteraction = webInteraction;
+        }
         return result;
       }
     }
@@ -639,6 +676,8 @@ public class Executor {
           result.success = iface.traverseMethod(args.method, args.mode);
         } catch (TUntraversableException untraversable) {
           result.untraversable = untraversable;
+        } catch (TWebInteractionException webInteraction) {
+          result.webInteraction = webInteraction;
         }
         return result;
       }
@@ -655,7 +694,13 @@ public class Executor {
 
       protected invokeAfterRouteHandler_result getResult(I iface, invokeAfterRouteHandler_args args) throws org.apache.thrift.TException {
         invokeAfterRouteHandler_result result = new invokeAfterRouteHandler_result();
-        iface.invokeAfterRouteHandler(args.rootPageIdentifier);
+        try {
+          iface.invokeAfterRouteHandler(args.rootPageIdentifier);
+        } catch (TWebInteractionException webInteraction) {
+          result.webInteraction = webInteraction;
+        } catch (TLifecycleEventHandlerException lifecycleEventHandler) {
+          result.lifecycleEventHandler = lifecycleEventHandler;
+        }
         return result;
       }
     }
@@ -1778,6 +1823,7 @@ public class Executor {
   public static class startRoute_result implements org.apache.thrift.TBase<startRoute_result, startRoute_result._Fields>, java.io.Serializable, Cloneable   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("startRoute_result");
 
+    private static final org.apache.thrift.protocol.TField WEB_INTERACTION_FIELD_DESC = new org.apache.thrift.protocol.TField("webInteraction", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -1785,10 +1831,11 @@ public class Executor {
       schemes.put(TupleScheme.class, new startRoute_resultTupleSchemeFactory());
     }
 
+    public TWebInteractionException webInteraction; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-;
+      WEB_INTERACTION((short)1, "webInteraction");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -1803,6 +1850,8 @@ public class Executor {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 1: // WEB_INTERACTION
+            return WEB_INTERACTION;
           default:
             return null;
         }
@@ -1841,9 +1890,13 @@ public class Executor {
         return _fieldName;
       }
     }
+
+    // isset id assignments
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.WEB_INTERACTION, new org.apache.thrift.meta_data.FieldMetaData("webInteraction", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(startRoute_result.class, metaDataMap);
     }
@@ -1851,10 +1904,20 @@ public class Executor {
     public startRoute_result() {
     }
 
+    public startRoute_result(
+      TWebInteractionException webInteraction)
+    {
+      this();
+      this.webInteraction = webInteraction;
+    }
+
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public startRoute_result(startRoute_result other) {
+      if (other.isSetWebInteraction()) {
+        this.webInteraction = new TWebInteractionException(other.webInteraction);
+      }
     }
 
     public startRoute_result deepCopy() {
@@ -1863,15 +1926,51 @@ public class Executor {
 
     @Override
     public void clear() {
+      this.webInteraction = null;
+    }
+
+    public TWebInteractionException getWebInteraction() {
+      return this.webInteraction;
+    }
+
+    public startRoute_result setWebInteraction(TWebInteractionException webInteraction) {
+      this.webInteraction = webInteraction;
+      return this;
+    }
+
+    public void unsetWebInteraction() {
+      this.webInteraction = null;
+    }
+
+    /** Returns true if field webInteraction is set (has been assigned a value) and false otherwise */
+    public boolean isSetWebInteraction() {
+      return this.webInteraction != null;
+    }
+
+    public void setWebInteractionIsSet(boolean value) {
+      if (!value) {
+        this.webInteraction = null;
+      }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case WEB_INTERACTION:
+        if (value == null) {
+          unsetWebInteraction();
+        } else {
+          setWebInteraction((TWebInteractionException)value);
+        }
+        break;
+
       }
     }
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case WEB_INTERACTION:
+        return getWebInteraction();
+
       }
       throw new IllegalStateException();
     }
@@ -1883,6 +1982,8 @@ public class Executor {
       }
 
       switch (field) {
+      case WEB_INTERACTION:
+        return isSetWebInteraction();
       }
       throw new IllegalStateException();
     }
@@ -1900,6 +2001,15 @@ public class Executor {
       if (that == null)
         return false;
 
+      boolean this_present_webInteraction = true && this.isSetWebInteraction();
+      boolean that_present_webInteraction = true && that.isSetWebInteraction();
+      if (this_present_webInteraction || that_present_webInteraction) {
+        if (!(this_present_webInteraction && that_present_webInteraction))
+          return false;
+        if (!this.webInteraction.equals(that.webInteraction))
+          return false;
+      }
+
       return true;
     }
 
@@ -1916,6 +2026,16 @@ public class Executor {
       int lastComparison = 0;
       startRoute_result typedOther = (startRoute_result)other;
 
+      lastComparison = Boolean.valueOf(isSetWebInteraction()).compareTo(typedOther.isSetWebInteraction());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetWebInteraction()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.webInteraction, typedOther.webInteraction);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -1936,6 +2056,13 @@ public class Executor {
       StringBuilder sb = new StringBuilder("startRoute_result(");
       boolean first = true;
 
+      sb.append("webInteraction:");
+      if (this.webInteraction == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.webInteraction);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -1978,6 +2105,15 @@ public class Executor {
             break;
           }
           switch (schemeField.id) {
+            case 1: // WEB_INTERACTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.webInteraction = new TWebInteractionException();
+                struct.webInteraction.read(iprot);
+                struct.setWebInteractionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -1993,6 +2129,11 @@ public class Executor {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.webInteraction != null) {
+          oprot.writeFieldBegin(WEB_INTERACTION_FIELD_DESC);
+          struct.webInteraction.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -2010,11 +2151,25 @@ public class Executor {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, startRoute_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetWebInteraction()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetWebInteraction()) {
+          struct.webInteraction.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, startRoute_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.webInteraction = new TWebInteractionException();
+          struct.webInteraction.read(iprot);
+          struct.setWebInteractionIsSet(true);
+        }
       }
     }
 
@@ -2269,6 +2424,7 @@ public class Executor {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("putXssAttackStringsInInputs_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.MAP, (short)0);
+    private static final org.apache.thrift.protocol.TField WEB_INTERACTION_FIELD_DESC = new org.apache.thrift.protocol.TField("webInteraction", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2277,10 +2433,12 @@ public class Executor {
     }
 
     public Map<String,String> success; // required
+    public TWebInteractionException webInteraction; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      WEB_INTERACTION((short)1, "webInteraction");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2297,6 +2455,8 @@ public class Executor {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // WEB_INTERACTION
+            return WEB_INTERACTION;
           default:
             return null;
         }
@@ -2344,6 +2504,8 @@ public class Executor {
           new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+      tmpMap.put(_Fields.WEB_INTERACTION, new org.apache.thrift.meta_data.FieldMetaData("webInteraction", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(putXssAttackStringsInInputs_result.class, metaDataMap);
     }
@@ -2352,10 +2514,12 @@ public class Executor {
     }
 
     public putXssAttackStringsInInputs_result(
-      Map<String,String> success)
+      Map<String,String> success,
+      TWebInteractionException webInteraction)
     {
       this();
       this.success = success;
+      this.webInteraction = webInteraction;
     }
 
     /**
@@ -2377,6 +2541,9 @@ public class Executor {
         }
         this.success = __this__success;
       }
+      if (other.isSetWebInteraction()) {
+        this.webInteraction = new TWebInteractionException(other.webInteraction);
+      }
     }
 
     public putXssAttackStringsInInputs_result deepCopy() {
@@ -2386,6 +2553,7 @@ public class Executor {
     @Override
     public void clear() {
       this.success = null;
+      this.webInteraction = null;
     }
 
     public int getSuccessSize() {
@@ -2423,6 +2591,30 @@ public class Executor {
       }
     }
 
+    public TWebInteractionException getWebInteraction() {
+      return this.webInteraction;
+    }
+
+    public putXssAttackStringsInInputs_result setWebInteraction(TWebInteractionException webInteraction) {
+      this.webInteraction = webInteraction;
+      return this;
+    }
+
+    public void unsetWebInteraction() {
+      this.webInteraction = null;
+    }
+
+    /** Returns true if field webInteraction is set (has been assigned a value) and false otherwise */
+    public boolean isSetWebInteraction() {
+      return this.webInteraction != null;
+    }
+
+    public void setWebInteractionIsSet(boolean value) {
+      if (!value) {
+        this.webInteraction = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -2433,6 +2625,14 @@ public class Executor {
         }
         break;
 
+      case WEB_INTERACTION:
+        if (value == null) {
+          unsetWebInteraction();
+        } else {
+          setWebInteraction((TWebInteractionException)value);
+        }
+        break;
+
       }
     }
 
@@ -2440,6 +2640,9 @@ public class Executor {
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case WEB_INTERACTION:
+        return getWebInteraction();
 
       }
       throw new IllegalStateException();
@@ -2454,6 +2657,8 @@ public class Executor {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case WEB_INTERACTION:
+        return isSetWebInteraction();
       }
       throw new IllegalStateException();
     }
@@ -2477,6 +2682,15 @@ public class Executor {
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_webInteraction = true && this.isSetWebInteraction();
+      boolean that_present_webInteraction = true && that.isSetWebInteraction();
+      if (this_present_webInteraction || that_present_webInteraction) {
+        if (!(this_present_webInteraction && that_present_webInteraction))
+          return false;
+        if (!this.webInteraction.equals(that.webInteraction))
           return false;
       }
 
@@ -2506,6 +2720,16 @@ public class Executor {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetWebInteraction()).compareTo(typedOther.isSetWebInteraction());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetWebInteraction()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.webInteraction, typedOther.webInteraction);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -2531,6 +2755,14 @@ public class Executor {
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("webInteraction:");
+      if (this.webInteraction == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.webInteraction);
       }
       first = false;
       sb.append(")");
@@ -2595,6 +2827,15 @@ public class Executor {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // WEB_INTERACTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.webInteraction = new TWebInteractionException();
+                struct.webInteraction.read(iprot);
+                struct.setWebInteractionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -2623,6 +2864,11 @@ public class Executor {
           }
           oprot.writeFieldEnd();
         }
+        if (struct.webInteraction != null) {
+          oprot.writeFieldBegin(WEB_INTERACTION_FIELD_DESC);
+          struct.webInteraction.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -2644,7 +2890,10 @@ public class Executor {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetWebInteraction()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
@@ -2655,12 +2904,15 @@ public class Executor {
             }
           }
         }
+        if (struct.isSetWebInteraction()) {
+          struct.webInteraction.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, putXssAttackStringsInInputs_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
             org.apache.thrift.protocol.TMap _map22 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
@@ -2675,6 +2927,11 @@ public class Executor {
             }
           }
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.webInteraction = new TWebInteractionException();
+          struct.webInteraction.read(iprot);
+          struct.setWebInteractionIsSet(true);
         }
       }
     }
@@ -2930,6 +3187,7 @@ public class Executor {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getCurrentXssIds_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.SET, (short)0);
+    private static final org.apache.thrift.protocol.TField WEB_INTERACTION_FIELD_DESC = new org.apache.thrift.protocol.TField("webInteraction", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2938,10 +3196,12 @@ public class Executor {
     }
 
     public Set<String> success; // required
+    public TWebInteractionException webInteraction; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      WEB_INTERACTION((short)1, "webInteraction");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2958,6 +3218,8 @@ public class Executor {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // WEB_INTERACTION
+            return WEB_INTERACTION;
           default:
             return null;
         }
@@ -3004,6 +3266,8 @@ public class Executor {
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+      tmpMap.put(_Fields.WEB_INTERACTION, new org.apache.thrift.meta_data.FieldMetaData("webInteraction", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getCurrentXssIds_result.class, metaDataMap);
     }
@@ -3012,10 +3276,12 @@ public class Executor {
     }
 
     public getCurrentXssIds_result(
-      Set<String> success)
+      Set<String> success,
+      TWebInteractionException webInteraction)
     {
       this();
       this.success = success;
+      this.webInteraction = webInteraction;
     }
 
     /**
@@ -3029,6 +3295,9 @@ public class Executor {
         }
         this.success = __this__success;
       }
+      if (other.isSetWebInteraction()) {
+        this.webInteraction = new TWebInteractionException(other.webInteraction);
+      }
     }
 
     public getCurrentXssIds_result deepCopy() {
@@ -3038,6 +3307,7 @@ public class Executor {
     @Override
     public void clear() {
       this.success = null;
+      this.webInteraction = null;
     }
 
     public int getSuccessSize() {
@@ -3079,6 +3349,30 @@ public class Executor {
       }
     }
 
+    public TWebInteractionException getWebInteraction() {
+      return this.webInteraction;
+    }
+
+    public getCurrentXssIds_result setWebInteraction(TWebInteractionException webInteraction) {
+      this.webInteraction = webInteraction;
+      return this;
+    }
+
+    public void unsetWebInteraction() {
+      this.webInteraction = null;
+    }
+
+    /** Returns true if field webInteraction is set (has been assigned a value) and false otherwise */
+    public boolean isSetWebInteraction() {
+      return this.webInteraction != null;
+    }
+
+    public void setWebInteractionIsSet(boolean value) {
+      if (!value) {
+        this.webInteraction = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -3089,6 +3383,14 @@ public class Executor {
         }
         break;
 
+      case WEB_INTERACTION:
+        if (value == null) {
+          unsetWebInteraction();
+        } else {
+          setWebInteraction((TWebInteractionException)value);
+        }
+        break;
+
       }
     }
 
@@ -3096,6 +3398,9 @@ public class Executor {
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case WEB_INTERACTION:
+        return getWebInteraction();
 
       }
       throw new IllegalStateException();
@@ -3110,6 +3415,8 @@ public class Executor {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case WEB_INTERACTION:
+        return isSetWebInteraction();
       }
       throw new IllegalStateException();
     }
@@ -3133,6 +3440,15 @@ public class Executor {
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_webInteraction = true && this.isSetWebInteraction();
+      boolean that_present_webInteraction = true && that.isSetWebInteraction();
+      if (this_present_webInteraction || that_present_webInteraction) {
+        if (!(this_present_webInteraction && that_present_webInteraction))
+          return false;
+        if (!this.webInteraction.equals(that.webInteraction))
           return false;
       }
 
@@ -3162,6 +3478,16 @@ public class Executor {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetWebInteraction()).compareTo(typedOther.isSetWebInteraction());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetWebInteraction()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.webInteraction, typedOther.webInteraction);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -3187,6 +3513,14 @@ public class Executor {
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("webInteraction:");
+      if (this.webInteraction == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.webInteraction);
       }
       first = false;
       sb.append(")");
@@ -3249,6 +3583,15 @@ public class Executor {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // WEB_INTERACTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.webInteraction = new TWebInteractionException();
+                struct.webInteraction.read(iprot);
+                struct.setWebInteractionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -3276,6 +3619,11 @@ public class Executor {
           }
           oprot.writeFieldEnd();
         }
+        if (struct.webInteraction != null) {
+          oprot.writeFieldBegin(WEB_INTERACTION_FIELD_DESC);
+          struct.webInteraction.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -3297,7 +3645,10 @@ public class Executor {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetWebInteraction()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
@@ -3307,12 +3658,15 @@ public class Executor {
             }
           }
         }
+        if (struct.isSetWebInteraction()) {
+          struct.webInteraction.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getCurrentXssIds_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
             org.apache.thrift.protocol.TSet _set31 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
@@ -3325,6 +3679,11 @@ public class Executor {
             }
           }
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.webInteraction = new TWebInteractionException();
+          struct.webInteraction.read(iprot);
+          struct.setWebInteractionIsSet(true);
         }
       }
     }
@@ -3580,6 +3939,7 @@ public class Executor {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getFormCount_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.I32, (short)0);
+    private static final org.apache.thrift.protocol.TField WEB_INTERACTION_FIELD_DESC = new org.apache.thrift.protocol.TField("webInteraction", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -3588,10 +3948,12 @@ public class Executor {
     }
 
     public int success; // required
+    public TWebInteractionException webInteraction; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      WEB_INTERACTION((short)1, "webInteraction");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -3608,6 +3970,8 @@ public class Executor {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // WEB_INTERACTION
+            return WEB_INTERACTION;
           default:
             return null;
         }
@@ -3655,6 +4019,8 @@ public class Executor {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.WEB_INTERACTION, new org.apache.thrift.meta_data.FieldMetaData("webInteraction", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getFormCount_result.class, metaDataMap);
     }
@@ -3663,11 +4029,13 @@ public class Executor {
     }
 
     public getFormCount_result(
-      int success)
+      int success,
+      TWebInteractionException webInteraction)
     {
       this();
       this.success = success;
       setSuccessIsSet(true);
+      this.webInteraction = webInteraction;
     }
 
     /**
@@ -3677,6 +4045,9 @@ public class Executor {
       __isset_bit_vector.clear();
       __isset_bit_vector.or(other.__isset_bit_vector);
       this.success = other.success;
+      if (other.isSetWebInteraction()) {
+        this.webInteraction = new TWebInteractionException(other.webInteraction);
+      }
     }
 
     public getFormCount_result deepCopy() {
@@ -3687,6 +4058,7 @@ public class Executor {
     public void clear() {
       setSuccessIsSet(false);
       this.success = 0;
+      this.webInteraction = null;
     }
 
     public int getSuccess() {
@@ -3712,6 +4084,30 @@ public class Executor {
       __isset_bit_vector.set(__SUCCESS_ISSET_ID, value);
     }
 
+    public TWebInteractionException getWebInteraction() {
+      return this.webInteraction;
+    }
+
+    public getFormCount_result setWebInteraction(TWebInteractionException webInteraction) {
+      this.webInteraction = webInteraction;
+      return this;
+    }
+
+    public void unsetWebInteraction() {
+      this.webInteraction = null;
+    }
+
+    /** Returns true if field webInteraction is set (has been assigned a value) and false otherwise */
+    public boolean isSetWebInteraction() {
+      return this.webInteraction != null;
+    }
+
+    public void setWebInteractionIsSet(boolean value) {
+      if (!value) {
+        this.webInteraction = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -3722,6 +4118,14 @@ public class Executor {
         }
         break;
 
+      case WEB_INTERACTION:
+        if (value == null) {
+          unsetWebInteraction();
+        } else {
+          setWebInteraction((TWebInteractionException)value);
+        }
+        break;
+
       }
     }
 
@@ -3729,6 +4133,9 @@ public class Executor {
       switch (field) {
       case SUCCESS:
         return Integer.valueOf(getSuccess());
+
+      case WEB_INTERACTION:
+        return getWebInteraction();
 
       }
       throw new IllegalStateException();
@@ -3743,6 +4150,8 @@ public class Executor {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case WEB_INTERACTION:
+        return isSetWebInteraction();
       }
       throw new IllegalStateException();
     }
@@ -3766,6 +4175,15 @@ public class Executor {
         if (!(this_present_success && that_present_success))
           return false;
         if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_webInteraction = true && this.isSetWebInteraction();
+      boolean that_present_webInteraction = true && that.isSetWebInteraction();
+      if (this_present_webInteraction || that_present_webInteraction) {
+        if (!(this_present_webInteraction && that_present_webInteraction))
+          return false;
+        if (!this.webInteraction.equals(that.webInteraction))
           return false;
       }
 
@@ -3795,6 +4213,16 @@ public class Executor {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetWebInteraction()).compareTo(typedOther.isSetWebInteraction());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetWebInteraction()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.webInteraction, typedOther.webInteraction);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -3817,6 +4245,14 @@ public class Executor {
 
       sb.append("success:");
       sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("webInteraction:");
+      if (this.webInteraction == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.webInteraction);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -3870,6 +4306,15 @@ public class Executor {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // WEB_INTERACTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.webInteraction = new TWebInteractionException();
+                struct.webInteraction.read(iprot);
+                struct.setWebInteractionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -3888,6 +4333,11 @@ public class Executor {
         oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
         oprot.writeI32(struct.success);
         oprot.writeFieldEnd();
+        if (struct.webInteraction != null) {
+          oprot.writeFieldBegin(WEB_INTERACTION_FIELD_DESC);
+          struct.webInteraction.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -3909,19 +4359,30 @@ public class Executor {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetWebInteraction()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           oprot.writeI32(struct.success);
+        }
+        if (struct.isSetWebInteraction()) {
+          struct.webInteraction.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getFormCount_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.success = iprot.readI32();
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.webInteraction = new TWebInteractionException();
+          struct.webInteraction.read(iprot);
+          struct.setWebInteractionIsSet(true);
         }
       }
     }
@@ -4404,6 +4865,7 @@ public class Executor {
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.MAP, (short)0);
     private static final org.apache.thrift.protocol.TField UNTRAVERSABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("untraversable", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField WEB_INTERACTION_FIELD_DESC = new org.apache.thrift.protocol.TField("webInteraction", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4413,11 +4875,13 @@ public class Executor {
 
     public Map<String,String> success; // required
     public TUntraversableException untraversable; // required
+    public TWebInteractionException webInteraction; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      UNTRAVERSABLE((short)1, "untraversable");
+      UNTRAVERSABLE((short)1, "untraversable"),
+      WEB_INTERACTION((short)2, "webInteraction");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4436,6 +4900,8 @@ public class Executor {
             return SUCCESS;
           case 1: // UNTRAVERSABLE
             return UNTRAVERSABLE;
+          case 2: // WEB_INTERACTION
+            return WEB_INTERACTION;
           default:
             return null;
         }
@@ -4485,6 +4951,8 @@ public class Executor {
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
       tmpMap.put(_Fields.UNTRAVERSABLE, new org.apache.thrift.meta_data.FieldMetaData("untraversable", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.WEB_INTERACTION, new org.apache.thrift.meta_data.FieldMetaData("webInteraction", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(traverseMethod_result.class, metaDataMap);
     }
@@ -4494,11 +4962,13 @@ public class Executor {
 
     public traverseMethod_result(
       Map<String,String> success,
-      TUntraversableException untraversable)
+      TUntraversableException untraversable,
+      TWebInteractionException webInteraction)
     {
       this();
       this.success = success;
       this.untraversable = untraversable;
+      this.webInteraction = webInteraction;
     }
 
     /**
@@ -4523,6 +4993,9 @@ public class Executor {
       if (other.isSetUntraversable()) {
         this.untraversable = new TUntraversableException(other.untraversable);
       }
+      if (other.isSetWebInteraction()) {
+        this.webInteraction = new TWebInteractionException(other.webInteraction);
+      }
     }
 
     public traverseMethod_result deepCopy() {
@@ -4533,6 +5006,7 @@ public class Executor {
     public void clear() {
       this.success = null;
       this.untraversable = null;
+      this.webInteraction = null;
     }
 
     public int getSuccessSize() {
@@ -4594,6 +5068,30 @@ public class Executor {
       }
     }
 
+    public TWebInteractionException getWebInteraction() {
+      return this.webInteraction;
+    }
+
+    public traverseMethod_result setWebInteraction(TWebInteractionException webInteraction) {
+      this.webInteraction = webInteraction;
+      return this;
+    }
+
+    public void unsetWebInteraction() {
+      this.webInteraction = null;
+    }
+
+    /** Returns true if field webInteraction is set (has been assigned a value) and false otherwise */
+    public boolean isSetWebInteraction() {
+      return this.webInteraction != null;
+    }
+
+    public void setWebInteractionIsSet(boolean value) {
+      if (!value) {
+        this.webInteraction = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -4612,6 +5110,14 @@ public class Executor {
         }
         break;
 
+      case WEB_INTERACTION:
+        if (value == null) {
+          unsetWebInteraction();
+        } else {
+          setWebInteraction((TWebInteractionException)value);
+        }
+        break;
+
       }
     }
 
@@ -4622,6 +5128,9 @@ public class Executor {
 
       case UNTRAVERSABLE:
         return getUntraversable();
+
+      case WEB_INTERACTION:
+        return getWebInteraction();
 
       }
       throw new IllegalStateException();
@@ -4638,6 +5147,8 @@ public class Executor {
         return isSetSuccess();
       case UNTRAVERSABLE:
         return isSetUntraversable();
+      case WEB_INTERACTION:
+        return isSetWebInteraction();
       }
       throw new IllegalStateException();
     }
@@ -4670,6 +5181,15 @@ public class Executor {
         if (!(this_present_untraversable && that_present_untraversable))
           return false;
         if (!this.untraversable.equals(that.untraversable))
+          return false;
+      }
+
+      boolean this_present_webInteraction = true && this.isSetWebInteraction();
+      boolean that_present_webInteraction = true && that.isSetWebInteraction();
+      if (this_present_webInteraction || that_present_webInteraction) {
+        if (!(this_present_webInteraction && that_present_webInteraction))
+          return false;
+        if (!this.webInteraction.equals(that.webInteraction))
           return false;
       }
 
@@ -4709,6 +5229,16 @@ public class Executor {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetWebInteraction()).compareTo(typedOther.isSetWebInteraction());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetWebInteraction()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.webInteraction, typedOther.webInteraction);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -4742,6 +5272,14 @@ public class Executor {
         sb.append("null");
       } else {
         sb.append(this.untraversable);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("webInteraction:");
+      if (this.webInteraction == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.webInteraction);
       }
       first = false;
       sb.append(")");
@@ -4815,6 +5353,15 @@ public class Executor {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // WEB_INTERACTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.webInteraction = new TWebInteractionException();
+                struct.webInteraction.read(iprot);
+                struct.setWebInteractionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -4848,6 +5395,11 @@ public class Executor {
           struct.untraversable.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.webInteraction != null) {
+          oprot.writeFieldBegin(WEB_INTERACTION_FIELD_DESC);
+          struct.webInteraction.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -4872,7 +5424,10 @@ public class Executor {
         if (struct.isSetUntraversable()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetWebInteraction()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
@@ -4886,12 +5441,15 @@ public class Executor {
         if (struct.isSetUntraversable()) {
           struct.untraversable.write(oprot);
         }
+        if (struct.isSetWebInteraction()) {
+          struct.webInteraction.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, traverseMethod_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
             org.apache.thrift.protocol.TMap _map40 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
@@ -4911,6 +5469,11 @@ public class Executor {
           struct.untraversable = new TUntraversableException();
           struct.untraversable.read(iprot);
           struct.setUntraversableIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.webInteraction = new TWebInteractionException();
+          struct.webInteraction.read(iprot);
+          struct.setWebInteractionIsSet(true);
         }
       }
     }
@@ -5273,6 +5836,8 @@ public class Executor {
   public static class invokeAfterRouteHandler_result implements org.apache.thrift.TBase<invokeAfterRouteHandler_result, invokeAfterRouteHandler_result._Fields>, java.io.Serializable, Cloneable   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("invokeAfterRouteHandler_result");
 
+    private static final org.apache.thrift.protocol.TField WEB_INTERACTION_FIELD_DESC = new org.apache.thrift.protocol.TField("webInteraction", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField LIFECYCLE_EVENT_HANDLER_FIELD_DESC = new org.apache.thrift.protocol.TField("lifecycleEventHandler", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -5280,10 +5845,13 @@ public class Executor {
       schemes.put(TupleScheme.class, new invokeAfterRouteHandler_resultTupleSchemeFactory());
     }
 
+    public TWebInteractionException webInteraction; // required
+    public TLifecycleEventHandlerException lifecycleEventHandler; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-;
+      WEB_INTERACTION((short)1, "webInteraction"),
+      LIFECYCLE_EVENT_HANDLER((short)2, "lifecycleEventHandler");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -5298,6 +5866,10 @@ public class Executor {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 1: // WEB_INTERACTION
+            return WEB_INTERACTION;
+          case 2: // LIFECYCLE_EVENT_HANDLER
+            return LIFECYCLE_EVENT_HANDLER;
           default:
             return null;
         }
@@ -5336,9 +5908,15 @@ public class Executor {
         return _fieldName;
       }
     }
+
+    // isset id assignments
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.WEB_INTERACTION, new org.apache.thrift.meta_data.FieldMetaData("webInteraction", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.LIFECYCLE_EVENT_HANDLER, new org.apache.thrift.meta_data.FieldMetaData("lifecycleEventHandler", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(invokeAfterRouteHandler_result.class, metaDataMap);
     }
@@ -5346,10 +5924,25 @@ public class Executor {
     public invokeAfterRouteHandler_result() {
     }
 
+    public invokeAfterRouteHandler_result(
+      TWebInteractionException webInteraction,
+      TLifecycleEventHandlerException lifecycleEventHandler)
+    {
+      this();
+      this.webInteraction = webInteraction;
+      this.lifecycleEventHandler = lifecycleEventHandler;
+    }
+
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public invokeAfterRouteHandler_result(invokeAfterRouteHandler_result other) {
+      if (other.isSetWebInteraction()) {
+        this.webInteraction = new TWebInteractionException(other.webInteraction);
+      }
+      if (other.isSetLifecycleEventHandler()) {
+        this.lifecycleEventHandler = new TLifecycleEventHandlerException(other.lifecycleEventHandler);
+      }
     }
 
     public invokeAfterRouteHandler_result deepCopy() {
@@ -5358,15 +5951,87 @@ public class Executor {
 
     @Override
     public void clear() {
+      this.webInteraction = null;
+      this.lifecycleEventHandler = null;
+    }
+
+    public TWebInteractionException getWebInteraction() {
+      return this.webInteraction;
+    }
+
+    public invokeAfterRouteHandler_result setWebInteraction(TWebInteractionException webInteraction) {
+      this.webInteraction = webInteraction;
+      return this;
+    }
+
+    public void unsetWebInteraction() {
+      this.webInteraction = null;
+    }
+
+    /** Returns true if field webInteraction is set (has been assigned a value) and false otherwise */
+    public boolean isSetWebInteraction() {
+      return this.webInteraction != null;
+    }
+
+    public void setWebInteractionIsSet(boolean value) {
+      if (!value) {
+        this.webInteraction = null;
+      }
+    }
+
+    public TLifecycleEventHandlerException getLifecycleEventHandler() {
+      return this.lifecycleEventHandler;
+    }
+
+    public invokeAfterRouteHandler_result setLifecycleEventHandler(TLifecycleEventHandlerException lifecycleEventHandler) {
+      this.lifecycleEventHandler = lifecycleEventHandler;
+      return this;
+    }
+
+    public void unsetLifecycleEventHandler() {
+      this.lifecycleEventHandler = null;
+    }
+
+    /** Returns true if field lifecycleEventHandler is set (has been assigned a value) and false otherwise */
+    public boolean isSetLifecycleEventHandler() {
+      return this.lifecycleEventHandler != null;
+    }
+
+    public void setLifecycleEventHandlerIsSet(boolean value) {
+      if (!value) {
+        this.lifecycleEventHandler = null;
+      }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case WEB_INTERACTION:
+        if (value == null) {
+          unsetWebInteraction();
+        } else {
+          setWebInteraction((TWebInteractionException)value);
+        }
+        break;
+
+      case LIFECYCLE_EVENT_HANDLER:
+        if (value == null) {
+          unsetLifecycleEventHandler();
+        } else {
+          setLifecycleEventHandler((TLifecycleEventHandlerException)value);
+        }
+        break;
+
       }
     }
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case WEB_INTERACTION:
+        return getWebInteraction();
+
+      case LIFECYCLE_EVENT_HANDLER:
+        return getLifecycleEventHandler();
+
       }
       throw new IllegalStateException();
     }
@@ -5378,6 +6043,10 @@ public class Executor {
       }
 
       switch (field) {
+      case WEB_INTERACTION:
+        return isSetWebInteraction();
+      case LIFECYCLE_EVENT_HANDLER:
+        return isSetLifecycleEventHandler();
       }
       throw new IllegalStateException();
     }
@@ -5395,6 +6064,24 @@ public class Executor {
       if (that == null)
         return false;
 
+      boolean this_present_webInteraction = true && this.isSetWebInteraction();
+      boolean that_present_webInteraction = true && that.isSetWebInteraction();
+      if (this_present_webInteraction || that_present_webInteraction) {
+        if (!(this_present_webInteraction && that_present_webInteraction))
+          return false;
+        if (!this.webInteraction.equals(that.webInteraction))
+          return false;
+      }
+
+      boolean this_present_lifecycleEventHandler = true && this.isSetLifecycleEventHandler();
+      boolean that_present_lifecycleEventHandler = true && that.isSetLifecycleEventHandler();
+      if (this_present_lifecycleEventHandler || that_present_lifecycleEventHandler) {
+        if (!(this_present_lifecycleEventHandler && that_present_lifecycleEventHandler))
+          return false;
+        if (!this.lifecycleEventHandler.equals(that.lifecycleEventHandler))
+          return false;
+      }
+
       return true;
     }
 
@@ -5411,6 +6098,26 @@ public class Executor {
       int lastComparison = 0;
       invokeAfterRouteHandler_result typedOther = (invokeAfterRouteHandler_result)other;
 
+      lastComparison = Boolean.valueOf(isSetWebInteraction()).compareTo(typedOther.isSetWebInteraction());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetWebInteraction()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.webInteraction, typedOther.webInteraction);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetLifecycleEventHandler()).compareTo(typedOther.isSetLifecycleEventHandler());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetLifecycleEventHandler()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.lifecycleEventHandler, typedOther.lifecycleEventHandler);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -5431,6 +6138,21 @@ public class Executor {
       StringBuilder sb = new StringBuilder("invokeAfterRouteHandler_result(");
       boolean first = true;
 
+      sb.append("webInteraction:");
+      if (this.webInteraction == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.webInteraction);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("lifecycleEventHandler:");
+      if (this.lifecycleEventHandler == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.lifecycleEventHandler);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -5473,6 +6195,24 @@ public class Executor {
             break;
           }
           switch (schemeField.id) {
+            case 1: // WEB_INTERACTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.webInteraction = new TWebInteractionException();
+                struct.webInteraction.read(iprot);
+                struct.setWebInteractionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // LIFECYCLE_EVENT_HANDLER
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.lifecycleEventHandler = new TLifecycleEventHandlerException();
+                struct.lifecycleEventHandler.read(iprot);
+                struct.setLifecycleEventHandlerIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -5488,6 +6228,16 @@ public class Executor {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.webInteraction != null) {
+          oprot.writeFieldBegin(WEB_INTERACTION_FIELD_DESC);
+          struct.webInteraction.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.lifecycleEventHandler != null) {
+          oprot.writeFieldBegin(LIFECYCLE_EVENT_HANDLER_FIELD_DESC);
+          struct.lifecycleEventHandler.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -5505,11 +6255,36 @@ public class Executor {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, invokeAfterRouteHandler_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetWebInteraction()) {
+          optionals.set(0);
+        }
+        if (struct.isSetLifecycleEventHandler()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetWebInteraction()) {
+          struct.webInteraction.write(oprot);
+        }
+        if (struct.isSetLifecycleEventHandler()) {
+          struct.lifecycleEventHandler.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, invokeAfterRouteHandler_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.webInteraction = new TWebInteractionException();
+          struct.webInteraction.read(iprot);
+          struct.setWebInteractionIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.lifecycleEventHandler = new TLifecycleEventHandlerException();
+          struct.lifecycleEventHandler.read(iprot);
+          struct.setLifecycleEventHandlerIsSet(true);
+        }
       }
     }
 

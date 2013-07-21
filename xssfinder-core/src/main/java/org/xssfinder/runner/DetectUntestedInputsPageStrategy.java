@@ -1,6 +1,7 @@
 package org.xssfinder.runner;
 
 import org.xssfinder.remote.ExecutorWrapper;
+import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.PageDescriptor;
 
@@ -9,7 +10,7 @@ import org.xssfinder.routing.PageDescriptor;
  */
 public class DetectUntestedInputsPageStrategy implements PageStrategy {
     @Override
-    public void processPage(PageContext pageContext, XssJournal xssJournal) {
+    public void processPage(PageContext pageContext, XssJournal xssJournal) throws TWebInteractionException {
         ExecutorWrapper driverWrapper = pageContext.getExecutor();
         int seenForms = driverWrapper.getFormCount();
 

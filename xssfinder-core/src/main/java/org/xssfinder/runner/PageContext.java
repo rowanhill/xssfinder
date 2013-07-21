@@ -2,6 +2,7 @@ package org.xssfinder.runner;
 
 import org.xssfinder.remote.ExecutorWrapper;
 import org.xssfinder.remote.PageDefinition;
+import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.routing.PageTraversal;
@@ -41,7 +42,7 @@ public class PageContext {
      * @return A PageContext created by traversing to the next page in the route
      * @see org.xssfinder.runner.PageContext#hasNextContext()
      */
-    public PageContext getNextContext() {
+    public PageContext getNextContext() throws TWebInteractionException {
         if (!hasNextContext()) {
             throw new IllegalStateException();
         }

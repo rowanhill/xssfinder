@@ -50,7 +50,7 @@ public class DetectUntestedInputsPageStrategyTest {
     }
 
     @Test
-    public void addsWarningIfPageDoesNotHaveEnoughSubmitActions() {
+    public void addsWarningIfPageDoesNotHaveEnoughSubmitActions() throws Exception {
         // given
         when(mockExecutor.getFormCount()).thenReturn(submitMethods.size() + 1);
         DetectUntestedInputsPageStrategy pageStrategy = new DetectUntestedInputsPageStrategy();
@@ -63,7 +63,7 @@ public class DetectUntestedInputsPageStrategyTest {
     }
 
     @Test
-    public void doesNotAddWarningIfPageHasAtLeastAsManySubmitActionsAsForms() {
+    public void doesNotAddWarningIfPageHasAtLeastAsManySubmitActionsAsForms() throws Exception {
         // given
         when(mockExecutor.getFormCount()).thenReturn(submitMethods.size());
         DetectUntestedInputsPageStrategy pageStrategy = new DetectUntestedInputsPageStrategy();

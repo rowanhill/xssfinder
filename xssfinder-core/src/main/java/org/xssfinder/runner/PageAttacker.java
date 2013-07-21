@@ -1,6 +1,7 @@
 package org.xssfinder.runner;
 
 import org.xssfinder.remote.ExecutorWrapper;
+import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.xss.XssDescriptor;
 import org.xssfinder.xss.XssDescriptorFactory;
 
@@ -22,7 +23,7 @@ class PageAttacker {
      * @param pageContext The current page context
      * @return A map of XSS attack identifiers to XssDescriptors
      */
-    public Map<String, XssDescriptor> attackIfAboutToSubmit(PageContext pageContext) {
+    public Map<String, XssDescriptor> attackIfAboutToSubmit(PageContext pageContext) throws TWebInteractionException {
         Map<String, XssDescriptor> xssIdsToDescriptors = new HashMap<String, XssDescriptor>();
         if (pageContext.hasNextContext() && pageContext.getPageTraversal().isSubmit()) {
             Map<String, String> inputIdsToXssIds = executor.putXssAttackStringsInInputs();

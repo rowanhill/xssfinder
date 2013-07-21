@@ -28,17 +28,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Thrown when the remote executor is asked to traverse an incorrectly configured traversal.
+ * Thrown when the remote executor attempted to interact with the web site (e.g. perform a traversal) but encountered an
+ * unexpected error.
  */
-public class TUntraversableException extends Exception implements org.apache.thrift.TBase<TUntraversableException, TUntraversableException._Fields>, java.io.Serializable, Cloneable {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TUntraversableException");
+public class TWebInteractionException extends Exception implements org.apache.thrift.TBase<TWebInteractionException, TWebInteractionException._Fields>, java.io.Serializable, Cloneable {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TWebInteractionException");
 
   private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new TUntraversableExceptionStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new TUntraversableExceptionTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TWebInteractionExceptionStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TWebInteractionExceptionTupleSchemeFactory());
   }
 
   public String message; // required
@@ -108,13 +109,13 @@ public class TUntraversableException extends Exception implements org.apache.thr
     tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TUntraversableException.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TWebInteractionException.class, metaDataMap);
   }
 
-  public TUntraversableException() {
+  public TWebInteractionException() {
   }
 
-  public TUntraversableException(
+  public TWebInteractionException(
     String message)
   {
     this();
@@ -124,14 +125,14 @@ public class TUntraversableException extends Exception implements org.apache.thr
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public TUntraversableException(TUntraversableException other) {
+  public TWebInteractionException(TWebInteractionException other) {
     if (other.isSetMessage()) {
       this.message = other.message;
     }
   }
 
-  public TUntraversableException deepCopy() {
-    return new TUntraversableException(this);
+  public TWebInteractionException deepCopy() {
+    return new TWebInteractionException(this);
   }
 
   @Override
@@ -143,7 +144,7 @@ public class TUntraversableException extends Exception implements org.apache.thr
     return this.message;
   }
 
-  public TUntraversableException setMessage(String message) {
+  public TWebInteractionException setMessage(String message) {
     this.message = message;
     return this;
   }
@@ -202,12 +203,12 @@ public class TUntraversableException extends Exception implements org.apache.thr
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof TUntraversableException)
-      return this.equals((TUntraversableException)that);
+    if (that instanceof TWebInteractionException)
+      return this.equals((TWebInteractionException)that);
     return false;
   }
 
-  public boolean equals(TUntraversableException that) {
+  public boolean equals(TWebInteractionException that) {
     if (that == null)
       return false;
 
@@ -228,13 +229,13 @@ public class TUntraversableException extends Exception implements org.apache.thr
     return 0;
   }
 
-  public int compareTo(TUntraversableException other) {
+  public int compareTo(TWebInteractionException other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
-    TUntraversableException typedOther = (TUntraversableException)other;
+    TWebInteractionException typedOther = (TWebInteractionException)other;
 
     lastComparison = Boolean.valueOf(isSetMessage()).compareTo(typedOther.isSetMessage());
     if (lastComparison != 0) {
@@ -263,7 +264,7 @@ public class TUntraversableException extends Exception implements org.apache.thr
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("TUntraversableException(");
+    StringBuilder sb = new StringBuilder("TWebInteractionException(");
     boolean first = true;
 
     sb.append("message:");
@@ -297,15 +298,15 @@ public class TUntraversableException extends Exception implements org.apache.thr
     }
   }
 
-  private static class TUntraversableExceptionStandardSchemeFactory implements SchemeFactory {
-    public TUntraversableExceptionStandardScheme getScheme() {
-      return new TUntraversableExceptionStandardScheme();
+  private static class TWebInteractionExceptionStandardSchemeFactory implements SchemeFactory {
+    public TWebInteractionExceptionStandardScheme getScheme() {
+      return new TWebInteractionExceptionStandardScheme();
     }
   }
 
-  private static class TUntraversableExceptionStandardScheme extends StandardScheme<TUntraversableException> {
+  private static class TWebInteractionExceptionStandardScheme extends StandardScheme<TWebInteractionException> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, TUntraversableException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TWebInteractionException struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -334,7 +335,7 @@ public class TUntraversableException extends Exception implements org.apache.thr
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, TUntraversableException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TWebInteractionException struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -349,16 +350,16 @@ public class TUntraversableException extends Exception implements org.apache.thr
 
   }
 
-  private static class TUntraversableExceptionTupleSchemeFactory implements SchemeFactory {
-    public TUntraversableExceptionTupleScheme getScheme() {
-      return new TUntraversableExceptionTupleScheme();
+  private static class TWebInteractionExceptionTupleSchemeFactory implements SchemeFactory {
+    public TWebInteractionExceptionTupleScheme getScheme() {
+      return new TWebInteractionExceptionTupleScheme();
     }
   }
 
-  private static class TUntraversableExceptionTupleScheme extends TupleScheme<TUntraversableException> {
+  private static class TWebInteractionExceptionTupleScheme extends TupleScheme<TWebInteractionException> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, TUntraversableException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TWebInteractionException struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
       if (struct.isSetMessage()) {
@@ -371,7 +372,7 @@ public class TUntraversableException extends Exception implements org.apache.thr
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, TUntraversableException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TWebInteractionException struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {

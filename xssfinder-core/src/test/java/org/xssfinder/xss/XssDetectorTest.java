@@ -19,7 +19,7 @@ public class XssDetectorTest {
     private ExecutorWrapper mockExecutor;
 
     @Test
-    public void xssDetectorInterrogatesDriverWrapperForCurrentXssIds() {
+    public void xssDetectorInterrogatesDriverWrapperForCurrentXssIds() throws Exception {
         // given
         Set<String> expectedXssIds = ImmutableSet.of("1", "2");
         when(mockExecutor.getCurrentXssIds()).thenReturn(expectedXssIds);
@@ -33,7 +33,7 @@ public class XssDetectorTest {
     }
 
     @Test
-    public void currentXssIdsIsEmptySetIfNullIsReturnedFromDriverWrapper() {
+    public void currentXssIdsIsEmptySetIfNullIsReturnedFromDriverWrapper() throws Exception {
         // given
         when(mockExecutor.getCurrentXssIds()).thenReturn(null);
         XssDetector xssDetector = new XssDetector();

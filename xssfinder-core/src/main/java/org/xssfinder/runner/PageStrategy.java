@@ -1,5 +1,6 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.reporting.XssJournal;
 
 /**
@@ -8,5 +9,5 @@ import org.xssfinder.reporting.XssJournal;
  * @see RoutePageStrategyRunner
  */
 interface PageStrategy {
-    void processPage(PageContext pageContext, XssJournal xssJournal);
+    void processPage(PageContext pageContext, XssJournal xssJournal) throws TWebInteractionException;
 }

@@ -46,7 +46,7 @@ public class PageAttackerTest {
     }
 
     @Test
-    public void attackingDoesNothingIfNextTraversalIsNotSubmission() {
+    public void attackingDoesNothingIfNextTraversalIsNotSubmission() throws Exception {
         // when
         pageAttacker.attackIfAboutToSubmit(mockPageContext);
 
@@ -55,7 +55,7 @@ public class PageAttackerTest {
     }
 
     @Test
-    public void attackingDoesNothingIfNextTraversalIsNull() {
+    public void attackingDoesNothingIfNextTraversalIsNull() throws Exception {
         // when
         pageAttacker.attackIfAboutToSubmit(mockPageContext);
 
@@ -64,7 +64,7 @@ public class PageAttackerTest {
     }
 
     @Test
-    public void attackingPutsXssAttacksInInputsIfTraversalIsSubmission() {
+    public void attackingPutsXssAttacksInInputsIfTraversalIsSubmission() throws Exception {
         //given
         when(mockPageTraversal.isSubmit()).thenReturn(true);
 
@@ -76,7 +76,7 @@ public class PageAttackerTest {
     }
 
     @Test
-    public void descriptionsOfAttackedInputsAreReturned() {
+    public void descriptionsOfAttackedInputsAreReturned() throws Exception {
         //given
         when(mockPageTraversal.isSubmit()).thenReturn(true);
         when(mockExecutor.putXssAttackStringsInInputs())

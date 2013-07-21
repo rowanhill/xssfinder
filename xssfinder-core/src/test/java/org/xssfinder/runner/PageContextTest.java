@@ -107,7 +107,7 @@ public class PageContextTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void getNextContextThrowsExceptionIfPageTraversalIsNull() {
+    public void getNextContextThrowsExceptionIfPageTraversalIsNull() throws Exception {
         // given
         PageContext context = new PageContext(mockExecutor, mockXssJournal, null, mockPageDescriptor);
 
@@ -116,7 +116,7 @@ public class PageContextTest {
     }
 
     @Test
-    public void nextContextPageIsGeneratedByPageTraverser() {
+    public void nextContextPageIsGeneratedByPageTraverser() throws Exception {
         // given
         PageDefinition mockNextPageDefinition = mockResultingPageDefinition(mockPageTraversal);
         PageContext context = new PageContext(mockExecutor, mockXssJournal, mockPageTraversal, mockPageDescriptor);
@@ -138,7 +138,7 @@ public class PageContextTest {
     }
 
     @Test
-    public void nextButOnePageIsGeneratedFromSecondTraversal() {
+    public void nextButOnePageIsGeneratedFromSecondTraversal() throws Exception {
         // given
         PageTraversal mockNextTraversal = mock(PageTraversal.class);
         PageDefinition mockNextButOnePageDefinition = mockResultingPageDefinition(mockNextTraversal);
