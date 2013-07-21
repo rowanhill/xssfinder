@@ -9,19 +9,18 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.xssfinder.reflection.Instantiator;
-import org.xssfinder.remote.*;
+import org.xssfinder.remote.Executor;
+import org.xssfinder.remote.ExecutorServer;
+import org.xssfinder.remote.ExecutorWrapper;
+import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.reporting.XssSighting;
 import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
 import org.xssfinder.routing.RouteGeneratorFactory;
-import org.xssfinder.runner.*;
-import org.xssfinder.scanner.PageDefinitionFactoryFactory;
-import org.xssfinder.scanner.PageFinder;
-import org.xssfinder.scanner.ThriftToReflectionLookupFactory;
-import org.xssfinder.xss.XssAttackFactory;
-import org.xssfinder.xss.XssGenerator;
+import org.xssfinder.runner.RouteRunner;
+import org.xssfinder.runner.RouteRunnerFactory;
+import org.xssfinder.scanner.ExecutorServerFactory;
 
 import java.io.File;
 import java.util.List;
@@ -61,23 +60,8 @@ public class XssFinderIT {
     @Test
     public void runXssFinder() throws Exception {
         // Set up the remote executor
-        ExecutorHandler executorHandler = new ExecutorHandler(
-                new PageFinder(),
-                new PageDefinitionFactoryFactory(),
-                new ThriftToReflectionLookupFactory(),
-                new ExecutorContext(
-                        new DefaultHtmlUnitDriverWrapper(),
-                        new XssGenerator(new XssAttackFactory()),
-                        new PageTraverser(
-                                new CustomTraverserInstantiator(new Instantiator()),
-                                new CustomSubmitterInstantiator(new Instantiator()),
-                                new LabelledXssGeneratorFactory()
-                        ),
-                        new Instantiator(),
-                        new LifecycleEventExecutor()
-                )
-        );
-        final ExecutorServer executorServer = new ExecutorServer(9091, executorHandler);
+        ExecutorServerFactory executorServerFactory = new ExecutorServerFactory();
+        final ExecutorServer executorServer = executorServerFactory.createExecutorServer(9091);
 
         Thread thread = new Thread(new Runnable() {
             @Override
