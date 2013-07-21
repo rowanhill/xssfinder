@@ -24,8 +24,7 @@ public class Route {
         this.pageTraversal = pageTraversal;
     }
 
-    //qq Rename
-    public PageDefinition getRootPageClass() {
+    public PageDefinition getRootPageDefinition() {
         return rootPageDescriptor.getPageDefinition();
     }
 

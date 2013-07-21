@@ -41,7 +41,7 @@ class RoutePageStrategyRunner {
     private void runRoute(Route route, XssJournal xssJournal, List<PageStrategy> pageStrategies) {
         PageContext pageContext = null;
         try {
-            executor.startRoute(route.getRootPageClass().getIdentifier());
+            executor.startRoute(route.getRootPageDefinition().getIdentifier());
 
             pageContext = contextFactory.createContext(route);
             while (pageContext.hasNextContext()) {
@@ -53,7 +53,7 @@ class RoutePageStrategyRunner {
             RouteRunErrorContext errorContext = errorContextFactory.createErrorContext(e, pageContext);
             xssJournal.addErrorContext(errorContext);
         } finally {
-            invokeAfterRouteIfNeeded(pageContext, route.getRootPageClass());
+            invokeAfterRouteIfNeeded(pageContext, route.getRootPageDefinition());
         }
     }
 

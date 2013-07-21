@@ -33,7 +33,7 @@ public class RequiredTraversalAppender {
         for (Route route : routes) {
             PageTraversal lastTraversal = route.getLastPageTraversal();
             String endPageIdentifier = lastTraversal == null ?
-                    route.getRootPageClass().getIdentifier() :
+                    route.getRootPageDefinition().getIdentifier() :
                     lastTraversal.getMethod().getReturnTypeIdentifier();
             Set<MethodDefinition> unusedMethods = getUnusedSubmitMethodsOnPage(endPageIdentifier, methodsByPage);
             if (unusedMethods.isEmpty()) {

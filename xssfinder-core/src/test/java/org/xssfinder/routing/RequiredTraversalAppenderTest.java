@@ -96,7 +96,7 @@ public class RequiredTraversalAppenderTest {
         when(mockUntraversedSubmitMethodFinder.getUntraversedSubmitMethods(routes, pageDescriptors))
                 .thenReturn(untraversedSubmitMethodsByDescriptor);
 
-        when(mockRoute.getRootPageClass()).thenReturn(mockSomePageDefinition);
+        when(mockRoute.getRootPageDefinition()).thenReturn(mockSomePageDefinition);
     }
 
     @Test

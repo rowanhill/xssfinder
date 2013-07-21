@@ -47,7 +47,7 @@ public class RoutePageStrategyRunnerTest {
     public void setUp() throws Exception {
         when(mockPageContextFactory.createContext(mockRoute)).thenReturn(mockPageContext);
         when(mockPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
-        when(mockRoute.getRootPageClass()).thenReturn(mockPageDefinition);
+        when(mockRoute.getRootPageDefinition()).thenReturn(mockPageDefinition);
         when(mockPageDefinition.getIdentifier()).thenReturn(PAGE_ID);
         routes.add(mockRoute);
 
@@ -134,7 +134,7 @@ public class RoutePageStrategyRunnerTest {
         when(mockPageContextFactory.createContext(mockOtherRoute)).thenReturn(mockOtherPageContext);
         PageDefinition mockOtherPageDefinition = mock(PageDefinition.class);
         when(mockOtherPageContext.getPageDefinition()).thenReturn(mockOtherPageDefinition);
-        when(mockOtherRoute.getRootPageClass()).thenReturn(mockOtherPageDefinition);
+        when(mockOtherRoute.getRootPageDefinition()).thenReturn(mockOtherPageDefinition);
         routes.add(mockOtherRoute);
         doThrow(new TWebInteractionException("Error!")).when(mockExecutor).startRoute(PAGE_ID);
 
@@ -172,7 +172,7 @@ public class RoutePageStrategyRunnerTest {
         PageContext mockOtherPageContext = mock(PageContext.class);
         when(mockPageContextFactory.createContext(mockOtherRoute)).thenReturn(mockOtherPageContext);
         when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
-        when(mockOtherRoute.getRootPageClass()).thenReturn(mockPageDefinition);
+        when(mockOtherRoute.getRootPageDefinition()).thenReturn(mockPageDefinition);
         routes.add(mockOtherRoute);
         doThrow(new TWebInteractionException("Error!")).when(mockStrategy).processPage(mockPageContext, mockXssJournal);
 
@@ -210,7 +210,7 @@ public class RoutePageStrategyRunnerTest {
         PageContext mockOtherPageContext = mock(PageContext.class);
         when(mockPageContextFactory.createContext(mockOtherRoute)).thenReturn(mockOtherPageContext);
         when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
-        when(mockOtherRoute.getRootPageClass()).thenReturn(mockPageDefinition);
+        when(mockOtherRoute.getRootPageDefinition()).thenReturn(mockPageDefinition);
         routes.add(mockOtherRoute);
         when(mockPageContext.hasNextContext()).thenReturn(true, false);
         when(mockPageContext.getNextContext()).thenThrow(new RuntimeException("Error!"));
@@ -265,7 +265,7 @@ public class RoutePageStrategyRunnerTest {
         PageContext mockOtherPageContext = mock(PageContext.class);
         when(mockPageContextFactory.createContext(mockOtherRoute)).thenReturn(mockOtherPageContext);
         when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
-        when(mockOtherRoute.getRootPageClass()).thenReturn(mockPageDefinition);
+        when(mockOtherRoute.getRootPageDefinition()).thenReturn(mockPageDefinition);
         routes.add(mockOtherRoute);
 
         doThrow(new TWebInteractionException("Error!")).when(mockExecutor).invokeAfterRouteHandler(PAGE_ID);

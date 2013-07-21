@@ -54,10 +54,10 @@ public class RouteTest {
         Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
-        PageDefinition rootPageClass = route.getRootPageClass();
+        PageDefinition rootPageDefinition = route.getRootPageDefinition();
 
         // then
-        assertThat(rootPageClass, is(mockPageDefinition));
+        assertThat(rootPageDefinition, is(mockPageDefinition));
     }
 
     @Test
@@ -161,7 +161,7 @@ public class RouteTest {
         Route clonedRoute = route.clone();
 
         // then
-        assertThat(clonedRoute.getRootPageClass(), is(mockPageDefinition));
+        assertThat(clonedRoute.getRootPageDefinition(), is(mockPageDefinition));
     }
 
     @Test
