@@ -10,14 +10,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.xssfinder.reflection.Instantiator;
 import org.xssfinder.runner.*;
-import org.xssfinder.scanner.MethodDefinitionFactory;
-import org.xssfinder.scanner.PageDefinitionFactory;
+import org.xssfinder.scanner.PageDefinitionFactoryFactory;
 import org.xssfinder.scanner.PageFinder;
 import org.xssfinder.scanner.ThriftToReflectionLookupFactory;
 import org.xssfinder.xss.XssAttackFactory;
 import org.xssfinder.xss.XssGenerator;
 
-import java.util.HashMap;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
@@ -32,10 +30,7 @@ public class ExecutorServerTest {
     public void setUp() {
         handler = new ExecutorHandler(
                 new PageFinder(),
-                new PageDefinitionFactory(
-                        new MethodDefinitionFactory(),
-                        new HashMap<Class<?>, PageDefinition>()
-                ),
+                new PageDefinitionFactoryFactory(),
                 new ThriftToReflectionLookupFactory(),
                 new ExecutorContext(
                         new DefaultHtmlUnitDriverWrapper(),

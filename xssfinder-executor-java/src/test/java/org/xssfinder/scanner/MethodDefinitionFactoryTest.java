@@ -12,8 +12,6 @@ import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -24,8 +22,6 @@ public class MethodDefinitionFactoryTest {
     private static final String PAGE_DEF_ID = "A Page";
 
     private final MethodDefinitionFactory factory = new MethodDefinitionFactory();
-    private final Set<Class<?>> knownPageClasses = new HashSet<Class<?>>();
-    private final ThriftToReflectionLookup lookup = new ThriftToReflectionLookup();
 
     @Mock
     private PageDefinitionFactory mockPageDefinitionFactory;
@@ -35,7 +31,7 @@ public class MethodDefinitionFactoryTest {
     @Before
     public void setUp() {
         when(mockPageDefinition.getIdentifier()).thenReturn(PAGE_DEF_ID);
-        when(mockPageDefinitionFactory.createPageDefinition(SomePage.class, knownPageClasses, lookup))
+        when(mockPageDefinitionFactory.createPageDefinition(SomePage.class))
                 .thenReturn(mockPageDefinition);
     }
 
@@ -146,9 +142,7 @@ public class MethodDefinitionFactoryTest {
     private MethodDefinition createMethodDefinitionFromFactory(Method method) {
         return factory.createMethodDefinition(
                 method,
-                mockPageDefinitionFactory,
-                knownPageClasses,
-                lookup
+                mockPageDefinitionFactory
         );
     }
 

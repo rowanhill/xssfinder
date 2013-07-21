@@ -17,15 +17,13 @@ import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
 import org.xssfinder.routing.RouteGeneratorFactory;
 import org.xssfinder.runner.*;
-import org.xssfinder.scanner.MethodDefinitionFactory;
-import org.xssfinder.scanner.PageDefinitionFactory;
+import org.xssfinder.scanner.PageDefinitionFactoryFactory;
 import org.xssfinder.scanner.PageFinder;
 import org.xssfinder.scanner.ThriftToReflectionLookupFactory;
 import org.xssfinder.xss.XssAttackFactory;
 import org.xssfinder.xss.XssGenerator;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -65,10 +63,7 @@ public class XssFinderIT {
         // Set up the remote executor
         ExecutorHandler executorHandler = new ExecutorHandler(
                 new PageFinder(),
-                new PageDefinitionFactory(
-                        new MethodDefinitionFactory(),
-                        new HashMap<Class<?>, PageDefinition>()
-                ),
+                new PageDefinitionFactoryFactory(),
                 new ThriftToReflectionLookupFactory(),
                 new ExecutorContext(
                         new DefaultHtmlUnitDriverWrapper(),

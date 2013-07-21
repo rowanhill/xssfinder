@@ -11,18 +11,18 @@ import java.util.Set;
 
 public class ExecutorHandler implements Executor.Iface {
     private final PageFinder pageFinder;
-    private final PageDefinitionFactory pageDefinitionFactory;
+    private final PageDefinitionFactoryFactory pageDefinitionFactoryFactory;
     private final ThriftToReflectionLookupFactory thriftToReflectionLookupFactory;
     private final ExecutorContext executorContext;
 
     public ExecutorHandler(
             PageFinder pageFinder,
-            PageDefinitionFactory pageDefinitionFactory,
+            PageDefinitionFactoryFactory pageDefinitionFactoryFactory,
             ThriftToReflectionLookupFactory thriftToReflectionLookupFactory,
             ExecutorContext executorContext
     ) {
         this.pageFinder = pageFinder;
-        this.pageDefinitionFactory = pageDefinitionFactory;
+        this.pageDefinitionFactoryFactory = pageDefinitionFactoryFactory;
         this.thriftToReflectionLookupFactory = thriftToReflectionLookupFactory;
         this.executorContext = executorContext;
     }
@@ -33,8 +33,10 @@ public class ExecutorHandler implements Executor.Iface {
             Set<Class<?>> pageClasses = pageFinder.findAllPages(namespaceIdentifier);
             Set<PageDefinition> pageDefinitions = new HashSet<PageDefinition>();
             ThriftToReflectionLookup lookup = thriftToReflectionLookupFactory.createLookup();
+            PageDefinitionFactory pageDefinitionFactory =
+                    pageDefinitionFactoryFactory.createPageDefinitionFactory(pageClasses, lookup);
             for (Class<?> pageClass : pageClasses) {
-                PageDefinition pageDefinition = pageDefinitionFactory.createPageDefinition(pageClass, pageClasses, lookup);
+                PageDefinition pageDefinition = pageDefinitionFactory.createPageDefinition(pageClass);
                 pageDefinitions.add(pageDefinition);
             }
             executorContext.setThriftToReflectionLookup(lookup);

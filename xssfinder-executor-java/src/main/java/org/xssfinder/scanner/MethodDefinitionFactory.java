@@ -6,19 +6,15 @@ import org.xssfinder.remote.MethodDefinition;
 import org.xssfinder.remote.PageDefinition;
 
 import java.lang.reflect.Method;
-import java.util.Set;
 
 public class MethodDefinitionFactory {
     public MethodDefinition createMethodDefinition(
             Method method,
-            PageDefinitionFactory pageDefinitionFactory,
-            Set<Class<?>> knownPageClasses,
-            ThriftToReflectionLookup lookup
+            PageDefinitionFactory pageDefinitionFactory
     ) {
         String identifier = method.getName();
         Class<?> returnTypeClass = method.getReturnType();
-        PageDefinition returnType = getPageDefinition(
-                pageDefinitionFactory, knownPageClasses, returnTypeClass, lookup);
+        PageDefinition returnType = getPageDefinition(pageDefinitionFactory, returnTypeClass);
         Class<?> owningTypeClass = method.getDeclaringClass();
         boolean hasArgs = method.getParameterTypes().length > 0;
         boolean isSubmit = method.isAnnotationPresent(SubmitAction.class);
@@ -35,10 +31,8 @@ public class MethodDefinitionFactory {
 
     private PageDefinition getPageDefinition(
             PageDefinitionFactory pageDefinitionFactory,
-            Set<Class<?>> knownPageClasses,
-            Class<?> returnTypeClass,
-            ThriftToReflectionLookup lookup
+            Class<?> returnTypeClass
     ) {
-        return pageDefinitionFactory.createPageDefinition(returnTypeClass, knownPageClasses, lookup);
+        return pageDefinitionFactory.createPageDefinition(returnTypeClass);
     }
 }

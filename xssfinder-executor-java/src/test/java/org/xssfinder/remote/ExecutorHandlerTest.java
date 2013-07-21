@@ -10,10 +10,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.xssfinder.runner.ExecutorContext;
 import org.xssfinder.runner.TraversalResult;
-import org.xssfinder.scanner.PageDefinitionFactory;
-import org.xssfinder.scanner.PageFinder;
-import org.xssfinder.scanner.ThriftToReflectionLookup;
-import org.xssfinder.scanner.ThriftToReflectionLookupFactory;
+import org.xssfinder.scanner.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +29,7 @@ public class ExecutorHandlerTest {
     @Mock
     private PageFinder mockPageFinder;
     @Mock
-    private PageDefinitionFactory mockPageDefFactory;
+    private PageDefinitionFactoryFactory mockPageDefFactoryFactory;
     @Mock
     private ThriftToReflectionLookupFactory mockThriftToReflectionLookupFactory;
     @Mock
@@ -45,8 +42,13 @@ public class ExecutorHandlerTest {
     @InjectMocks
     private ExecutorHandler executorHandler;
 
+    @Mock
+    private PageDefinitionFactory mockPageDefFactory;
+
     @Before
     public void setUp() {
+        //noinspection unchecked
+        when(mockPageDefFactoryFactory.createPageDefinitionFactory(anySet(), eq(mockLookup))).thenReturn(mockPageDefFactory);
         when(mockThriftToReflectionLookupFactory.createLookup()).thenReturn(mockLookup);
     }
 
@@ -56,7 +58,7 @@ public class ExecutorHandlerTest {
         Set<Class<?>> pageClasses = new HashSet<Class<?>>();
         pageClasses.add(SomePage.class);
         when(mockPageFinder.findAllPages(PACKAGE_NAME)).thenReturn(pageClasses);
-        when(mockPageDefFactory.createPageDefinition(SomePage.class, pageClasses, mockLookup)).thenReturn(mockPageDefinition);
+        when(mockPageDefFactory.createPageDefinition(SomePage.class)).thenReturn(mockPageDefinition);
 
         // when
         Set<PageDefinition> pageDefinitions = executorHandler.getPageDefinitions(PACKAGE_NAME);
