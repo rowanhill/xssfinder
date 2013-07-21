@@ -3,6 +3,8 @@ package org.xssfinder.runner;
 import org.xssfinder.remote.ExecutorWrapper;
 import org.xssfinder.reporting.HtmlReportWriter;
 import org.xssfinder.reporting.RouteRunErrorContextFactory;
+import org.xssfinder.reporting.XssJournal;
+import org.xssfinder.reporting.XssSightingFactory;
 import org.xssfinder.xss.*;
 
 public class RouteRunnerFactory {
@@ -13,25 +15,27 @@ public class RouteRunnerFactory {
     }
 
     public RouteRunner createRouteRunner(ExecutorWrapper executor, String outputFile) {
+        XssJournal xssJournal = new XssJournal(new XssSightingFactory());
         return new RouteRunner(
-                createRouteStrategyRunner(executor),
+                createRouteStrategyRunner(executor, xssJournal),
                 createAttackPageStrategy(executor),
                 createDetectSuccessfulXssPageStrategy(),
                 new DetectUntestedInputsPageStrategy(),
-                new HtmlReportWriter(outputFile)
+                new HtmlReportWriter(outputFile),
+                xssJournal
         );
     }
 
-    private RoutePageStrategyRunner createRouteStrategyRunner(ExecutorWrapper executor) {
+    private RoutePageStrategyRunner createRouteStrategyRunner(ExecutorWrapper executor, XssJournal xssJournal) {
         return new RoutePageStrategyRunner(
                 executor,
-                createPageContextFactory(),
+                createPageContextFactory(executor, xssJournal),
                 new RouteRunErrorContextFactory()
         );
     }
 
-    private PageContextFactory createPageContextFactory() {
-        return new PageContextFactory();
+    private PageContextFactory createPageContextFactory(ExecutorWrapper executor, XssJournal xssJournal) {
+        return new PageContextFactory(executor, xssJournal);
     }
 
     private AttackPageStrategy createAttackPageStrategy(ExecutorWrapper executor) {

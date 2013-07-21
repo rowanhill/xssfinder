@@ -43,7 +43,7 @@ class RoutePageStrategyRunner {
         try {
             executor.startRoute(route.getRootPageClass().getIdentifier());
 
-            pageContext = contextFactory.createContext(executor, route, xssJournal);
+            pageContext = contextFactory.createContext(route);
             while (pageContext.hasNextContext()) {
                 executePageStrategies(pageStrategies, pageContext, xssJournal);
                 pageContext = pageContext.getNextContext();

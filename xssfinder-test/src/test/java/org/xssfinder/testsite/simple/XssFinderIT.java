@@ -13,7 +13,6 @@ import org.xssfinder.reflection.Instantiator;
 import org.xssfinder.remote.*;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.reporting.XssSighting;
-import org.xssfinder.reporting.XssSightingFactory;
 import org.xssfinder.routing.Route;
 import org.xssfinder.routing.RouteGenerator;
 import org.xssfinder.routing.RouteGeneratorFactory;
@@ -104,7 +103,6 @@ public class XssFinderIT {
             TProtocol protocol = new TBinaryProtocol(transport);
             client = new Executor.Client(protocol);
             ExecutorWrapper executorWrapper = new ExecutorWrapper(client);
-            XssJournal journal = new XssJournal(new XssSightingFactory());
             RouteRunner runner = runnerFactory.createRouteRunner(executorWrapper, OUTPUT_FILE);
 
             // Get the routes
@@ -114,7 +112,7 @@ public class XssFinderIT {
             List<Route> routes = routeGenerator.generateRoutes(pageDefinitions);
 
             // Run!
-            runner.run(routes, journal);
+            XssJournal journal = runner.run(routes);
 
             assertThat(routes.size(), is(4));
             assertThat(journal.getDescriptorById("1"), is(not(nullValue())));

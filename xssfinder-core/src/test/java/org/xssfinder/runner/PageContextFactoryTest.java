@@ -31,14 +31,14 @@ public class PageContextFactoryTest {
     @Test
     public void constructsPageContexts() {
         // given
-        PageContextFactory factory = new PageContextFactory();
+        PageContextFactory factory = new PageContextFactory(mockExecutor, mockXssJournal);
         PageTraversal mockPageTraversal = mock(PageTraversal.class);
         PageDescriptor mockPageDescriptor = mock(PageDescriptor.class);
         when(mockRoute.getPageTraversal()).thenReturn(mockPageTraversal);
         when(mockRoute.getRootPageDescriptor()).thenReturn(mockPageDescriptor);
 
         // when
-        PageContext context = factory.createContext(mockExecutor, mockRoute, mockXssJournal);
+        PageContext context = factory.createContext(mockRoute);
 
         // then
         assertThat(context, is(notNullValue()));
