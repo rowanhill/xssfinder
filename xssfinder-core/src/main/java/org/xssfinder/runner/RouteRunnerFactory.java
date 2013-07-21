@@ -35,7 +35,7 @@ public class RouteRunnerFactory {
     }
 
     private PageContextFactory createPageContextFactory(ExecutorWrapper executor, XssJournal xssJournal) {
-        return new PageContextFactory(executor, xssJournal);
+        return new PageContextFactory(executor, xssJournal, new XssDescriptorFactory());
     }
 
     private AttackPageStrategy createAttackPageStrategy(ExecutorWrapper executor) {

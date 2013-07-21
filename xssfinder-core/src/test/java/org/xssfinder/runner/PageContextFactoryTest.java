@@ -9,6 +9,7 @@ import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.routing.Route;
+import org.xssfinder.xss.XssDescriptorFactory;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -23,6 +24,8 @@ public class PageContextFactoryTest {
     @Mock
     private XssJournal mockXssJournal;
     @Mock
+    private XssDescriptorFactory mockXssDescriptorFactory;
+    @Mock
     private ExecutorWrapper mockExecutor;
     @Mock
     private PageTraversal mockPageTraversal;
@@ -31,7 +34,7 @@ public class PageContextFactoryTest {
     @Test
     public void constructsPageContexts() {
         // given
-        PageContextFactory factory = new PageContextFactory(mockExecutor, mockXssJournal);
+        PageContextFactory factory = new PageContextFactory(mockExecutor, mockXssJournal, mockXssDescriptorFactory);
         PageTraversal mockPageTraversal = mock(PageTraversal.class);
         PageDescriptor mockPageDescriptor = mock(PageDescriptor.class);
         when(mockRoute.getPageTraversal()).thenReturn(mockPageTraversal);

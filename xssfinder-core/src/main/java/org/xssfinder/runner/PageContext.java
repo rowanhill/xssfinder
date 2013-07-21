@@ -6,6 +6,8 @@ import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.routing.PageTraversal;
+import org.xssfinder.xss.XssDescriptor;
+import org.xssfinder.xss.XssDescriptorFactory;
 
 import java.util.Map;
 
@@ -15,17 +17,20 @@ import java.util.Map;
 public class PageContext {
     private final ExecutorWrapper executor;
     private final XssJournal xssJournal;
+    private final XssDescriptorFactory xssDescriptorFactory;
     private final PageTraversal pageTraversal;
-    private PageDescriptor pageDescriptor;
+    private final PageDescriptor pageDescriptor;
 
     public PageContext(
             ExecutorWrapper executor,
             XssJournal xssJournal,
+            XssDescriptorFactory xssDescriptorFactory,
             PageTraversal pageTraversal,
             PageDescriptor pageDescriptor
     ) {
         this.executor = executor;
         this.xssJournal = xssJournal;
+        this.xssDescriptorFactory = xssDescriptorFactory;
         this.pageTraversal = pageTraversal;
         this.pageDescriptor = pageDescriptor;
     }
@@ -50,10 +55,15 @@ public class PageContext {
                 pageTraversal.getMethod(),
                 pageTraversal.getTraversalMode().convertToThrift()
         );
-        //qq Add inputIdsToAttackIds to xssJournal
+        for (Map.Entry<String, String> inputIdToAttackId : inputIdsToAttackIds.entrySet()) {
+            XssDescriptor xssDescriptor =
+                    xssDescriptorFactory.createXssDescriptor(pageTraversal, inputIdToAttackId.getKey());
+            xssJournal.addXssDescriptor(inputIdToAttackId.getValue(), xssDescriptor);
+        }
         return new PageContext(
                 executor,
                 xssJournal,
+                xssDescriptorFactory,
                 pageTraversal.getNextTraversal(),
                 pageTraversal.getResultingPageDescriptor()
         );
