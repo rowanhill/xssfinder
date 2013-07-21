@@ -72,7 +72,6 @@ public class PageContext {
     /**
      * @return The current page definition
      */
-    //qq Do we still need this method?
     public PageDefinition getPageDefinition() {
         return pageDescriptor.getPageDefinition();
     }
