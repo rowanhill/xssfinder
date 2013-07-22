@@ -282,17 +282,27 @@ public class RoutePageStrategyRunnerTest {
         // given
         PageStrategy mockStrategy = mock(PageStrategy.class);
         pageStrategies.add(mockStrategy);
-        TWebInteractionException webInteractionException = new TWebInteractionException("Error!");
-        doThrow(webInteractionException).when(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
-        RouteRunErrorContext mockErrorContext =  mock(RouteRunErrorContext.class);
-        when(mockErrorContextFactory.createErrorContext(webInteractionException, mockPageContext))
-                .thenReturn(mockErrorContext);
+
+        when(mockPageContext.hasNextContext()).thenReturn(true, false);
+        TWebInteractionException traversingException = new TWebInteractionException("Traversing error!");
+        when(mockPageContext.getNextContext()).thenThrow(traversingException);
+        RouteRunErrorContext mockTraversingErrorContext =  mock(RouteRunErrorContext.class, "mockTraversingErrorContext");
+        when(mockErrorContextFactory.createErrorContext(traversingException, mockPageContext))
+                .thenReturn(mockTraversingErrorContext);
+
+        TWebInteractionException afterRouteException = new TWebInteractionException("After route error!");
+        doThrow(afterRouteException).when(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
+        RouteRunErrorContext mockAfterRouteErrorContext =  mock(RouteRunErrorContext.class, "mockAfterRouteErrorContext");
+        when(mockErrorContextFactory.createErrorContext(afterRouteException, mockPageContext))
+                .thenReturn(mockAfterRouteErrorContext);
 
         // when
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        verify(mockXssJournal).addErrorContext(mockErrorContext);
+        InOrder inOrder = inOrder(mockXssJournal);
+        inOrder.verify(mockXssJournal).addErrorContext(mockTraversingErrorContext);
+        inOrder.verify(mockXssJournal).addErrorContext(mockAfterRouteErrorContext);
     }
 
     @Test
@@ -306,5 +316,23 @@ public class RoutePageStrategyRunnerTest {
 
         // then
         verify(mockExecutor, never()).invokeAfterRouteHandler(PAGE_ID);
+    }
+
+    @Test
+    public void exceptionsThrownBothByTraversingAndInAfterRouteAreLogged() throws Exception {
+
+        PageStrategy mockStrategy = mock(PageStrategy.class);
+        pageStrategies.add(mockStrategy);
+        TWebInteractionException webInteractionException = new TWebInteractionException("Error!");
+        doThrow(webInteractionException).when(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
+        RouteRunErrorContext mockErrorContext =  mock(RouteRunErrorContext.class);
+        when(mockErrorContextFactory.createErrorContext(webInteractionException, mockPageContext))
+                .thenReturn(mockErrorContext);
+
+        // when
+        runner.run(routes, pageStrategies, mockXssJournal);
+
+        // then
+        verify(mockXssJournal).addErrorContext(mockErrorContext);
     }
 }

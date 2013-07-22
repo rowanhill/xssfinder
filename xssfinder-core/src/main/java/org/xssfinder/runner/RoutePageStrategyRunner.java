@@ -51,10 +51,15 @@ class RoutePageStrategyRunner {
                     pageContext = pageContext.getNextContext();
                 }
                 executePageStrategies(pageStrategies, pageContext, xssJournal);
+            } catch (Exception e) {
+                e.printStackTrace();
+                RouteRunErrorContext errorContext = errorContextFactory.createErrorContext(e, pageContext);
+                xssJournal.addErrorContext(errorContext);
             } finally {
                 invokeAfterRouteIfNeeded(pageContext, route.getRootPageDefinition());
             }
         } catch (Exception e) {
+            e.getStackTrace();
             RouteRunErrorContext errorContext = errorContextFactory.createErrorContext(e, pageContext);
             xssJournal.addErrorContext(errorContext);
         }
