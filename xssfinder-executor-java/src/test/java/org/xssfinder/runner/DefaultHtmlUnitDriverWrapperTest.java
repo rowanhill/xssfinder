@@ -3,7 +3,7 @@ package org.xssfinder.runner;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.google.common.collect.ImmutableSet;
-import org.junit.Ignore;
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -15,12 +15,12 @@ import java.lang.reflect.Field;
 import java.net.URLDecoder;
 import java.util.*;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertThat;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -197,6 +197,58 @@ public class DefaultHtmlUnitDriverWrapperTest {
         assertThat(numFormsOnTwoFormPage, is(2));
     }
 
+    @Test
+    public void browserSessionIsMaintainedAcrossRequests() {
+        // given
+        DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
+        stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse().withBody(INDEX_PAGE).withHeader("Set-Cookie", "TestCookie=SomeValue;Path=/\n"))
+        );
+        driverWrapper.visit("http://localhost:8089/");
+
+        // when
+        driverWrapper.visit("http://localhost:8089/cookie");
+
+        // then
+        verify(getRequestedFor(urlEqualTo("/cookie")).withHeader("Cookie", matching("TestCookie=SomeValue")));
+    }
+
+    @Test
+    public void renewingSessionClosesBrowserSessionAndOpensNewOne() {
+        // given
+        DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
+        stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse().withBody(INDEX_PAGE).withHeader("Set-Cookie", "TestCookie=SomeValue;Path=/\n"))
+        );
+        driverWrapper.visit("http://localhost:8089/");
+
+        // when
+        driverWrapper.renewSession();
+        driverWrapper.visit("http://localhost:8089/cookie");
+
+        // then
+        verify(getRequestedFor(urlEqualTo("/cookie")).withoutHeader("Cookie"));
+    }
+
+    @Test
+    public void renewingSessionUpdatesPageInstantiator() {
+        // given
+        DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
+        stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse().withBody(INDEX_PAGE).withHeader("Set-Cookie", "TestCookie=SomeValue;Path=/\n"))
+        );
+        driverWrapper.visit("http://localhost:8089/");
+        PageInstantiator pageInstantiator = driverWrapper.getPageInstantiator();
+
+        // when
+        WebDriverPage oldSessionPage = pageInstantiator.instantiatePage(WebDriverPage.class);
+        driverWrapper.renewSession();
+        WebDriverPage newSessionPage = pageInstantiator.instantiatePage(WebDriverPage.class);
+
+        // then
+        assertThat(oldSessionPage.driver, Matchers.is(not(newSessionPage.driver)));
+    }
+
     private void clickSubmit(DefaultHtmlUnitDriverWrapper driverWrapper) throws Exception {
         Field driverField = DefaultHtmlUnitDriverWrapper.class.getDeclaredField("driver");
         driverField.setAccessible(true);
@@ -215,5 +267,12 @@ public class DefaultHtmlUnitDriverWrapperTest {
             params.put(name, value);
         }
         return params;
+    }
+
+    private static final class WebDriverPage {
+        public final WebDriver driver;
+        private WebDriverPage(WebDriver driver) {
+            this.driver = driver;
+        }
     }
 }

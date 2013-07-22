@@ -8,9 +8,13 @@ import java.lang.reflect.Constructor;
  * Creates page objects backed by WebDriver implementations
  */
 public class WebDriverPageInstantiator implements PageInstantiator {
-    private final WebDriver driver;
+    private WebDriver driver;
 
     public WebDriverPageInstantiator(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public void setDriver(WebDriver driver) {
         this.driver = driver;
     }
 

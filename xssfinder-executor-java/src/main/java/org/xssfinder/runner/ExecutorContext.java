@@ -82,6 +82,11 @@ public class ExecutorContext {
         }
     }
 
+    public void renewSession() {
+        driverWrapper.renewSession();
+        currentPage = null;
+    }
+
     private Object createLifecycleEventHandler(Class<?> rootClass) throws TLifecycleEventHandlerException {
         CrawlStartPoint crawlStartPoint = rootClass.getAnnotation(CrawlStartPoint.class);
         Class<?> handlerClass = crawlStartPoint.lifecycleHandler();

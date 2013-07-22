@@ -12,15 +12,17 @@ import java.util.*;
  * A DriverWrapper backed by an HtmlUnitDriver
  */
 public class DefaultHtmlUnitDriverWrapper implements DriverWrapper {
-    private final HtmlUnitDriver driver;
+    private final WebDriverPageInstantiator pageInstantiator;
+    private HtmlUnitDriver driver;
 
     public DefaultHtmlUnitDriverWrapper() {
-        driver = new HtmlUnitDriver(true);
+        driver = createDriver();
+        pageInstantiator = new WebDriverPageInstantiator(driver);
     }
 
     @Override
     public PageInstantiator getPageInstantiator() {
-        return new WebDriverPageInstantiator(driver);
+        return pageInstantiator;
     }
 
     @Override
@@ -52,6 +54,17 @@ public class DefaultHtmlUnitDriverWrapper implements DriverWrapper {
             inputsToAttacks.put(xpathFinder.getXPath(element), xssAttack.getIdentifier());
         }
         return inputsToAttacks;
+    }
+
+    @Override
+    public void renewSession() {
+        driver.close();
+        driver = createDriver();
+        pageInstantiator.setDriver(driver);
+    }
+
+    private HtmlUnitDriver createDriver() {
+        return new HtmlUnitDriver(true);
     }
 
 }

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -158,6 +159,17 @@ public class ExecutorHandlerTest {
 
         // then
         verify(mockExecutorContext).invokeAfterRouteHandler(PAGE_ID);
+    }
+
+    @Test
+    public void invokingAfterRouteHandlerRefreshesSessionAfterDelegatingToExecutorContext() throws Exception {
+        // when
+        executorHandler.invokeAfterRouteHandler(PAGE_ID);
+
+        // then
+        InOrder inOrder = inOrder(mockExecutorContext);
+        inOrder.verify(mockExecutorContext).invokeAfterRouteHandler(PAGE_ID);
+        inOrder.verify(mockExecutorContext).renewSession();
     }
 
     private static class SomePage {

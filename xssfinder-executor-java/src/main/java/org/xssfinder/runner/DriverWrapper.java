@@ -38,4 +38,9 @@ public interface DriverWrapper {
      * @return The number of forms observable on the current page
      */
     int getFormCount();
+
+    /**
+     * Close the existing session and open a new one, ready for the next test
+     */
+    void renewSession();
 }

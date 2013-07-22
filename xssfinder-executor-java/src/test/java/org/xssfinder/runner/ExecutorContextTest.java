@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class ExecutorContextTest {
     private static final String HOME_PAGE_URL = "http://home";
-    public static final String HOME_PAGE_ID = "HomePage";
+    private static final String HOME_PAGE_ID = "HomePage";
 
     @Mock
     private DriverWrapper mockDriverWrapper;
@@ -216,6 +216,40 @@ public class ExecutorContextTest {
         //noinspection unchecked
         verify(mockInstantiator, never()).instantiate(Matchers.any(Class.class));
         verify(mockLifecycleEventExecutor, never()).afterRoute(any(Object.class), any(Object.class));
+    }
+
+    @Test
+    public void renewingSessionIsDelegatedToDriverWrapper() {
+        // when
+        context.renewSession();
+
+        // then
+        verify(mockDriverWrapper).renewSession();
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void pageIsSetToNullAfterRenewingSession() throws Exception {
+        // given
+        visitHomePage();
+        context.renewSession();
+        Method method = HomePage.class.getMethod("goToSecondPage");
+        MethodDefinition mockMethodDefinition = mockMethodDefinition(method);
+        when(mockMethodDefinition.getIdentifier()).thenReturn("goToSecondPageId");
+        lookup.putMethod("goToSecondPageId", method);
+        NullPointerException npe = new NullPointerException();
+        when(mockPageTraverser.traverse(isNull(), eq(method), eq(TraversalMode.NORMAL))).thenThrow(npe);
+
+        try {
+            // when
+            context.traverseMethod(mockMethodDefinition, TraversalMode.NORMAL);
+
+            // then
+        } catch (NullPointerException e) {
+            // We test that the exception we see raised is precisely the one we expected to throw, as other null
+            // pointer exceptions can be thrown by traverseMethod
+            assertThat(e, is(npe));
+            throw e;
+        }
     }
 
     private MethodDefinition mockMethodDefinition(Method method) {

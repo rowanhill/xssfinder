@@ -79,5 +79,6 @@ public class ExecutorHandler implements Executor.Iface {
             throws TException, TWebInteractionException, TLifecycleEventHandlerException
     {
         executorContext.invokeAfterRouteHandler(rootPageIdentifier);
+        executorContext.renewSession();
     }
 }
