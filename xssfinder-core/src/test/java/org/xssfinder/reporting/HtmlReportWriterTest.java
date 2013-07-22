@@ -18,6 +18,7 @@ import org.xssfinder.remote.PageDefinition;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +26,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -49,6 +51,16 @@ public class HtmlReportWriterTest {
         boolean didDelete = file.delete();
         if (didDelete) {
             System.err.println("Warning: Had to delete " + OUT_FILE);
+        }
+
+        // We need to be connected to the internet, because the report needs to access
+        // jQuery from a CDN URL
+        //TODO: Fix this by including jQuery locally
+        try {
+            URL url = new URL("http://www.google.com");
+            url.getContent();
+        } catch (Exception e) {
+            assumeTrue("Assumption that this machine is connected to the internet failed.", false);
         }
     }
 
