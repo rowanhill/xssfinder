@@ -5,9 +5,6 @@ import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.xssfinder.scanner.MethodDefinitionFactory;
-import org.xssfinder.scanner.PageDefinitionFactory;
-import org.xssfinder.scanner.PageFinder;
 
 public class ExecutorServer {
 

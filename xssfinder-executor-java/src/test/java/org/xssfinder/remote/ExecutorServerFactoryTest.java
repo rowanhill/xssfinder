@@ -1,7 +1,8 @@
-package org.xssfinder.scanner;
+package org.xssfinder.remote;
 
 import org.junit.Test;
 import org.xssfinder.remote.ExecutorServer;
+import org.xssfinder.remote.ExecutorServerFactory;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;

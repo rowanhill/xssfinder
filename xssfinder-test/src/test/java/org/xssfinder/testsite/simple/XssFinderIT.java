@@ -9,7 +9,7 @@ import org.xssfinder.XssFinder;
 import org.xssfinder.remote.ExecutorServer;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.reporting.XssSighting;
-import org.xssfinder.scanner.ExecutorServerFactory;
+import org.xssfinder.remote.ExecutorServerFactory;
 
 import java.io.File;
 

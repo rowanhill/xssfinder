@@ -1,10 +1,11 @@
-package org.xssfinder.scanner;
+package org.xssfinder.remote;
 
 import org.apache.thrift.transport.TTransportException;
 import org.xssfinder.reflection.Instantiator;
-import org.xssfinder.remote.ExecutorHandler;
-import org.xssfinder.remote.ExecutorServer;
 import org.xssfinder.runner.*;
+import org.xssfinder.scanner.PageDefinitionFactoryFactory;
+import org.xssfinder.scanner.PageFinder;
+import org.xssfinder.scanner.ThriftToReflectionLookupFactory;
 import org.xssfinder.xss.XssAttackFactory;
 import org.xssfinder.xss.XssGenerator;
 
