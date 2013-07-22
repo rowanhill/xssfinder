@@ -74,7 +74,13 @@ public class PageTraverser {
             }
             return new TraversalResult(newPage, inputIdsToAttackIds);
         } catch (Exception e) {
-            throw new TWebInteractionException("Error when traversing: " + e.getMessage());
+            String message;
+            if (e.getMessage() == null && e.getCause() != null) {
+                message = e.getCause().getMessage();
+            } else {
+                message = e.getMessage();
+            }
+            throw new TWebInteractionException("Error when traversing: " + message);
         }
     }
 

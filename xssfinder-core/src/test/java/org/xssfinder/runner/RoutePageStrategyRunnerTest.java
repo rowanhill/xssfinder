@@ -278,6 +278,24 @@ public class RoutePageStrategyRunnerTest {
     }
 
     @Test
+    public void exceptionThrownByAfterRouteIsLoggedInXssJournal() throws Exception {
+        // given
+        PageStrategy mockStrategy = mock(PageStrategy.class);
+        pageStrategies.add(mockStrategy);
+        TWebInteractionException webInteractionException = new TWebInteractionException("Error!");
+        doThrow(webInteractionException).when(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
+        RouteRunErrorContext mockErrorContext =  mock(RouteRunErrorContext.class);
+        when(mockErrorContextFactory.createErrorContext(webInteractionException, mockPageContext))
+                .thenReturn(mockErrorContext);
+
+        // when
+        runner.run(routes, pageStrategies, mockXssJournal);
+
+        // then
+        verify(mockXssJournal).addErrorContext(mockErrorContext);
+    }
+
+    @Test
     public void afterRouteNotCalledIfExceptionThrownBeforePageContextCanBeCreated() throws Exception {
         // given
         when(mockPageContextFactory.createContext(mockRoute))

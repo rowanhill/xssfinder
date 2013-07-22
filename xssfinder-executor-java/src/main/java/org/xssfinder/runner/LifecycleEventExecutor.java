@@ -22,11 +22,14 @@ public class LifecycleEventExecutor {
         try {
             afterRouteMethod.invoke(lifecycleHandler, page);
         } catch (InvocationTargetException e) {
-            throw new TWebInteractionException("Invoking afterRoute method threw exception: " + e.getMessage());
+            String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+            throw new TWebInteractionException("Invoking afterRoute method threw exception: " + message);
         } catch (IllegalArgumentException e) {
-            throw new TLifecycleEventHandlerException("Could not invoke afterRoute method: " + e.getMessage());
+            String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+            throw new TLifecycleEventHandlerException("Could not invoke afterRoute method: " + message);
         } catch (IllegalAccessException e) {
-            throw new TLifecycleEventHandlerException("Could not invoke afterRoute method: " + e.getMessage());
+            String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+            throw new TLifecycleEventHandlerException("Could not invoke afterRoute method: " + message);
         }
     }
 

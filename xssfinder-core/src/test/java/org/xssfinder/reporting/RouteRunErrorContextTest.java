@@ -31,6 +31,7 @@ public class RouteRunErrorContextTest {
     private PageTraversal mockTraversal;
     @Mock
     private MethodDefinition mockMethodDefinition;
+    private PageContext mockContext;
 
     private RouteRunErrorContext errorContext;
 
@@ -38,7 +39,7 @@ public class RouteRunErrorContextTest {
     public void setUp() {
         when(mockException.getMessage()).thenReturn(EXCEPTION_MESSAGE);
 
-        PageContext mockContext = mock(PageContext.class);
+        mockContext = mock(PageContext.class);
         PageDescriptor mockDescriptor = mock(PageDescriptor.class);
         when(mockContext.getPageDescriptor()).thenReturn(mockDescriptor);
         //noinspection unchecked
@@ -135,6 +136,30 @@ public class RouteRunErrorContextTest {
     public void traversalModeNameIsNullIfPageContextIsNull() {
         // given
         errorContext = new RouteRunErrorContext(mockException, null);
+
+        // when
+        String traversalModeName = errorContext.getTraversalModeName();
+
+        // then
+        assertThat(traversalModeName, is(nullValue()));
+    }
+
+    @Test
+    public void pageTraversalMethodStringIsNullIfPageTraversalIsNull() {
+        // given
+        when(mockContext.getPageTraversal()).thenReturn(null);
+
+        // when
+        String traversalMethodString = errorContext.getPageTraversalMethodString();
+
+        // then
+        assertThat(traversalMethodString, is(nullValue()));
+    }
+
+    @Test
+    public void traversalModeNameIsNullIfPageTraversalIsNull() {
+        // given
+        when(mockContext.getPageTraversal()).thenReturn(null);
 
         // when
         String traversalModeName = errorContext.getTraversalModeName();

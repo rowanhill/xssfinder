@@ -65,7 +65,11 @@ public class XssFinderIT {
         // then
         assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
         assertThat(journal.getXssSightings().size(), is(1));
-        assertThat(journal.getErrorContexts().size(), is(2)); // throwException is called on both runs (attack / observe)
+        // There are two errors recorded for each error (once in the attack phase, once in the detect phase). There
+        // are two errors each for:
+        //  - the page method throwException()
+        //  - the afterRoute handler trying to log out when login failed
+        assertThat(journal.getErrorContexts().size(), is(4));
         XssSighting sighting = journal.getXssSightings().iterator().next();
         assertThat(sighting.getSubmitMethodName(), is("unsafeSubmit"));
         assertThat(sighting.getInputIdentifier(), is("//form[@id=\"unsafeForm\"]/input[1]"));

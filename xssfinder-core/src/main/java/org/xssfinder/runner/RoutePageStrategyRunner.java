@@ -2,6 +2,7 @@ package org.xssfinder.runner;
 
 import org.xssfinder.remote.ExecutorWrapper;
 import org.xssfinder.remote.PageDefinition;
+import org.xssfinder.remote.TLifecycleEventHandlerException;
 import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.reporting.RouteRunErrorContext;
 import org.xssfinder.reporting.RouteRunErrorContextFactory;
@@ -41,19 +42,21 @@ class RoutePageStrategyRunner {
     private void runRoute(Route route, XssJournal xssJournal, List<PageStrategy> pageStrategies) {
         PageContext pageContext = null;
         try {
-            executor.startRoute(route.getRootPageDefinition().getIdentifier());
+            try {
+                executor.startRoute(route.getRootPageDefinition().getIdentifier());
 
-            pageContext = contextFactory.createContext(route);
-            while (pageContext.hasNextContext()) {
+                pageContext = contextFactory.createContext(route);
+                while (pageContext.hasNextContext()) {
+                    executePageStrategies(pageStrategies, pageContext, xssJournal);
+                    pageContext = pageContext.getNextContext();
+                }
                 executePageStrategies(pageStrategies, pageContext, xssJournal);
-                pageContext = pageContext.getNextContext();
+            } finally {
+                invokeAfterRouteIfNeeded(pageContext, route.getRootPageDefinition());
             }
-            executePageStrategies(pageStrategies, pageContext, xssJournal);
         } catch (Exception e) {
             RouteRunErrorContext errorContext = errorContextFactory.createErrorContext(e, pageContext);
             xssJournal.addErrorContext(errorContext);
-        } finally {
-            invokeAfterRouteIfNeeded(pageContext, route.getRootPageDefinition());
         }
     }
 
@@ -65,14 +68,11 @@ class RoutePageStrategyRunner {
         }
     }
 
-    private void invokeAfterRouteIfNeeded(PageContext pageContext, PageDefinition rootPageDefinition) {
+    private void invokeAfterRouteIfNeeded(PageContext pageContext, PageDefinition rootPageDefinition)
+            throws TWebInteractionException, TLifecycleEventHandlerException {
         if (pageContext == null) {
             return;
         }
-        try {
-            executor.invokeAfterRouteHandler(rootPageDefinition.getIdentifier());
-        } catch (Exception e) {
-            //TODO Log exception in XSS Journal
-        }
+        executor.invokeAfterRouteHandler(rootPageDefinition.getIdentifier());
     }
 }

@@ -1,5 +1,6 @@
 package org.xssfinder.reporting;
 
+import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.runner.PageContext;
 
 import java.io.PrintWriter;
@@ -27,10 +28,12 @@ public class RouteRunErrorContext {
     }
 
     public String getPageTraversalMethodString() {
-        return pageContext == null ? null : pageContext.getPageTraversal().getMethod().toString();
+        PageTraversal traversal = pageContext == null ? null : pageContext.getPageTraversal();
+        return traversal == null ? null : traversal.getMethod().toString();
     }
 
     public String getTraversalModeName() {
-        return pageContext == null ? null : pageContext.getPageTraversal().getTraversalMode().getDescription();
+        PageTraversal traversal = pageContext == null ? null : pageContext.getPageTraversal();
+        return traversal == null ? null : traversal.getTraversalMode().getDescription();
     }
 }
