@@ -1,6 +1,6 @@
 XSS Finder [![Build Status](https://travis-ci.org/rowanhill/xssfinder.png)](https://travis-ci.org/rowanhill/xssfinder)
 ==========
-XSS Finder builds on your existing Java web test [page objects](https://code.google.com/p/selenium/wiki/PageObjects)
+XSS Finder builds on your existing web test [page objects](https://code.google.com/p/selenium/wiki/PageObjects)
 to automatically traverse your web application searching for XSS vulnerabilities.
 
 According to [OWASP](https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project),
@@ -20,7 +20,7 @@ if the attack is ever executed.
 
 The difficulty in automating this is knowing how to effectively
 navigate around the web site under test. Fortunately, if you've
-written you web tests using the page object pattern (which is
+written your web tests using the page object pattern (which is
 good practice, regardless of whether or not you want to use XSS
 Finder), you've already encoded a wealth of information about
 how to get around the site.
@@ -30,7 +30,7 @@ the form of annotations) to automate basic XSS detection. In a
 nutshell, it does the following:
 
 1. Find all pages, and how they fit together, then pick a few
-routes that visit all pages at least once.
+routes that visit all pages and submit all forms at least once.
 1. Run through all the routes, submitting all forms with uniquely
 identifiable attacks as it goes.
 1. Look for evidence of these attacks being executed as it goes.
@@ -39,8 +39,25 @@ show up on earlier pages).
 1. Write a report on all successful attacks, details where they
 originated and where they were executed.
 
-Usage
------
+### Language Support ###
+TL;DR: Only Java is supported, but wider support is possible.
+
+XSS Finder is split in two: a coordinator (responsible for designing
+routes, deciding which page to go to next, recording & reporting on XSS
+vulnerabilities) and an executor (responsible for identifying page objects,
+executing methods on the page objects, submitting & detecting XSS attacks).
+The aim is to keep all the complex logic in the coordinator, and have a
+dumb executor doing what it's told.
+
+As the executor has to integrate with your page objects, it needs to be in
+the same language. Fortunately, even though the coordinator is written in Java,
+the executor doesn't have to be, as the two communicate via Thrift. If a language
+has Thrift support, an executor can be written for that language.
+
+Currently, however, there is only a Java implementation of the executor.
+
+Usage (Java)
+------------
 ### Summary ###
 1. Annotate page objects with `@Page`.
 1. Annotate the entry point page objects with `@CrawlStartPoint`.
@@ -57,7 +74,6 @@ Usage
 1. Run XSS Finder - currently easiest from a unit test
 
 See the xssfinder-test module for an example.
-
 
 ### Basic Annotations ###
 XSS Finder tries to keep things as simple and unobtrusive as
@@ -197,23 +213,14 @@ once the route has finished with `@AfterRoute`.
 
 TODOs
 -----
-1. Investigate splitting control & coordination (generating & running routes, creating XSS attacks, logging results &
-   making reports, etc) from execution (finding pages, invoking traversals) and connecting via Thrift, to allow multiple
-   language implementations of the execution section. See thrift branch.
 1. Record entirety of route that had error
-1. Record errors executing lifecycle event handlers
 1. Pass DriverWrapper to @AfterRoute method
 1. Somehow group / de-duplicate errors that happen on both runs (attack / observe)
 1. Allow no-args, no-@TraverseWith submit methods to be non-terminal (to reduce total # routes)
-1. Handle submit actions that return void (e.g. for client-side
-only submissions that don't change page).
+1. Handle submit actions that return void (e.g. for client-side only submissions that don't change page).
 1. Implement as a Maven plugin.
-1. Write a Builder interface for setting up & running XSS Finder (e.g. from JUnit)
 1. Make the reports (lots) prettier.
 1. Add DriverWrappers beyond just HtmlUnitDriver.
 1. Add more lifecycle events (before route, before/after traversal).
-1. Consider annotation inheritance - at a minimum, `@Page` probably
-wants to be marked as 
+1. Consider annotation inheritance - at a minimum, `@Page` probably wants to be marked as
 [`@Inherited`](http://docs.oracle.com/javase/6/docs/api/java/lang/annotation/Inherited.html)
-1. Have RouteRunner#run create (from a factory) and return an XssJournal,
-rather than take one as a param
