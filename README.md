@@ -1,4 +1,4 @@
-XSS Finder [![Build Status](https://travis-ci.org/rowanhill/xssfinder.png)](https://travis-ci.org/rowanhill/xssfinder)
+XSS Finder [![Build Status](https://travis-ci.org/rowanhill/xssfinder.png?branch=master)](https://travis-ci.org/rowanhill/xssfinder)
 ==========
 XSS Finder builds on your existing Java web test [page objects](https://code.google.com/p/selenium/wiki/PageObjects)
 to automatically traverse your web application searching for XSS vulnerabilities.
