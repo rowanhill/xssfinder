@@ -33,6 +33,7 @@ public class HtmlReportWriter {
             output.write("<script src=\"http://code.jquery.com/jquery-1.10.2.min.js\"></script>");
             output.write("</head>");
             output.write("<body>");
+            output.write("<h2>Vulnerabilities</h2>");
             output.write("<p>The following vulnerabilities were detected:</p>");
             output.write("<table id='vulnerabilities'>");
             output.write("<tr>");
@@ -58,6 +59,7 @@ public class HtmlReportWriter {
             }
             output.write("</table>");
 
+            output.write("<h2>Untested inputs</h2>");
             output.write("<p>Potentially untested inputs were found on the following pages:</p>");
             output.write("<table id='warnings'>");
             output.write("<tr>");
@@ -74,6 +76,7 @@ public class HtmlReportWriter {
             }
             output.write("</table>");
 
+            output.write("<h2>Exceptions</h2>");
             output.write("<p>The following exceptions occurred:</p>");
             output.write("<table id='errors'>");
             output.write("<tr>");
