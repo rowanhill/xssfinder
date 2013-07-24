@@ -1,5 +1,7 @@
 package org.xssfinder.routing;
 
+import org.xssfinder.remote.PageDefinition;
+
 import java.util.*;
 
 /**
@@ -7,7 +9,7 @@ import java.util.*;
  */
 class Graph {
     private final Set<PageDescriptor> pageDescriptors;
-    private final Class<?> rootPageClass;
+    private final PageDefinition rootPageDefinition;
     private final DjikstraRunner djikstraRunner;
     private final RequiredTraversalAppender requiredTraversalAppender;
 
@@ -17,7 +19,7 @@ class Graph {
             RequiredTraversalAppender requiredTraversalAppender
     ) {
         this.pageDescriptors = pageDescriptors;
-        this.rootPageClass = findRootNode(pageDescriptors);
+        this.rootPageDefinition = findRootNode(pageDescriptors);
         this.djikstraRunner = djikstraRunner;
         this.requiredTraversalAppender = requiredTraversalAppender;
     }
@@ -26,19 +28,19 @@ class Graph {
      * @return A list of routes which visit all pages of the graph at least once
      */
     public List<Route> getRoutes() {
-        DjikstraResult djikstraResult = djikstraRunner.computeShortestPaths(rootPageClass, pageDescriptors);
+        DjikstraResult djikstraResult = djikstraRunner.computeShortestPaths(rootPageDefinition, pageDescriptors);
         List<Route> routes = djikstraResult.getRoutesToLeafNodes();
         return requiredTraversalAppender.appendTraversalsToRoutes(routes, pageDescriptors, djikstraResult);
     }
 
-    private Class<?> findRootNode(Set<PageDescriptor> pageDescriptors) {
-        Class<?> root = null;
+    private PageDefinition findRootNode(Set<PageDescriptor> pageDescriptors) {
+        PageDefinition root = null;
         for (PageDescriptor pageDescriptor : pageDescriptors) {
             if (pageDescriptor.isRoot()) {
                 if (root != null) {
                     throw new MultipleRootPagesFoundException();
                 }
-                root = pageDescriptor.getPageClass();
+                root = pageDescriptor.getPageDefinition();
             }
         }
         if (root == null) {

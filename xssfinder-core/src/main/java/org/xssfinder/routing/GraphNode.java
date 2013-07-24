@@ -1,5 +1,8 @@
 package org.xssfinder.routing;
 
+import org.xssfinder.remote.MethodDefinition;
+import org.xssfinder.remote.PageDefinition;
+
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -7,7 +10,7 @@ public class GraphNode {
     private final PageDescriptor pageDescriptor;
     private int distance;
     private GraphNode predecessor;
-    private Method predecessorTraversalMethod;
+    private MethodDefinition predecessorTraversalMethod;
 
     public GraphNode(PageDescriptor pageDescriptor) {
         this.pageDescriptor = pageDescriptor;
@@ -26,7 +29,7 @@ public class GraphNode {
         return pageDescriptor.isRoot();
     }
 
-    public Set<Method> getTraversalMethods() {
+    public Set<MethodDefinition> getTraversalMethods() {
         return pageDescriptor.getTraversalMethods();
     }
 
@@ -34,17 +37,17 @@ public class GraphNode {
         return predecessor;
     }
 
-    public Method getPredecessorTraversalMethod() {
+    public MethodDefinition getPredecessorTraversalMethod() {
         return predecessorTraversalMethod;
     }
 
-    public void setPredecessor(GraphNode predecessor, Method predecessorTraversalMethod) {
+    public void setPredecessor(GraphNode predecessor, MethodDefinition predecessorTraversalMethod) {
         this.predecessor = predecessor;
         this.predecessorTraversalMethod = predecessorTraversalMethod;
     }
 
-    public Class<?> getPageClass() {
-        return pageDescriptor.getPageClass();
+    public PageDefinition getPageDefinition() {
+        return pageDescriptor.getPageDefinition();
     }
 
     public PageDescriptor getPageDescriptor() {

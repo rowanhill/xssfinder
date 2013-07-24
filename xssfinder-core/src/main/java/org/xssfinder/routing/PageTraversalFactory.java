@@ -1,7 +1,6 @@
 package org.xssfinder.routing;
 
-
-import java.lang.reflect.Method;
+import org.xssfinder.remote.MethodDefinition;
 
 public class PageTraversalFactory {
     public PageTraversal createTraversalToNode(GraphNode graphNode, PageTraversal.TraversalMode traversalMode) {
@@ -13,7 +12,7 @@ public class PageTraversalFactory {
     }
 
     public PageTraversal createTraversal(
-            Method method,
+            MethodDefinition method,
             PageDescriptor pageDescriptor,
             PageTraversal.TraversalMode traversalMode
     ) {

@@ -1,53 +1,45 @@
 package org.xssfinder.runner;
 
-import org.xssfinder.reflection.Instantiator;
+import org.xssfinder.remote.ExecutorWrapper;
 import org.xssfinder.reporting.HtmlReportWriter;
 import org.xssfinder.reporting.RouteRunErrorContextFactory;
+import org.xssfinder.reporting.XssJournal;
+import org.xssfinder.reporting.XssSightingFactory;
 import org.xssfinder.xss.*;
 
 public class RouteRunnerFactory {
-    private final PageTraverser pageTraverser;
     private final XssDetector xssDetector;
-    private final PageAttacker pageAttacker;
 
     public RouteRunnerFactory() {
-        Instantiator instantiator = new Instantiator();
-        pageTraverser = new PageTraverser(
-                new CustomTraverserInstantiator(instantiator),
-                new CustomSubmitterInstantiator(instantiator),
-                new LabelledXssGeneratorFactory());
-        pageAttacker = new PageAttacker(new XssGenerator(new XssAttackFactory()), new XssDescriptorFactory());
         xssDetector = new XssDetector();
     }
 
-    public RouteRunner createRouteRunner(DriverWrapper driverWrapper, String outputFile) {
+    public RouteRunner createRouteRunner(ExecutorWrapper executor, String outputFile) {
+        XssJournal xssJournal = new XssJournal(new XssSightingFactory());
         return new RouteRunner(
-                createRouteStrategyRunner(driverWrapper),
-                createAttackPageStrategy(),
+                createRouteStrategyRunner(executor, xssJournal),
+                createAttackPageStrategy(executor),
                 createDetectSuccessfulXssPageStrategy(),
                 new DetectUntestedInputsPageStrategy(),
-                new HtmlReportWriter(outputFile)
+                new HtmlReportWriter(outputFile),
+                xssJournal
         );
     }
 
-    private RoutePageStrategyRunner createRouteStrategyRunner(DriverWrapper driverWrapper) {
+    private RoutePageStrategyRunner createRouteStrategyRunner(ExecutorWrapper executor, XssJournal xssJournal) {
         return new RoutePageStrategyRunner(
-                driverWrapper,
-                createPageContextFactory(driverWrapper),
-                new LifecycleEventExecutor(),
+                executor,
+                createPageContextFactory(executor, xssJournal),
                 new RouteRunErrorContextFactory()
         );
     }
 
-    private PageContextFactory createPageContextFactory(DriverWrapper driverWrapper) {
-        return new PageContextFactory(
-                    pageTraverser,
-                    driverWrapper.getPageInstantiator()
-            );
+    private PageContextFactory createPageContextFactory(ExecutorWrapper executor, XssJournal xssJournal) {
+        return new PageContextFactory(executor, xssJournal, new XssDescriptorFactory());
     }
 
-    private AttackPageStrategy createAttackPageStrategy() {
-        return new AttackPageStrategy(pageAttacker);
+    private AttackPageStrategy createAttackPageStrategy(ExecutorWrapper executor) {
+        return new AttackPageStrategy(new PageAttacker(executor, new XssDescriptorFactory()));
     }
 
     private DetectSuccessfulXssPageStrategy createDetectSuccessfulXssPageStrategy() {

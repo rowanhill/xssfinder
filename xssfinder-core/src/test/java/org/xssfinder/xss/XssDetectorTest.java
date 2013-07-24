@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.xssfinder.runner.DriverWrapper;
+import org.xssfinder.remote.ExecutorWrapper;
 
 import java.util.Set;
 
@@ -16,30 +16,30 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class XssDetectorTest {
     @Mock
-    private DriverWrapper mockDriverWrapper;
+    private ExecutorWrapper mockExecutor;
 
     @Test
-    public void xssDetectorInterrogatesDriverWrapperForCurrentXssIds() {
+    public void xssDetectorInterrogatesDriverWrapperForCurrentXssIds() throws Exception {
         // given
         Set<String> expectedXssIds = ImmutableSet.of("1", "2");
-        when(mockDriverWrapper.getCurrentXssIds()).thenReturn(expectedXssIds);
+        when(mockExecutor.getCurrentXssIds()).thenReturn(expectedXssIds);
         XssDetector xssDetector = new XssDetector();
 
         // when
-        Set<String> xssIds = xssDetector.getCurrentXssIds(mockDriverWrapper);
+        Set<String> xssIds = xssDetector.getCurrentXssIds(mockExecutor);
 
         // then
         assertThat(xssIds, is(expectedXssIds));
     }
 
     @Test
-    public void currentXssIdsIsEmptySetIfNullIsReturnedFromDriverWrapper() {
+    public void currentXssIdsIsEmptySetIfNullIsReturnedFromDriverWrapper() throws Exception {
         // given
-        when(mockDriverWrapper.getCurrentXssIds()).thenReturn(null);
+        when(mockExecutor.getCurrentXssIds()).thenReturn(null);
         XssDetector xssDetector = new XssDetector();
 
         // when
-        Set<String> xssIds = xssDetector.getCurrentXssIds(mockDriverWrapper);
+        Set<String> xssIds = xssDetector.getCurrentXssIds(mockExecutor);
 
         // then
         Set<String> expectedXssIds = ImmutableSet.of();

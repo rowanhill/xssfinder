@@ -13,6 +13,8 @@
         <module>xssfinder-core</module>
         <module>xssfinder-annotations</module>
         <module>xssfinder-test</module>
+        <module>xssfinder-executor</module>
+        <module>xssfinder-executor-java</module>
     </modules>
 
     <dependencyManagement>
@@ -27,6 +29,33 @@
                 <artifactId>reflections-maven</artifactId>
                 <version>0.9.8</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.thrift</groupId>
+                <artifactId>libthrift</artifactId>
+                <version>0.8.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.5</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.0.13</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>14.0</version>
+            </dependency>
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -60,6 +89,15 @@
                 <groupId>xml-apis</groupId>
                 <artifactId>xml-apis</artifactId>
                 <version>1.4.01</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <!-- The following dependency is set just to ensure all the transitive dependencies use this version, to
+                 avoid no class def issues -->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>4.2.2</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

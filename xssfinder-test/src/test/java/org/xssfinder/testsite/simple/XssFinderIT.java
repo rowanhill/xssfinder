@@ -5,18 +5,13 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.xssfinder.XssFinder;
+import org.xssfinder.remote.ExecutorServer;
+import org.xssfinder.remote.ExecutorServerFactory;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.reporting.XssSighting;
-import org.xssfinder.reporting.XssSightingFactory;
-import org.xssfinder.routing.Route;
-import org.xssfinder.routing.RouteGenerator;
-import org.xssfinder.routing.RouteGeneratorFactory;
-import org.xssfinder.runner.*;
-import org.xssfinder.scanner.PageFinder;
 
 import java.io.File;
-import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -51,27 +46,30 @@ public class XssFinderIT {
 
     @Test
     public void runXssFinder() throws Exception {
-        // Find all the page classes
-        Set<Class<?>> pageClasses = new PageFinder("org.xssfinder.testsite.simple").findAllPages();
+        // given
+        ExecutorServerFactory executorServerFactory = new ExecutorServerFactory();
+        final ExecutorServer executorServer = executorServerFactory.createExecutorServer(9091);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                executorServer.serve();
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
 
-        // Generate routes from the page object network
-        RouteGeneratorFactory routeGeneratorFactory = new RouteGeneratorFactory();
-        RouteGenerator routeGenerator = routeGeneratorFactory.createRouteGenerator();
-        List<Route> routes = routeGenerator.generateRoutes(pageClasses);
+        // when
+        XssFinder xssFinder = new XssFinder("localhost", 9091, 5000);
+        XssJournal journal = xssFinder.findXssVulnerabilities("org.xssfinder.testsite.simple", OUTPUT_FILE);
 
-        // Create a runner using HtmlUnitDriver
-        RouteRunnerFactory runnerFactory = new RouteRunnerFactory();
-        DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
-        XssJournal journal = new XssJournal(new XssSightingFactory());
-        RouteRunner runner = runnerFactory.createRouteRunner(driverWrapper, OUTPUT_FILE);
-
-        // Run!
-        runner.run(routes, journal);
-
-        assertThat(routes.size(), is(4));
+        // then
         assertThat(journal.getDescriptorById("1"), is(not(nullValue())));
         assertThat(journal.getXssSightings().size(), is(1));
-        assertThat(journal.getErrorContexts().size(), is(2)); // throwException is called on both runs (attack / observe)
+        // There are two errors recorded for each error (once in the attack phase, once in the detect phase). There
+        // are two errors each for:
+        //  - the page method throwException()
+        //  - the afterRoute handler trying to log out when login failed
+        assertThat(journal.getErrorContexts().size(), is(4));
         XssSighting sighting = journal.getXssSightings().iterator().next();
         assertThat(sighting.getSubmitMethodName(), is("unsafeSubmit"));
         assertThat(sighting.getInputIdentifier(), is("//form[@id=\"unsafeForm\"]/input[1]"));

@@ -1,61 +1,73 @@
 package org.xssfinder.runner;
 
+import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.remote.ExecutorWrapper;
+import org.xssfinder.remote.MethodDefinition;
+import org.xssfinder.remote.PageDefinition;
+import org.xssfinder.remote.TraversalMode;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.routing.PageTraversal;
+import org.xssfinder.xss.XssDescriptor;
+import org.xssfinder.xss.XssDescriptorFactory;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PageContextTest {
     @Mock
-    private PageTraverser mockPageTraverser;
-    @Mock
-    private Object mockPage;
-    @Mock
-    private DriverWrapper mockDriverWrapper;
+    private ExecutorWrapper mockExecutor;
     @Mock
     private XssJournal mockXssJournal;
+    @Mock
+    private XssDescriptorFactory mockXssDescriptorFactory;
     @Mock
     private PageTraversal mockPageTraversal;
     @Mock
     private PageDescriptor mockPageDescriptor;
 
+    @Before
+    public void setUp() {
+        when(mockPageTraversal.getTraversalMode()).thenReturn(PageTraversal.TraversalMode.NORMAL);
+    }
+
     @Test
     public void pageIsAvailable() {
         // given
-        PageContext context = new PageContext(mockPageTraverser, mockPage, mockDriverWrapper, mockXssJournal, mockPageTraversal, mockPageDescriptor);
+        PageDefinition mockPageDefinition = mock(PageDefinition.class);
+        when(mockPageDescriptor.getPageDefinition()).thenReturn(mockPageDefinition);
+        PageContext context = new PageContext(mockExecutor, mockXssJournal, mockXssDescriptorFactory, mockPageTraversal, mockPageDescriptor);
 
         // when
-        Object page = context.getPage();
+        PageDefinition pageDefinition = context.getPageDefinition();
 
         // then
-        assertThat(page, is(mockPage));
+        assertThat(pageDefinition, is(mockPageDefinition));
     }
 
     @Test
     public void driverWrapperIsAvailable() {
         // given
-        PageContext context = new PageContext(mockPageTraverser, mockPage, mockDriverWrapper, mockXssJournal, mockPageTraversal, mockPageDescriptor);
+        PageContext context = new PageContext(mockExecutor, mockXssJournal, mockXssDescriptorFactory, mockPageTraversal, mockPageDescriptor);
 
         // when
-        DriverWrapper driverWrapper = context.getDriverWrapper();
+        ExecutorWrapper executor = context.getExecutor();
 
         // then
-        assertThat(driverWrapper, is(mockDriverWrapper));
+        assertThat(executor, is(mockExecutor));
     }
 
     @Test
     public void traversalIsAvailable() {
         // given
-        PageContext context = new PageContext(mockPageTraverser, mockPage, mockDriverWrapper, mockXssJournal, mockPageTraversal, mockPageDescriptor);
+        PageContext context = new PageContext(mockExecutor, mockXssJournal, mockXssDescriptorFactory, mockPageTraversal, mockPageDescriptor);
 
         // when
         PageTraversal traversal = context.getPageTraversal();
@@ -67,7 +79,7 @@ public class PageContextTest {
     @Test
     public void pageDescriptorIsAvailable() {
         // given
-        PageContext context = new PageContext(mockPageTraverser, mockPage, mockDriverWrapper, mockXssJournal, mockPageTraversal, mockPageDescriptor);
+        PageContext context = new PageContext(mockExecutor, mockXssJournal, mockXssDescriptorFactory, mockPageTraversal, mockPageDescriptor);
 
         // when
         PageDescriptor descriptor = context.getPageDescriptor();
@@ -79,7 +91,7 @@ public class PageContextTest {
     @Test
     public void hasNextContextIsTrueIfPageTraversalIsNotNull() {
         // given
-        PageContext context = new PageContext(mockPageTraverser, mockPage, mockDriverWrapper, mockXssJournal, mockPageTraversal, mockPageDescriptor);
+        PageContext context = new PageContext(mockExecutor, mockXssJournal, mockXssDescriptorFactory, mockPageTraversal, mockPageDescriptor);
 
         // when
         boolean hasNextContext = context.hasNextContext();
@@ -91,7 +103,7 @@ public class PageContextTest {
     @Test
     public void hasNextContextIsFalseIfPageTraversalIsNull() {
         // given
-        PageContext context = new PageContext(mockPageTraverser, mockPage, mockDriverWrapper, mockXssJournal, null, mockPageDescriptor);
+        PageContext context = new PageContext(mockExecutor, mockXssJournal, mockXssDescriptorFactory, null, mockPageDescriptor);
 
         // when
         boolean hasNextContext = context.hasNextContext();
@@ -101,46 +113,70 @@ public class PageContextTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void getNextContextThrowsExceptionIfPageTraversalIsNull() {
+    public void getNextContextThrowsExceptionIfPageTraversalIsNull() throws Exception {
         // given
-        PageContext context = new PageContext(mockPageTraverser, mockPage, mockDriverWrapper, mockXssJournal, null, mockPageDescriptor);
+        PageContext context = new PageContext(mockExecutor, mockXssJournal, mockXssDescriptorFactory, null, mockPageDescriptor);
 
         // when
         context.getNextContext();
     }
 
     @Test
-    public void nextContextPageIsGeneratedByPageTraverser() {
+    public void nextContextPageIsGeneratedByPageTraverser() throws Exception {
         // given
-        Object mockNextPage = mock(Object.class);
-        when(mockPageTraverser.traverse(mockPage, mockPageTraversal, mockXssJournal)).thenReturn(mockNextPage);
-        PageContext context = new PageContext(mockPageTraverser, mockPage, mockDriverWrapper, mockXssJournal, mockPageTraversal, mockPageDescriptor);
+        PageDefinition mockNextPageDefinition = mockResultingPageDefinition(mockPageTraversal);
+        PageContext context = new PageContext(mockExecutor, mockXssJournal, mockXssDescriptorFactory, mockPageTraversal, mockPageDescriptor);
 
         // when
         PageContext nextContext = context.getNextContext();
-        Object nextPage = nextContext.getPage();
+        PageDefinition nextPage = nextContext.getPageDefinition();
 
         // then
-        assertThat(nextPage, is(mockNextPage));
+        assertThat(nextPage, is(mockNextPageDefinition));
     }
 
     @Test
-    public void nextButOnePageIsGeneratedFromSecondTraversal() {
+    public void nextButOnePageIsGeneratedFromSecondTraversal() throws Exception {
         // given
-        Object mockNextPage = mock(Object.class);
-        Object mockNextButOnePage = mock(Object.class);
         PageTraversal mockNextTraversal = mock(PageTraversal.class);
-        when(mockPageTraverser.traverse(mockPage, mockPageTraversal, mockXssJournal)).thenReturn(mockNextPage);
+        PageDefinition mockNextButOnePageDefinition = mockResultingPageDefinition(mockNextTraversal);
         when(mockPageTraversal.getNextTraversal()).thenReturn(mockNextTraversal);
-        when(mockPageTraverser.traverse(mockNextPage, mockNextTraversal, mockXssJournal)).thenReturn(mockNextButOnePage);
-        PageContext context = new PageContext(mockPageTraverser, mockPage, mockDriverWrapper, mockXssJournal, mockPageTraversal, mockPageDescriptor);
+        when(mockNextTraversal.getTraversalMode()).thenReturn(PageTraversal.TraversalMode.NORMAL);
+        PageContext context = new PageContext(mockExecutor, mockXssJournal, mockXssDescriptorFactory, mockPageTraversal, mockPageDescriptor);
 
         // when
         PageContext nextContext = context.getNextContext();
         PageContext nextButOneContext = nextContext.getNextContext();
-        Object nextButOnePage = nextButOneContext.getPage();
+        PageDefinition nextButOnePageDefinition = nextButOneContext.getPageDefinition();
 
         // then
-        assertThat(nextButOnePage, is(mockNextButOnePage));
+        assertThat(nextButOnePageDefinition, is(mockNextButOnePageDefinition));
+    }
+
+    @Test
+    public void xssAttacksCreatedByTraversingAreAddedToXssJournal() throws Exception {
+        // given
+        PageContext context = new PageContext(mockExecutor, mockXssJournal, mockXssDescriptorFactory, mockPageTraversal, mockPageDescriptor);
+        MethodDefinition mockMethodDefinition = mock(MethodDefinition.class);
+        when(mockPageTraversal.getMethod()).thenReturn(mockMethodDefinition);
+        when(mockExecutor.traverseMethod(mockMethodDefinition, TraversalMode.NORMAL)).thenReturn(ImmutableMap.of(
+                "inputId", "attackId"
+        ));
+        XssDescriptor mockXssDescriptor = mock(XssDescriptor.class);
+        when(mockXssDescriptorFactory.createXssDescriptor(mockPageTraversal, "inputId")).thenReturn(mockXssDescriptor);
+
+        // when
+        context.getNextContext();
+
+        // then
+        verify(mockXssJournal).addXssDescriptor("attackId", mockXssDescriptor);
+    }
+
+    private PageDefinition mockResultingPageDefinition(PageTraversal mockPageTraversal) {
+        PageDefinition mockNextPageDefinition = mock(PageDefinition.class);
+        PageDescriptor mockNextPageDescriptor = mock(PageDescriptor.class);
+        when(mockNextPageDescriptor.getPageDefinition()).thenReturn(mockNextPageDefinition);
+        when(mockPageTraversal.getResultingPageDescriptor()).thenReturn(mockNextPageDescriptor);
+        return mockNextPageDefinition;
     }
 }

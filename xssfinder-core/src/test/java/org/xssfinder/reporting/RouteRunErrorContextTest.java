@@ -5,29 +5,33 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.remote.MethodDefinition;
+import org.xssfinder.remote.PageDefinition;
 import org.xssfinder.routing.PageDescriptor;
 import org.xssfinder.routing.PageTraversal;
 import org.xssfinder.runner.PageContext;
 
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.xssfinder.testhelper.MockPageDefinitionBuilder.mockPageDefinition;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RouteRunErrorContextTest {
     private static final String EXCEPTION_MESSAGE = "Here is a message";
-    private static final Class<?> PAGE_CLASS = SomePage.class;
+    private static final String PAGE_NAME = "SomePage";
 
     @Mock
     private Exception mockException;
     @Mock
     private PageTraversal mockTraversal;
+    @Mock
+    private MethodDefinition mockMethodDefinition;
+    private PageContext mockContext;
 
     private RouteRunErrorContext errorContext;
 
@@ -35,11 +39,14 @@ public class RouteRunErrorContextTest {
     public void setUp() {
         when(mockException.getMessage()).thenReturn(EXCEPTION_MESSAGE);
 
-        PageContext mockContext = mock(PageContext.class);
+        mockContext = mock(PageContext.class);
         PageDescriptor mockDescriptor = mock(PageDescriptor.class);
         when(mockContext.getPageDescriptor()).thenReturn(mockDescriptor);
         //noinspection unchecked
-        when(mockDescriptor.getPageClass()).thenReturn((Class)PAGE_CLASS);
+        PageDefinition mockPageDefinition = mockPageDefinition()
+                .withName(PAGE_NAME)
+                .build();
+        when(mockDescriptor.getPageDefinition()).thenReturn(mockPageDefinition);
         when(mockContext.getPageTraversal()).thenReturn(mockTraversal);
 
         errorContext = new RouteRunErrorContext(mockException, mockContext);
@@ -68,25 +75,25 @@ public class RouteRunErrorContextTest {
     }
 
     @Test
-    public void errorContextHasPageClassName() {
+    public void errorContextHasPageIdentifier() {
         // when
-        String pageClass = errorContext.getPageClassName();
+        String pageClass = errorContext.getPageIdentifier();
 
         // then
-        assertEquals(pageClass, PAGE_CLASS.getCanonicalName());
+        assertEquals(pageClass, PAGE_NAME);
     }
 
     @Test
     public void errorContextHasPageTraversalString() throws Exception {
         // given
-        Method method = SomePage.class.getMethod("goToSomePage");
-        when(mockTraversal.getMethod()).thenReturn(method);
+        when(mockMethodDefinition.toString()).thenReturn("Mock method");
+        when(mockTraversal.getMethod()).thenReturn(mockMethodDefinition);
 
         // when
         String traversalMethodString = errorContext.getPageTraversalMethodString();
 
         // then
-        assertThat(traversalMethodString, is(method.toString()));
+        assertThat(traversalMethodString, is("Mock method"));
     }
 
     @Test
@@ -101,7 +108,63 @@ public class RouteRunErrorContextTest {
         assertThat(modeName, is(PageTraversal.TraversalMode.SUBMIT.getDescription()));
     }
 
-    private static class SomePage {
-        public SomePage goToSomePage() { return null; }
+    @Test
+    public void pageIdentifierIsNullIfPageContextIsNull() {
+        // given
+        errorContext = new RouteRunErrorContext(mockException, null);
+
+        // when
+        String pageId = errorContext.getPageIdentifier();
+
+        // then
+        assertThat(pageId, is(nullValue()));
+    }
+
+    @Test
+    public void pageTraversalMethodStringIsNullIfPageContextIsNull() {
+        // given
+        errorContext = new RouteRunErrorContext(mockException, null);
+
+        // when
+        String traversalMethodString = errorContext.getPageTraversalMethodString();
+
+        // then
+        assertThat(traversalMethodString, is(nullValue()));
+    }
+
+    @Test
+    public void traversalModeNameIsNullIfPageContextIsNull() {
+        // given
+        errorContext = new RouteRunErrorContext(mockException, null);
+
+        // when
+        String traversalModeName = errorContext.getTraversalModeName();
+
+        // then
+        assertThat(traversalModeName, is(nullValue()));
+    }
+
+    @Test
+    public void pageTraversalMethodStringIsNullIfPageTraversalIsNull() {
+        // given
+        when(mockContext.getPageTraversal()).thenReturn(null);
+
+        // when
+        String traversalMethodString = errorContext.getPageTraversalMethodString();
+
+        // then
+        assertThat(traversalMethodString, is(nullValue()));
+    }
+
+    @Test
+    public void traversalModeNameIsNullIfPageTraversalIsNull() {
+        // given
+        when(mockContext.getPageTraversal()).thenReturn(null);
+
+        // when
+        String traversalModeName = errorContext.getTraversalModeName();
+
+        // then
+        assertThat(traversalModeName, is(nullValue()));
     }
 }

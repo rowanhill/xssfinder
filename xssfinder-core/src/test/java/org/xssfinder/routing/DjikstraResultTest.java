@@ -1,9 +1,11 @@
 package org.xssfinder.routing;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.remote.PageDefinition;
 
 import java.util.*;
 
@@ -15,11 +17,20 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DjikstraResultTest {
+    public static final String PAGE_DEF_ID = "A Page";
     @Mock
     private RouteFactory mockRouteFactory;
 
-    private Map<Class<?>, GraphNode> classesToNodes = new HashMap<Class<?>, GraphNode>();
+    @Mock
+    private PageDefinition mockPageDefinition;
+
+    private Map<String, GraphNode> classesToNodes = new HashMap<String, GraphNode>();
     private Set<GraphNode> leafNodes = new HashSet<GraphNode>();
+
+    @Before
+    public void setUp() {
+        when(mockPageDefinition.getIdentifier()).thenReturn(PAGE_DEF_ID);
+    }
 
     @Test
     public void routesAreCreatedFromLeafNodes() {
@@ -43,11 +54,11 @@ public class DjikstraResultTest {
         // given
         DjikstraResult djikstraResult = new DjikstraResult(mockRouteFactory, classesToNodes, leafNodes);
         GraphNode mockNode = mock(GraphNode.class);
-        classesToNodes.put(SomePage.class, mockNode);
+        classesToNodes.put(PAGE_DEF_ID, mockNode);
         Route mockRoute = mockRouteCreationForNode(mockNode);
 
         // when
-        Route route = djikstraResult.createRouteEndingAtClass(SomePage.class);
+        Route route = djikstraResult.createRouteEndingAtClass(mockPageDefinition);
 
         // then
         assertThat(route, is(mockRoute));
@@ -64,6 +75,4 @@ public class DjikstraResultTest {
         when(mockRouteFactory.createRouteEndingAtNode(mockNode)).thenReturn(mockRoute);
         return mockRoute;
     }
-
-    private static class SomePage {}
 }

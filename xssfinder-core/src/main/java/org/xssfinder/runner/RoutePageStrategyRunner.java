@@ -1,5 +1,9 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.remote.ExecutorWrapper;
+import org.xssfinder.remote.PageDefinition;
+import org.xssfinder.remote.TLifecycleEventHandlerException;
+import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.reporting.RouteRunErrorContext;
 import org.xssfinder.reporting.RouteRunErrorContextFactory;
 import org.xssfinder.routing.Route;
@@ -8,20 +12,17 @@ import org.xssfinder.reporting.XssJournal;
 import java.util.List;
 
 class RoutePageStrategyRunner {
-    private final DriverWrapper driverWrapper;
+    private final ExecutorWrapper executor;
     private final PageContextFactory contextFactory;
-    private final LifecycleEventExecutor lifecycleEventExecutor;
     private final RouteRunErrorContextFactory errorContextFactory;
 
     public RoutePageStrategyRunner(
-            DriverWrapper driverWrapper,
+            ExecutorWrapper executor,
             PageContextFactory contextFactory,
-            LifecycleEventExecutor lifecycleEventExecutor,
             RouteRunErrorContextFactory errorContextFactory
     ) {
-        this.driverWrapper = driverWrapper;
+        this.executor = executor;
         this.contextFactory = contextFactory;
-        this.lifecycleEventExecutor = lifecycleEventExecutor;
         this.errorContextFactory = errorContextFactory;
     }
 
@@ -39,41 +40,44 @@ class RoutePageStrategyRunner {
     }
 
     private void runRoute(Route route, XssJournal xssJournal, List<PageStrategy> pageStrategies) {
-        Object lifecycleHandler = null;
         PageContext pageContext = null;
         try {
-            driverWrapper.visit(route.getUrl());
+            try {
+                executor.startRoute(route.getRootPageDefinition().getIdentifier());
 
-            lifecycleHandler = route.createLifecycleHandler();
-
-            pageContext = contextFactory.createContext(driverWrapper, route, xssJournal);
-            while (pageContext.hasNextContext()) {
+                pageContext = contextFactory.createContext(route);
+                while (pageContext.hasNextContext()) {
+                    executePageStrategies(pageStrategies, pageContext, xssJournal);
+                    pageContext = pageContext.getNextContext();
+                }
                 executePageStrategies(pageStrategies, pageContext, xssJournal);
-                pageContext = pageContext.getNextContext();
+            } catch (Exception e) {
+                e.printStackTrace();
+                RouteRunErrorContext errorContext = errorContextFactory.createErrorContext(e, pageContext);
+                xssJournal.addErrorContext(errorContext);
+            } finally {
+                invokeAfterRouteIfNeeded(pageContext, route.getRootPageDefinition());
             }
-            executePageStrategies(pageStrategies, pageContext, xssJournal);
         } catch (Exception e) {
+            e.getStackTrace();
             RouteRunErrorContext errorContext = errorContextFactory.createErrorContext(e, pageContext);
             xssJournal.addErrorContext(errorContext);
-        } finally {
-            invokeAfterRouteIfNeeded(lifecycleHandler, pageContext);
         }
     }
 
-    private void executePageStrategies(List<PageStrategy> pageStrategies, PageContext context, XssJournal xssJournal) {
+    private void executePageStrategies(List<PageStrategy> pageStrategies, PageContext context, XssJournal xssJournal)
+            throws TWebInteractionException
+    {
         for (PageStrategy pageStrategy : pageStrategies) {
             pageStrategy.processPage(context, xssJournal);
         }
     }
 
-    private void invokeAfterRouteIfNeeded(Object lifecycleHandler, PageContext pageContext) {
+    private void invokeAfterRouteIfNeeded(PageContext pageContext, PageDefinition rootPageDefinition)
+            throws TWebInteractionException, TLifecycleEventHandlerException {
         if (pageContext == null) {
             return;
         }
-        try {
-            lifecycleEventExecutor.afterRoute(lifecycleHandler, pageContext.getPage());
-        } catch (Exception e) {
-            // Do nothing... for now
-        }
+        executor.invokeAfterRouteHandler(rootPageDefinition.getIdentifier());
     }
 }

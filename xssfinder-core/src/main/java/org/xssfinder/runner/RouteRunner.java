@@ -15,19 +15,22 @@ public class RouteRunner {
     private final DetectSuccessfulXssPageStrategy detectStrategy;
     private final DetectUntestedInputsPageStrategy warnStrategy;
     private final HtmlReportWriter reportWriter;
+    private final XssJournal xssJournal;
 
     public RouteRunner(
             RoutePageStrategyRunner strategyRunner,
             AttackPageStrategy attackStrategy,
             DetectSuccessfulXssPageStrategy detectStrategy,
             DetectUntestedInputsPageStrategy warnStrategy,
-            HtmlReportWriter reportWriter
+            HtmlReportWriter reportWriter,
+            XssJournal xssJournal
     ) {
         this.strategyRunner = strategyRunner;
         this.attackStrategy = attackStrategy;
         this.detectStrategy = detectStrategy;
         this.warnStrategy = warnStrategy;
         this.reportWriter = reportWriter;
+        this.xssJournal = xssJournal;
     }
 
     /**
@@ -35,12 +38,12 @@ public class RouteRunner {
      * the results report when complete.
      *
      * @param routes A list of routes to run through
-     * @param xssJournal A journal to record results in
      * @throws IOException
      */
-    public void run(List<Route> routes, XssJournal xssJournal) throws IOException {
+    public XssJournal run(List<Route> routes) throws IOException {
         strategyRunner.run(routes, ImmutableList.of(attackStrategy, detectStrategy, warnStrategy), xssJournal);
         strategyRunner.run(routes, ImmutableList.of((PageStrategy)detectStrategy), xssJournal);
         reportWriter.write(xssJournal);
+        return xssJournal;
     }
 }

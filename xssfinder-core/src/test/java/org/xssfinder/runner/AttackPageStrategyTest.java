@@ -25,7 +25,7 @@ public class AttackPageStrategyTest {
     private PageContext mockContext;
 
     @Test
-    public void processingPageAddsAttackDescriptorsToJournal() {
+    public void processingPageAddsAttackDescriptorsToJournal() throws Exception {
         // given
         XssDescriptor mockXssDescriptor = mock(XssDescriptor.class);
         Map<String, XssDescriptor> descriptorsById = ImmutableMap.of(

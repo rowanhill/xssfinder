@@ -23,15 +23,17 @@ public class RouteRunErrorContext {
         exception.printStackTrace(printWriter);
     }
 
-    public String getPageClassName() {
-        return pageContext.getPageDescriptor().getPageClass().getCanonicalName();
+    public String getPageIdentifier() {
+        return pageContext == null ? null : pageContext.getPageDescriptor().getPageDefinition().getIdentifier();
     }
 
     public String getPageTraversalMethodString() {
-        return pageContext.getPageTraversal().getMethod().toString();
+        PageTraversal traversal = pageContext == null ? null : pageContext.getPageTraversal();
+        return traversal == null ? null : traversal.getMethod().toString();
     }
 
     public String getTraversalModeName() {
-        return pageContext.getPageTraversal().getTraversalMode().getDescription();
+        PageTraversal traversal = pageContext == null ? null : pageContext.getPageTraversal();
+        return traversal == null ? null : traversal.getTraversalMode().getDescription();
     }
 }

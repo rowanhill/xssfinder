@@ -1,19 +1,22 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.remote.ExecutorWrapper;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.routing.Route;
+import org.xssfinder.xss.XssDescriptorFactory;
 
 class PageContextFactory {
-    private final PageTraverser pageTraverser;
-    private final PageInstantiator pageInstantiator;
+    private final ExecutorWrapper executor;
+    private final XssJournal xssJournal;
+    private final XssDescriptorFactory xssDescriptorFactory;
 
-    public PageContextFactory(PageTraverser pageTraverser, PageInstantiator pageInstantiator) {
-        this.pageTraverser = pageTraverser;
-        this.pageInstantiator = pageInstantiator;
+    PageContextFactory(ExecutorWrapper executor, XssJournal xssJournal, XssDescriptorFactory xssDescriptorFactory) {
+        this.executor = executor;
+        this.xssJournal = xssJournal;
+        this.xssDescriptorFactory = xssDescriptorFactory;
     }
 
-    public PageContext createContext(DriverWrapper driverWrapper, Route route, XssJournal xssJournal) {
-        Object page = pageInstantiator.instantiatePage(route.getRootPageClass());
-        return new PageContext(pageTraverser, page, driverWrapper, xssJournal, route.getPageTraversal(), route.getRootPageDescriptor());
+    public PageContext createContext(Route route) {
+        return new PageContext(executor, xssJournal, xssDescriptorFactory, route.getPageTraversal(), route.getRootPageDescriptor());
     }
 }

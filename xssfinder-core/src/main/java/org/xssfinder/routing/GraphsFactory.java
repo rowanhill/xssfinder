@@ -1,6 +1,8 @@
 package org.xssfinder.routing;
 
-import java.lang.reflect.Method;
+import org.xssfinder.remote.MethodDefinition;
+import org.xssfinder.remote.PageDefinition;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,27 +20,27 @@ public class GraphsFactory {
         this.requiredTraversalAppender = requiredTraversalAppender;
     }
 
-    public Set<Graph> createGraphs(Set<Class<?>> pageClasses) {
-        Map<Class<?>, Set<PageDescriptor>> setMembership = new HashMap<Class<?>, Set<PageDescriptor>>();
+    public Set<Graph> createGraphs(Set<PageDefinition> pageClasses) {
+        Map<String, Set<PageDescriptor>> setMembership = new HashMap<String, Set<PageDescriptor>>();
         Set<PageDescriptor> pageDescriptors = new HashSet<PageDescriptor>();
 
-        for (Class<?> pageClass : pageClasses) {
-            PageDescriptor descriptor = new PageDescriptor(pageClass);
+        for (PageDefinition pageDefinition : pageClasses) {
+            PageDescriptor descriptor = new PageDescriptor(pageDefinition);
             Set<PageDescriptor> descriptorSet = new HashSet<PageDescriptor>();
             descriptorSet.add(descriptor);
-            setMembership.put(pageClass, descriptorSet);
+            setMembership.put(pageDefinition.getIdentifier(), descriptorSet);
             pageDescriptors.add(descriptor);
         }
 
         for (PageDescriptor descriptor : pageDescriptors) {
-            Set<PageDescriptor> descriptorSet = setMembership.get(descriptor.getPageClass());
+            Set<PageDescriptor> descriptorSet = setMembership.get(descriptor.getPageDefinition().getIdentifier());
 
-            for (Method traversalMethod : descriptor.getTraversalMethods()) {
-                Class<?> linkedPageClass = traversalMethod.getReturnType();
-                Set<PageDescriptor> linkedDescriptorsSet = setMembership.get(linkedPageClass);
+            for (MethodDefinition traversalMethod : descriptor.getTraversalMethods()) {
+                String linkedPageIdentifier = traversalMethod.getReturnTypeIdentifier();
+                Set<PageDescriptor> linkedDescriptorsSet = setMembership.get(linkedPageIdentifier);
                 descriptorSet.addAll(linkedDescriptorsSet);
                 for (PageDescriptor linkedDescriptor : linkedDescriptorsSet) {
-                    setMembership.put(linkedDescriptor.getPageClass(), descriptorSet);
+                    setMembership.put(linkedDescriptor.getPageDefinition().getIdentifier(), descriptorSet);
                 }
             }
         }

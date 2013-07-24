@@ -6,14 +6,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.xssfinder.CrawlStartPoint;
-import org.xssfinder.Page;
-import org.xssfinder.SubmitAction;
-import org.xssfinder.reflection.*;
-import org.xssfinder.reflection.InstantiationException;
-import org.xssfinder.runner.LifecycleEventException;
+import org.xssfinder.remote.MethodDefinition;
+import org.xssfinder.remote.PageDefinition;
 
-import java.lang.reflect.Method;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
@@ -23,12 +18,10 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RouteTest {
-    private static final String ROOT_PAGE_URL = "http://localhost:8080/";
+    private static final String PAGE_DEF_ID = "A Page";
 
     @Mock
     private PageTraversal mockPageTraversal;
-    @Mock
-    private Instantiator mockInstantiator;
     @Mock
     private PageDescriptor mockPageDescriptor;
     @Mock
@@ -36,28 +29,41 @@ public class RouteTest {
     @Mock
     private PageTraversal mockNextPageTraversal;
 
+    @Mock
+    private PageDefinition mockPageDefinition;
+    @Mock
+    private MethodDefinition mockCircularMethodDefinition;
+    @Mock
+    private MethodDefinition mockSubmitMethodDefinition;
+
     @Before
     public void setUp() {
-        //noinspection unchecked
-        when(mockPageDescriptor.getPageClass()).thenReturn((Class) RootPage.class);
+        when(mockPageDescriptor.getPageDefinition()).thenReturn(mockPageDefinition);
+
+        when(mockCircularMethodDefinition.getReturnTypeIdentifier()).thenReturn(PAGE_DEF_ID);
+        when(mockSubmitMethodDefinition.getReturnTypeIdentifier()).thenReturn(PAGE_DEF_ID);
+        when(mockSubmitMethodDefinition.isSubmitAnnotated()).thenReturn(true);
+        when(mockPageDefinition.getMethods()).thenReturn(ImmutableSet.of(mockCircularMethodDefinition, mockSubmitMethodDefinition));
+
+        when(mockPageDefinition.isCrawlStartPoint()).thenReturn(true);
     }
 
     @Test
     public void rootPageClassIsAvailable() {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
-        Class<?> rootPageClass = route.getRootPageClass();
+        PageDefinition rootPageDefinition = route.getRootPageDefinition();
 
         // then
-        assertThat(rootPageClass == RootPage.class, is(true));
+        assertThat(rootPageDefinition, is(mockPageDefinition));
     }
 
     @Test
     public void rootPageDescriptorIsAvailable() {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         PageDescriptor descriptor = route.getRootPageDescriptor();
@@ -67,22 +73,9 @@ public class RouteTest {
     }
 
     @Test
-    public void urlIsTakenFromRootPage() {
-        // given
-        when(mockPageDescriptor.getCrawlStartPointUrl()).thenReturn(ROOT_PAGE_URL);
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
-
-        // when
-        String url = route.getUrl();
-
-        // then
-        assertThat(url, is(ROOT_PAGE_URL));
-    }
-
-    @Test
     public void pageTraversalIsAvailable() {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         PageTraversal traversal = route.getPageTraversal();
@@ -94,7 +87,7 @@ public class RouteTest {
     @Test
     public void lastPageTraversalIsNullIfFirstPageTraversalIsNull() {
         // given
-        Route route = new Route(mockPageDescriptor, null, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, null, mockPageTraversalFactory);
 
         // when
         PageTraversal traversal = route.getLastPageTraversal();
@@ -106,7 +99,7 @@ public class RouteTest {
     @Test
     public void lastPageTraversalIsFirstPageTraversalIfItHasNoSubsequentTraversal() {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         PageTraversal traversal = route.getLastPageTraversal();
@@ -120,7 +113,7 @@ public class RouteTest {
         // given
         PageTraversal mockPageTraversal2 = mock(PageTraversal.class);
         when(mockPageTraversal.getNextTraversal()).thenReturn(mockPageTraversal2);
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         PageTraversal traversal = route.getLastPageTraversal();
@@ -132,14 +125,13 @@ public class RouteTest {
     @Test
     public void appendingTraversalToNullTraversalSetsNewTraversalFromRoot() throws Exception {
         // given
-        Route route = new Route(mockPageDescriptor, null, mockInstantiator, mockPageTraversalFactory);
-        Method method = RootPage.class.getMethod("circularLink");
+        Route route = new Route(mockPageDescriptor, null, mockPageTraversalFactory);
         PageTraversal.TraversalMode traversalMode = PageTraversal.TraversalMode.NORMAL;
-        when(mockPageTraversalFactory.createTraversal(method, mockPageDescriptor, traversalMode))
+        when(mockPageTraversalFactory.createTraversal(mockCircularMethodDefinition, mockPageDescriptor, traversalMode))
                 .thenReturn(mockNextPageTraversal);
 
         // when
-        route.appendTraversal(method, mockPageDescriptor, traversalMode);
+        route.appendTraversal(mockCircularMethodDefinition, mockPageDescriptor, traversalMode);
 
         // then
         assertThat(route.getPageTraversal(), is(mockNextPageTraversal));
@@ -148,14 +140,13 @@ public class RouteTest {
     @Test
     public void appendingTraversalToNonNullTraversalSetsNextTraversal() throws Exception {
         // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
-        Method method = RootPage.class.getMethod("circularLink");
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
         PageTraversal.TraversalMode traversalMode = PageTraversal.TraversalMode.NORMAL;
-        when(mockPageTraversalFactory.createTraversal(method, mockPageDescriptor, traversalMode))
+        when(mockPageTraversalFactory.createTraversal(mockCircularMethodDefinition, mockPageDescriptor, traversalMode))
                 .thenReturn(mockNextPageTraversal);
 
         // when
-        route.appendTraversal(method, mockPageDescriptor, traversalMode);
+        route.appendTraversal(mockCircularMethodDefinition, mockPageDescriptor, traversalMode);
 
         // then
         verify(mockPageTraversal).setNextTraversal(mockNextPageTraversal);
@@ -164,19 +155,19 @@ public class RouteTest {
     @Test
     public void cloneHasSameRootClass() {
         // given
-        Route route = new Route(mockPageDescriptor, null, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, null, mockPageTraversalFactory);
 
         // when
         Route clonedRoute = route.clone();
 
         // then
-        assertThat(clonedRoute.getRootPageClass() == RootPage.class, is(true));
+        assertThat(clonedRoute.getRootPageDefinition(), is(mockPageDefinition));
     }
 
     @Test
     public void cloneHasNullTraversalIfOriginalDoes() {
         // given
-        Route route = new Route(mockPageDescriptor, null, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, null, mockPageTraversalFactory);
 
         // when
         Route clonedRoute = route.clone();
@@ -190,7 +181,7 @@ public class RouteTest {
         // given
         PageTraversal mockCloneTraversal = mock(PageTraversal.class);
         when(mockPageTraversal.clone()).thenReturn(mockCloneTraversal);
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockPageTraversalFactory);
 
         // when
         Route clonedRoute = route.clone();
@@ -200,60 +191,20 @@ public class RouteTest {
     }
 
     @Test
-    public void createsLifecycleHandler() throws Exception {
-        // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
-        LifecycleHandler mockHandler = mock(LifecycleHandler.class);
-        when(mockInstantiator.instantiate(LifecycleHandler.class)).thenReturn(mockHandler);
-
-        // when
-        Object handler = route.createLifecycleHandler();
-
-        // then
-        assertThat(handler, is((Object)mockHandler));
-    }
-
-    @Test(expected=LifecycleEventException.class)
-    public void throwsExceptionIfCreatingLifecycleHandlerFails() throws Exception {
-        // given
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
-        when(mockInstantiator.instantiate(LifecycleHandler.class)).thenThrow(new InstantiationException(null));
-
-        // when
-        route.createLifecycleHandler();
-    }
-
-    @Test
-    public void createsNullLifecycleHandlerIfNoneSpecified() throws Exception {
-        // given
-        //noinspection unchecked
-        when(mockPageDescriptor.getPageClass()).thenReturn((Class) PageWithoutLifecycleHandler.class);
-        Route route = new Route(mockPageDescriptor, mockPageTraversal, mockInstantiator, mockPageTraversalFactory);
-
-        // when
-        Object handler = route.createLifecycleHandler();
-
-        // then
-        assertThat(handler, is(nullValue()));
-        //noinspection unchecked
-        verify(mockInstantiator, never()).instantiate(any(Class.class));
-    }
-
-    @Test
     public void returnsTraversedSubmitMethods() throws Exception {
         // given
         PageTraversal traversal = new PageTraversal(
-                RootPage.class.getMethod("submit"),
+                mockSubmitMethodDefinition,
                 mockPageDescriptor,
                 PageTraversal.TraversalMode.SUBMIT);
-        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, traversal, mockPageTraversalFactory);
 
         // when
-        Set<Method> submitMethods = route.getTraversedSubmitMethods();
+        Set<MethodDefinition> submitMethods = route.getTraversedSubmitMethods();
 
         // then
-        Set<Method> expectedMethods = ImmutableSet.of(
-                RootPage.class.getMethod("submit")
+        Set<MethodDefinition> expectedMethods = ImmutableSet.of(
+                mockSubmitMethodDefinition
         );
         assertThat(submitMethods, is(expectedMethods));
     }
@@ -262,16 +213,16 @@ public class RouteTest {
     public void submitMethodsTraversedInNormalModeNotConsideredTraversed() throws Exception {
         // given
         PageTraversal traversal = new PageTraversal(
-                RootPage.class.getMethod("submit"),
+                mockSubmitMethodDefinition,
                 mockPageDescriptor,
                 PageTraversal.TraversalMode.NORMAL);
-        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, traversal, mockPageTraversalFactory);
 
         // when
-        Set<Method> submitMethods = route.getTraversedSubmitMethods();
+        Set<MethodDefinition> submitMethods = route.getTraversedSubmitMethods();
 
         // then
-        Set<Method> expectedMethods = ImmutableSet.of(
+        Set<MethodDefinition> expectedMethods = ImmutableSet.of(
         );
         assertThat(submitMethods, is(expectedMethods));
     }
@@ -280,16 +231,16 @@ public class RouteTest {
     public void normalMethodsTraversedInNormalModeNotConsideredTraversedSubmitMethods() throws Exception {
         // given
         PageTraversal traversal = new PageTraversal(
-                RootPage.class.getMethod("circularLink"),
+                mockCircularMethodDefinition,
                 mockPageDescriptor,
                 PageTraversal.TraversalMode.NORMAL);
-        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, traversal, mockPageTraversalFactory);
 
         // when
-        Set<Method> submitMethods = route.getTraversedSubmitMethods();
+        Set<MethodDefinition> submitMethods = route.getTraversedSubmitMethods();
 
         // then
-        Set<Method> expectedMethods = ImmutableSet.of(
+        Set<MethodDefinition> expectedMethods = ImmutableSet.of(
         );
         assertThat(submitMethods, is(expectedMethods));
     }
@@ -298,34 +249,17 @@ public class RouteTest {
     public void normalMethodsTraversedInSubmitModeNotConsideredTraversedSubmitMethods() throws Exception {
         // given
         PageTraversal traversal = new PageTraversal(
-                RootPage.class.getMethod("circularLink"),
+                mockCircularMethodDefinition,
                 mockPageDescriptor,
                 PageTraversal.TraversalMode.SUBMIT);
-        Route route = new Route(mockPageDescriptor, traversal, mockInstantiator, mockPageTraversalFactory);
+        Route route = new Route(mockPageDescriptor, traversal, mockPageTraversalFactory);
 
         // when
-        Set<Method> submitMethods = route.getTraversedSubmitMethods();
+        Set<MethodDefinition> submitMethods = route.getTraversedSubmitMethods();
 
         // then
-        Set<Method> expectedMethods = ImmutableSet.of(
+        Set<MethodDefinition> expectedMethods = ImmutableSet.of(
         );
         assertThat(submitMethods, is(expectedMethods));
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    @Page
-    @CrawlStartPoint(url=ROOT_PAGE_URL, lifecycleHandler=LifecycleHandler.class)
-    private static class RootPage {
-        public RootPage circularLink() { return null; }
-        @SubmitAction
-        public RootPage submit() { return null; }
-    }
-
-    private static class LifecycleHandler {}
-
-    @SuppressWarnings("UnusedDeclaration")
-    @CrawlStartPoint(url=ROOT_PAGE_URL)
-    private static class PageWithoutLifecycleHandler {
-
     }
 }

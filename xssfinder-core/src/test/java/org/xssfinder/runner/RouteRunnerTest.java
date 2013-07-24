@@ -35,10 +35,10 @@ public class RouteRunnerTest {
     @Test
     public void runAttacksAllPagesThenVerifiesAllPagesThenWritesReport() throws Exception {
         // given
-        RouteRunner runner = new RouteRunner(mockStrategyRunner, mockAttackStrategy, mockDetectStrategy, mockWarnStrategy, mockReportWriter);
+        RouteRunner runner = new RouteRunner(mockStrategyRunner, mockAttackStrategy, mockDetectStrategy, mockWarnStrategy, mockReportWriter, mockXssJournal);
 
         // when
-        runner.run(routes, mockXssJournal);
+        runner.run(routes);
 
         // then
         List<PageStrategy> attackPhaseStrategies = ImmutableList.of(mockAttackStrategy, mockDetectStrategy, mockWarnStrategy);

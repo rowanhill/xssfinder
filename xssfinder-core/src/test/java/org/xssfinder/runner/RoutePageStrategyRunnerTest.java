@@ -6,6 +6,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xssfinder.remote.ExecutorWrapper;
+import org.xssfinder.remote.PageDefinition;
+import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.reporting.RouteRunErrorContext;
 import org.xssfinder.reporting.RouteRunErrorContextFactory;
 import org.xssfinder.routing.Route;
@@ -18,10 +21,10 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RoutePageStrategyRunnerTest {
-    private static final String URL = "http://localhost";
+    private static final String PAGE_ID = "some page";
 
     @Mock
-    private DriverWrapper mockDriverWrapper;
+    private ExecutorWrapper mockExecutor;
     @Mock
     private PageContextFactory mockPageContextFactory;
     @Mock
@@ -31,13 +34,9 @@ public class RoutePageStrategyRunnerTest {
     @Mock
     private XssJournal mockXssJournal;
     @Mock
-    private Object mockLifecycleHandler;
-    @Mock
-    private LifecycleEventExecutor mockLifecycleEventExecutor;
-    @Mock
     private RouteRunErrorContextFactory mockErrorContextFactory;
     @Mock
-    private Object mockPage;
+    private PageDefinition mockPageDefinition;
 
     private final List<Route> routes = new ArrayList<Route>();
     private final List<PageStrategy> pageStrategies = new ArrayList<PageStrategy>();
@@ -46,27 +45,26 @@ public class RoutePageStrategyRunnerTest {
 
     @Before
     public void setUp() throws Exception {
-        when(mockPageContextFactory.createContext(mockDriverWrapper, mockRoute, mockXssJournal)).thenReturn(mockPageContext);
-        when(mockPageContext.getPage()).thenReturn(mockPage);
-        when(mockRoute.getUrl()).thenReturn(URL);
-        when(mockRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
+        when(mockPageContextFactory.createContext(mockRoute)).thenReturn(mockPageContext);
+        when(mockPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
+        when(mockRoute.getRootPageDefinition()).thenReturn(mockPageDefinition);
+        when(mockPageDefinition.getIdentifier()).thenReturn(PAGE_ID);
         routes.add(mockRoute);
 
         runner = new RoutePageStrategyRunner(
-                mockDriverWrapper,
+                mockExecutor,
                 mockPageContextFactory,
-                mockLifecycleEventExecutor,
                 mockErrorContextFactory
         );
     }
 
     @Test
-    public void runnerOpensDriverWrapperAtStartPointOfRoute() {
+    public void runnerOpensDriverWrapperAtStartPointOfRoute() throws Exception {
         // when
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        verify(mockDriverWrapper).visit(URL);
+        verify(mockExecutor).startRoute(PAGE_ID);
     }
 
     @Test
@@ -82,7 +80,7 @@ public class RoutePageStrategyRunnerTest {
     }
 
     @Test
-    public void firstAndOnlyContextIsProcessedByStrategiesAndThenAfterRouteIsCalled() {
+    public void firstAndOnlyContextIsProcessedByStrategiesAndThenAfterRouteIsCalled() throws Exception {
         // given
         PageStrategy mockStrategy1 = mock(PageStrategy.class);
         PageStrategy mockStrategy2 = mock(PageStrategy.class);
@@ -93,15 +91,15 @@ public class RoutePageStrategyRunnerTest {
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockLifecycleEventExecutor);
+        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockExecutor);
         inOrder.verify(mockStrategy1).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
-        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPage);
+        inOrder.verify(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
-    public void secondContextIsProcessedByStrategiesAndThenAfterRouteIsCalled() {
+    public void secondContextIsProcessedByStrategiesAndThenAfterRouteIsCalled() throws Exception {
         // given
         PageStrategy mockStrategy1 = mock(PageStrategy.class);
         PageStrategy mockStrategy2 = mock(PageStrategy.class);
@@ -110,36 +108,35 @@ public class RoutePageStrategyRunnerTest {
         PageContext mockNextContext = mock(PageContext.class);
         when(mockPageContext.hasNextContext()).thenReturn(true);
         when(mockPageContext.getNextContext()).thenReturn(mockNextContext);
-        Object mockNextPage = new Object();
-        when(mockNextContext.getPage()).thenReturn(mockNextPage);
+        PageDefinition mockNextPage = mock(PageDefinition.class);
+        when(mockNextContext.getPageDefinition()).thenReturn(mockNextPage);
 
         // when
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockLifecycleEventExecutor);
+        InOrder inOrder = inOrder(mockStrategy1, mockStrategy2, mockExecutor);
         inOrder.verify(mockStrategy1).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockPageContext, mockXssJournal);
         inOrder.verify(mockStrategy1).processPage(mockNextContext, mockXssJournal);
         inOrder.verify(mockStrategy2).processPage(mockNextContext, mockXssJournal);
-        inOrder.verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockNextPage);
+        inOrder.verify(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
-    public void exceptionThrownByTraversingDoesNotPreventOtherRoutesFromExecuting() {
+    public void exceptionThrownByStartingRouteDoesNotPreventOtherRoutesFromExecuting() throws Exception {
         // given
         PageStrategy mockStrategy = mock(PageStrategy.class);
         pageStrategies.add(mockStrategy);
         Route mockOtherRoute = mock(Route.class);
         PageContext mockOtherPageContext = mock(PageContext.class);
-        when(mockPageContextFactory.createContext(mockDriverWrapper, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
-        when(mockOtherPageContext.getPage()).thenReturn(mockPage);
-        when(mockOtherRoute.getUrl()).thenReturn(URL);
-        when(mockOtherRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
+        when(mockPageContextFactory.createContext(mockOtherRoute)).thenReturn(mockOtherPageContext);
+        PageDefinition mockOtherPageDefinition = mock(PageDefinition.class);
+        when(mockOtherPageContext.getPageDefinition()).thenReturn(mockOtherPageDefinition);
+        when(mockOtherRoute.getRootPageDefinition()).thenReturn(mockOtherPageDefinition);
         routes.add(mockOtherRoute);
-        when(mockPageContext.hasNextContext()).thenReturn(true, false);
-        when(mockPageContext.getNextContext()).thenThrow(new RuntimeException("Error!"));
+        doThrow(new TWebInteractionException("Error!")).when(mockExecutor).startRoute(PAGE_ID);
 
         // when
         runner.run(routes, pageStrategies, mockXssJournal);
@@ -149,30 +146,14 @@ public class RoutePageStrategyRunnerTest {
     }
 
     @Test
-    public void exceptionThrownByTraversingDoesNotPreventAfterRouteFromBeingHandled() {
+    public void exceptionThrownByStartingRouteIsLoggedInXssJournal() throws Exception {
         // given
         PageStrategy mockStrategy = mock(PageStrategy.class);
         pageStrategies.add(mockStrategy);
-        when(mockPageContext.hasNextContext()).thenReturn(true, false);
-        when(mockPageContext.getNextContext()).thenThrow(new RuntimeException("Error!"));
-
-        // when
-        runner.run(routes, pageStrategies, mockXssJournal);
-
-        // then
-        verify(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPage);
-    }
-
-    @Test
-    public void exceptionThrowByTraversingIsLoggedInXssJournal() {
-        // given
-        PageStrategy mockStrategy = mock(PageStrategy.class);
-        pageStrategies.add(mockStrategy);
-        when(mockPageContext.hasNextContext()).thenReturn(true, false);
-        Exception runtimeException = new RuntimeException("Error!");
-        when(mockPageContext.getNextContext()).thenThrow(runtimeException);
+        TWebInteractionException webInteractionException = new TWebInteractionException("Error!");
+        doThrow(webInteractionException).when(mockExecutor).startRoute(PAGE_ID);
         RouteRunErrorContext mockErrorContext =  mock(RouteRunErrorContext.class);
-        when(mockErrorContextFactory.createErrorContext(runtimeException, mockPageContext))
+        when(mockErrorContextFactory.createErrorContext(webInteractionException, null))
                 .thenReturn(mockErrorContext);
 
         // when
@@ -183,20 +164,17 @@ public class RoutePageStrategyRunnerTest {
     }
 
     @Test
-    public void exceptionThrownByAfterRouteDoesNotPreventOtherRoutesFromBeingExecuted() {
+    public void exceptionThrownByProcessingPageDoesNotPreventOtherRoutesFromExecuting() throws Exception {
         // given
         PageStrategy mockStrategy = mock(PageStrategy.class);
         pageStrategies.add(mockStrategy);
         Route mockOtherRoute = mock(Route.class);
         PageContext mockOtherPageContext = mock(PageContext.class);
-        when(mockPageContextFactory.createContext(mockDriverWrapper, mockOtherRoute, mockXssJournal)).thenReturn(mockOtherPageContext);
-        when(mockOtherPageContext.getPage()).thenReturn(mockPage);
-        when(mockOtherRoute.getUrl()).thenReturn(URL);
-        when(mockOtherRoute.createLifecycleHandler()).thenReturn(mockLifecycleHandler);
+        when(mockPageContextFactory.createContext(mockOtherRoute)).thenReturn(mockOtherPageContext);
+        when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
+        when(mockOtherRoute.getRootPageDefinition()).thenReturn(mockPageDefinition);
         routes.add(mockOtherRoute);
-
-        doThrow(new RuntimeException("Error!"))
-                .when(mockLifecycleEventExecutor).afterRoute(mockLifecycleHandler, mockPage);
+        doThrow(new TWebInteractionException("Error!")).when(mockStrategy).processPage(mockPageContext, mockXssJournal);
 
         // when
         runner.run(routes, pageStrategies, mockXssJournal);
@@ -206,15 +184,155 @@ public class RoutePageStrategyRunnerTest {
     }
 
     @Test
-    public void afterRouteNotCalledIfExceptionThrownBeforePageContextCanBeCreated() {
+    public void exceptionThrownByProcessingPageIsLoggedInXssJournal() throws Exception {
         // given
-        when(mockPageContextFactory.createContext(mockDriverWrapper, mockRoute, mockXssJournal))
+        PageStrategy mockStrategy = mock(PageStrategy.class);
+        pageStrategies.add(mockStrategy);
+        TWebInteractionException webInteractionException = new TWebInteractionException("Error!");
+        doThrow(webInteractionException).when(mockStrategy).processPage(mockPageContext, mockXssJournal);
+        RouteRunErrorContext mockErrorContext =  mock(RouteRunErrorContext.class);
+        when(mockErrorContextFactory.createErrorContext(webInteractionException, mockPageContext))
+                .thenReturn(mockErrorContext);
+
+        // when
+        runner.run(routes, pageStrategies, mockXssJournal);
+
+        // then
+        verify(mockXssJournal).addErrorContext(mockErrorContext);
+    }
+
+    @Test
+    public void exceptionThrownByTraversingDoesNotPreventOtherRoutesFromExecuting() throws Exception {
+        // given
+        PageStrategy mockStrategy = mock(PageStrategy.class);
+        pageStrategies.add(mockStrategy);
+        Route mockOtherRoute = mock(Route.class);
+        PageContext mockOtherPageContext = mock(PageContext.class);
+        when(mockPageContextFactory.createContext(mockOtherRoute)).thenReturn(mockOtherPageContext);
+        when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
+        when(mockOtherRoute.getRootPageDefinition()).thenReturn(mockPageDefinition);
+        routes.add(mockOtherRoute);
+        when(mockPageContext.hasNextContext()).thenReturn(true, false);
+        when(mockPageContext.getNextContext()).thenThrow(new RuntimeException("Error!"));
+
+        // when
+        runner.run(routes, pageStrategies, mockXssJournal);
+
+        // then
+        verify(mockStrategy).processPage(mockOtherPageContext, mockXssJournal);
+    }
+
+    @Test
+    public void exceptionThrownByTraversingDoesNotPreventAfterRouteFromBeingHandled() throws Exception {
+        // given
+        PageStrategy mockStrategy = mock(PageStrategy.class);
+        pageStrategies.add(mockStrategy);
+        when(mockPageContext.hasNextContext()).thenReturn(true, false);
+        when(mockPageContext.getNextContext()).thenThrow(new TWebInteractionException("Error!"));
+
+        // when
+        runner.run(routes, pageStrategies, mockXssJournal);
+
+        // then
+        verify(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
+    }
+
+    @Test
+    public void exceptionThrowByTraversingIsLoggedInXssJournal() throws Exception {
+        // given
+        PageStrategy mockStrategy = mock(PageStrategy.class);
+        pageStrategies.add(mockStrategy);
+        when(mockPageContext.hasNextContext()).thenReturn(true, false);
+        TWebInteractionException webInteractionException = new TWebInteractionException("Error!");
+        when(mockPageContext.getNextContext()).thenThrow(webInteractionException);
+        RouteRunErrorContext mockErrorContext =  mock(RouteRunErrorContext.class);
+        when(mockErrorContextFactory.createErrorContext(webInteractionException, mockPageContext))
+                .thenReturn(mockErrorContext);
+
+        // when
+        runner.run(routes, pageStrategies, mockXssJournal);
+
+        // then
+        verify(mockXssJournal).addErrorContext(mockErrorContext);
+    }
+
+    @Test
+    public void exceptionThrownByAfterRouteDoesNotPreventOtherRoutesFromBeingExecuted() throws Exception {
+        // given
+        PageStrategy mockStrategy = mock(PageStrategy.class);
+        pageStrategies.add(mockStrategy);
+        Route mockOtherRoute = mock(Route.class);
+        PageContext mockOtherPageContext = mock(PageContext.class);
+        when(mockPageContextFactory.createContext(mockOtherRoute)).thenReturn(mockOtherPageContext);
+        when(mockOtherPageContext.getPageDefinition()).thenReturn(mockPageDefinition);
+        when(mockOtherRoute.getRootPageDefinition()).thenReturn(mockPageDefinition);
+        routes.add(mockOtherRoute);
+
+        doThrow(new TWebInteractionException("Error!")).when(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
+
+        // when
+        runner.run(routes, pageStrategies, mockXssJournal);
+
+        // then
+        verify(mockStrategy).processPage(mockOtherPageContext, mockXssJournal);
+    }
+
+    @Test
+    public void exceptionThrownByAfterRouteIsLoggedInXssJournal() throws Exception {
+        // given
+        PageStrategy mockStrategy = mock(PageStrategy.class);
+        pageStrategies.add(mockStrategy);
+
+        when(mockPageContext.hasNextContext()).thenReturn(true, false);
+        TWebInteractionException traversingException = new TWebInteractionException("Traversing error!");
+        when(mockPageContext.getNextContext()).thenThrow(traversingException);
+        RouteRunErrorContext mockTraversingErrorContext =  mock(RouteRunErrorContext.class, "mockTraversingErrorContext");
+        when(mockErrorContextFactory.createErrorContext(traversingException, mockPageContext))
+                .thenReturn(mockTraversingErrorContext);
+
+        TWebInteractionException afterRouteException = new TWebInteractionException("After route error!");
+        doThrow(afterRouteException).when(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
+        RouteRunErrorContext mockAfterRouteErrorContext =  mock(RouteRunErrorContext.class, "mockAfterRouteErrorContext");
+        when(mockErrorContextFactory.createErrorContext(afterRouteException, mockPageContext))
+                .thenReturn(mockAfterRouteErrorContext);
+
+        // when
+        runner.run(routes, pageStrategies, mockXssJournal);
+
+        // then
+        InOrder inOrder = inOrder(mockXssJournal);
+        inOrder.verify(mockXssJournal).addErrorContext(mockTraversingErrorContext);
+        inOrder.verify(mockXssJournal).addErrorContext(mockAfterRouteErrorContext);
+    }
+
+    @Test
+    public void afterRouteNotCalledIfExceptionThrownBeforePageContextCanBeCreated() throws Exception {
+        // given
+        when(mockPageContextFactory.createContext(mockRoute))
                 .thenThrow(new RuntimeException("Error!"));
 
         // when
         runner.run(routes, pageStrategies, mockXssJournal);
 
         // then
-        verifyZeroInteractions(mockLifecycleEventExecutor);
+        verify(mockExecutor, never()).invokeAfterRouteHandler(PAGE_ID);
+    }
+
+    @Test
+    public void exceptionsThrownBothByTraversingAndInAfterRouteAreLogged() throws Exception {
+
+        PageStrategy mockStrategy = mock(PageStrategy.class);
+        pageStrategies.add(mockStrategy);
+        TWebInteractionException webInteractionException = new TWebInteractionException("Error!");
+        doThrow(webInteractionException).when(mockExecutor).invokeAfterRouteHandler(PAGE_ID);
+        RouteRunErrorContext mockErrorContext =  mock(RouteRunErrorContext.class);
+        when(mockErrorContextFactory.createErrorContext(webInteractionException, mockPageContext))
+                .thenReturn(mockErrorContext);
+
+        // when
+        runner.run(routes, pageStrategies, mockXssJournal);
+
+        // then
+        verify(mockXssJournal).addErrorContext(mockErrorContext);
     }
 }

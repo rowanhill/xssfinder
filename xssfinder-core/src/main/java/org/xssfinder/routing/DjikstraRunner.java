@@ -1,6 +1,8 @@
 package org.xssfinder.routing;
 
-import java.lang.reflect.Method;
+import org.xssfinder.remote.MethodDefinition;
+import org.xssfinder.remote.PageDefinition;
+
 import java.util.*;
 
 class DjikstraRunner {
@@ -12,10 +14,10 @@ class DjikstraRunner {
         this.djikstraResultFactory = djikstraResultFactory;
     }
 
-    DjikstraResult computeShortestPaths(Class<?> rootPageClass, Set<PageDescriptor> pageDescriptors) {
-        Map<Class<?>, GraphNode> nodes = graphNodesFactory.createNodes(pageDescriptors);
+    DjikstraResult computeShortestPaths(PageDefinition rootPageClass, Set<PageDescriptor> pageDescriptors) {
+        Map<String, GraphNode> nodes = graphNodesFactory.createNodes(pageDescriptors);
 
-        nodes.get(rootPageClass).setDistance(0);
+        nodes.get(rootPageClass.getIdentifier()).setDistance(0);
         PriorityQueue<GraphNode> nodeQueue = new PriorityQueue<GraphNode>(nodes.size(), new NodeDistanceComparator());
         nodeQueue.addAll(nodes.values());
 
@@ -26,8 +28,8 @@ class DjikstraRunner {
                 throw new DisjointGraphException();
             }
             int nextDistance = nearestNode.getDistance()+1;
-            for (Method traversalMethod : nearestNode.getTraversalMethods()) {
-                GraphNode neighbour = nodes.get(traversalMethod.getReturnType());
+            for (MethodDefinition traversalMethod : nearestNode.getTraversalMethods()) {
+                GraphNode neighbour = nodes.get(traversalMethod.getReturnTypeIdentifier());
                 if (neighbour.getDistance() > nextDistance) {
                     leafNodes.remove(nearestNode);
                     neighbour.setDistance(nextDistance);

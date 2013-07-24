@@ -1,8 +1,6 @@
 package org.xssfinder.routing;
 
-import org.xssfinder.SubmitAction;
-
-import java.lang.reflect.Method;
+import org.xssfinder.remote.MethodDefinition;
 
 /**
  * A traversal from one page to another as part of a route
@@ -19,10 +17,18 @@ public class PageTraversal {
             this.description = description;
         }
 
+        public static TraversalMode convertFromThrift(org.xssfinder.remote.TraversalMode thriftTraversalMode) {
+            return TraversalMode.valueOf(thriftTraversalMode.name());
+        }
+
         public String getDescription() { return description; }
+
+        public org.xssfinder.remote.TraversalMode convertToThrift() {
+            return org.xssfinder.remote.TraversalMode.valueOf(this.name());
+        }
     }
 
-    private final Method method;
+    private final MethodDefinition method;
     private final PageDescriptor resultingPageDescriptor;
     private final TraversalMode traversalMode;
     private PageTraversal nextTraversal = null;
@@ -32,13 +38,13 @@ public class PageTraversal {
      * @param resultingPageDescriptor The page that results from undertaking this traversal
      * @param traversalMode Traversal mode to use when traversing the method
      */
-    public PageTraversal(Method method, PageDescriptor resultingPageDescriptor, TraversalMode traversalMode) {
+    public PageTraversal(MethodDefinition method, PageDescriptor resultingPageDescriptor, TraversalMode traversalMode) {
         this.method = method;
         this.resultingPageDescriptor = resultingPageDescriptor;
         this.traversalMode = traversalMode;
     }
 
-    public Method getMethod() {
+    public MethodDefinition getMethod() {
         return method;
     }
 
@@ -58,7 +64,7 @@ public class PageTraversal {
     }
 
     public boolean isSubmit() {
-        return method.isAnnotationPresent(SubmitAction.class);
+        return method.isSubmitAnnotated();
     }
 
     @Override
@@ -76,9 +82,9 @@ public class PageTraversal {
         String childString = nextTraversal == null ? "" : " -> " + nextTraversal.toString();
         return String.format(
                 "{%s, %s} -> %s%s",
-                this.getMethod().getName(),
+                this.getMethod().getIdentifier(),
                 this.traversalMode.getDescription(),
-                this.getMethod().getReturnType().getSimpleName(),
+                this.getMethod().getReturnTypeIdentifier(),
                 childString
         );
     }

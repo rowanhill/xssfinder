@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.xssfinder.reflection.Instantiator;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -16,8 +15,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RouteFactoryTest {
-    @Mock
-    private Instantiator mockInstantiator;
     @Mock
     private PageTraversalFactory mockPageTraversalFactory;
 

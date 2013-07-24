@@ -1,5 +1,6 @@
 package org.xssfinder.runner;
 
+import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.xss.XssDescriptor;
 import org.xssfinder.reporting.XssJournal;
 
@@ -13,7 +14,7 @@ public class AttackPageStrategy implements PageStrategy {
     }
 
     @Override
-    public void processPage(PageContext pageContext, XssJournal xssJournal) {
+    public void processPage(PageContext pageContext, XssJournal xssJournal) throws TWebInteractionException {
         Map<String, XssDescriptor> xssIdsToXssDescriptors =
                 pageAttacker.attackIfAboutToSubmit(pageContext);
         for (Map.Entry<String, XssDescriptor> entry : xssIdsToXssDescriptors.entrySet()) {

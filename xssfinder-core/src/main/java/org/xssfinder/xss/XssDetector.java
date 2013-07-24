@@ -1,6 +1,7 @@
 package org.xssfinder.xss;
 
-import org.xssfinder.runner.DriverWrapper;
+import org.xssfinder.remote.ExecutorWrapper;
+import org.xssfinder.remote.TWebInteractionException;
 
 import java.util.Collections;
 import java.util.Set;
@@ -9,8 +10,8 @@ import java.util.Set;
  * Looks for successful attacks on the current page
  */
 public class XssDetector {
-    public Set<String> getCurrentXssIds(DriverWrapper driverWrapper) {
-        Set<String> currentXssIds = driverWrapper.getCurrentXssIds();
+    public Set<String> getCurrentXssIds(ExecutorWrapper executor) throws TWebInteractionException {
+        Set<String> currentXssIds = executor.getCurrentXssIds();
         if (currentXssIds == null) {
             return Collections.emptySet();
         } else {
