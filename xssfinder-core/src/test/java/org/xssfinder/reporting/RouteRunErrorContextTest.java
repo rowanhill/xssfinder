@@ -86,7 +86,7 @@ public class RouteRunErrorContextTest {
     @Test
     public void errorContextHasPageTraversalString() throws Exception {
         // given
-        when(mockMethodDefinition.toString()).thenReturn("Mock method");
+        when(mockMethodDefinition.getIdentifier()).thenReturn("Mock method");
         when(mockTraversal.getMethod()).thenReturn(mockMethodDefinition);
 
         // when

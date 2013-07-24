@@ -29,7 +29,7 @@ public class RouteRunErrorContext {
 
     public String getPageTraversalMethodString() {
         PageTraversal traversal = pageContext == null ? null : pageContext.getPageTraversal();
-        return traversal == null ? null : traversal.getMethod().toString();
+        return traversal == null ? null : traversal.getMethod().getIdentifier();
     }
 
     public String getTraversalModeName() {
