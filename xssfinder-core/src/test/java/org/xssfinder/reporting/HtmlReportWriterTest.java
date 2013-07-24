@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -81,6 +80,57 @@ public class HtmlReportWriterTest {
         // then
         File file = new File(OUT_FILE).getAbsoluteFile();
         assertThat(file.exists(), is(true));
+    }
+
+    @Test
+    public void reportFileSummaryListsNumberOfVulnerabilitiesFound() throws Exception {
+        // given
+        XssSighting mockXssSighting = mock(XssSighting.class);
+        Set<XssSighting> expectedSightings = ImmutableSet.of(mockXssSighting);
+        when(mockJournal.getXssSightings()).thenReturn(expectedSightings);
+
+        // when
+        reportWriter.write(mockJournal);
+
+        // then
+        ReportPage reportPage = new ReportPage(createDriver());
+        assertThat(reportPage.getSummaryVulnerabilitiesCount(), is(1));
+    }
+
+    @Test
+    public void reportFileSummaryListsNumberOfUntestedInputsFound() throws Exception {
+        // given
+        PageDefinition mockPageDefinition1 = mock(PageDefinition.class);
+        when(mockPageDefinition1.getIdentifier()).thenReturn("Mock Page 1");
+        PageDefinition mockPageDefinition2 = mock(PageDefinition.class);
+        when(mockPageDefinition2.getIdentifier()).thenReturn("Mock Page 2");
+        Set<PageDefinition> pageClassesWithUntestedInputs = ImmutableSet.of(
+                mockPageDefinition1,
+                mockPageDefinition2
+        );
+        when(mockJournal.getPagesClassWithUntestedInputs()).thenReturn(pageClassesWithUntestedInputs);
+
+        // when
+        reportWriter.write(mockJournal);
+
+        // then
+        ReportPage reportPage = new ReportPage(createDriver());
+        assertThat(reportPage.getSummaryUntestedInputPagesCount(), is(2));
+    }
+
+    @Test
+    public void reportFileSummaryListsNumberOfExceptionsRecorded() throws Exception {
+        // given
+        RouteRunErrorContext mockContext = mock(RouteRunErrorContext.class);
+        List<RouteRunErrorContext> errorContexts = ImmutableList.of(mockContext);
+        when(mockJournal.getErrorContexts()).thenReturn(errorContexts);
+
+        // when
+        reportWriter.write(mockJournal);
+
+        // then
+        ReportPage reportPage = new ReportPage(createDriver());
+        assertThat(reportPage.getSummaryExceptionCount(), is(1));
     }
 
     @Test
@@ -261,6 +311,18 @@ public class HtmlReportWriterTest {
 
         private ReportPage(HtmlUnitDriver webDriver) {
             this.webDriver = webDriver;
+        }
+
+        public int getSummaryVulnerabilitiesCount() {
+            return Integer.parseInt(webDriver.findElement(By.id("summary-vulns")).getText());
+        }
+
+        public int getSummaryUntestedInputPagesCount() {
+            return Integer.parseInt(webDriver.findElement(By.id("summary-untested")).getText());
+        }
+
+        public int getSummaryExceptionCount() {
+            return Integer.parseInt(webDriver.findElement(By.id("summary-exceptions")).getText());
         }
 
         public int getVulnerabilityCount() {

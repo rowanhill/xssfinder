@@ -33,6 +33,13 @@ public class HtmlReportWriter {
             output.write("<script src=\"http://code.jquery.com/jquery-1.10.2.min.js\"></script>");
             output.write("</head>");
             output.write("<body>");
+
+            output.write("<h2>Summary</h2>");
+            output.write("<p>There were <span id='summary-vulns'>"+journal.getXssSightings().size()+"</span> ");
+            output.write("detected vulnerabilitie(s), ");
+            output.write("<span id='summary-untested'>"+journal.getPagesClassWithUntestedInputs().size()+"</span> page(s) with untested inputs, ");
+            output.write("and <span id='summary-exceptions'>"+journal.getErrorContexts().size()+"</span> error(s).</p>");
+
             output.write("<h2>Vulnerabilities</h2>");
             output.write("<p>The following vulnerabilities were detected:</p>");
             output.write("<table id='vulnerabilities'>");
