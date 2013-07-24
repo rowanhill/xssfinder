@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xssfinder.XssFinder;
 import org.xssfinder.remote.ExecutorServer;
+import org.xssfinder.remote.ExecutorServerFactory;
 import org.xssfinder.reporting.XssJournal;
 import org.xssfinder.reporting.XssSighting;
-import org.xssfinder.remote.ExecutorServerFactory;
 
 import java.io.File;
 
