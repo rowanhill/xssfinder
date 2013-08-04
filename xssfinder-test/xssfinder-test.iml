@@ -22,13 +22,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="xssfinder-executor-java" />
-    <orderEntry type="module" module-name="xssfinder-executor" />
     <orderEntry type="library" name="Maven: org.apache.thrift:libthrift:0.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.5" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.httpcomponents:httpcore:4.2.2" level="project" />
-    <orderEntry type="module" module-name="xssfinder-annotations" />
+    <orderEntry type="library" name="Maven: org.xssfinder:xssfinder-annotations:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-java:2.32.0" level="project" />
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-android-driver:2.32.0" level="project" />
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-remote-driver:2.32.0" level="project" />
@@ -110,6 +108,9 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-tx:3.0.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:3.0.6.RELEASE" level="project" />
     <orderEntry type="module" module-name="xssfinder-core" scope="TEST" />
+    <orderEntry type="module" module-name="xssfinder-java-executor" scope="TEST" />
+    <orderEntry type="module" module-name="xssfinder-java-thrift" scope="TEST" />
+    <orderEntry type="module" module-name="xssfinder-java-annotations" scope="TEST" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:7.6.10.v20130312" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.orbit:javax.servlet:2.5.0.v201103041518" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:7.6.10.v20130312" level="project" />

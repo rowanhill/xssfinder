@@ -11,10 +11,10 @@
 
     <modules>
         <module>xssfinder-core</module>
-        <module>xssfinder-annotations</module>
         <module>xssfinder-test</module>
-        <module>xssfinder-executor</module>
-        <module>xssfinder-executor-java</module>
+        <module>xssfinder-java-thrift</module>
+        <module>xssfinder-java-annotations</module>
+        <module>xssfinder-java-executor</module>
     </modules>
 
     <dependencyManagement>
