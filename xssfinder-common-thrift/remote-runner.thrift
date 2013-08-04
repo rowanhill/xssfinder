@@ -1,4 +1,5 @@
 namespace java org.xssfinder.remote
+namespace php XssFinderRemote
 
 struct PageDefinition {}
 
