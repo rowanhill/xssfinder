@@ -64,10 +64,10 @@ public class ExecutorWrapper implements Executor.Iface {
     {
         try {
             return innerExecutor.traverseMethod(method, mode);
-        } catch (TException e) {
-            throw new CommunicationsException(e);
         } catch (TUntraversableException e) {
             throw new RuntimeException(e);
+        } catch (TException e) {
+            throw new CommunicationsException(e);
         }
     }
 
