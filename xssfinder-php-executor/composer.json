@@ -1,0 +1,14 @@
+{
+    "name": "rowanhill/xssfinder-php-executor",
+    "description": "PHP remote executor for XSS Finder",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Rowan Hill"
+        }
+    ],
+
+    "require": {
+        "leric/php-thrift": "0.9.0"
+    }
+}

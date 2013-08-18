@@ -6,3 +6,4 @@ xssfinder-java-thrift/target/*
 xssfinder-java-annotations/target/*
 xssfinder-java-executor/target/*
 xssfinder-test/target/*
+xssfinder-php-executor/vendor/*

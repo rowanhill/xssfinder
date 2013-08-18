@@ -6,9 +6,24 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/xssfinder-php-thrift/src/remote-runner" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/leric/php-thrift" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="Composer Vendors">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/leric/php-thrift" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/composer" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/leric/php-thrift" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/composer" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
 
