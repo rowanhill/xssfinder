@@ -7,6 +7,6 @@ rm -rf $JAVA_SRC
 mkdir -p $JAVA_SRC
 $THRIFT_BIN/thrift -out $JAVA_SRC --gen java remote-runner.thrift
 
-rm -rf $PHP_SRC
+rm -rf $PHP_SRC/XssFinderRemote
 mkdir -p $PHP_SRC
 $THRIFT_BIN/thrift -out $PHP_SRC --gen php:namespace remote-runner.thrift
