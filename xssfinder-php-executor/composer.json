@@ -8,11 +8,23 @@
         }
     ],
 
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mindplay-dk/php-annotations"
+        }
+    ],
+
     "autoload": {
         "psr-0": {"XssFinder\\": "src"}
     },
 
     "require": {
-        "leric/php-thrift": "0.9.0"
+        "leric/php-thrift": "0.9.0",
+        "mindplay/annotations": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*@dev",
+        "hafriedlander/phockito": "dev-master"
     }
 }

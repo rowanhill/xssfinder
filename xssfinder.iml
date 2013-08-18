@@ -7,7 +7,17 @@
       <sourceFolder url="file://$MODULE_DIR$/xssfinder-php-thrift/src/remote-runner" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/hafriedlander/phockito" />
       <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/leric/php-thrift" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/mindplay/annotations" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-code-coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-file-iterator" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-text-template" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-timer" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-token-stream" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/phpunit" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/phpunit-mock-objects" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/symfony/yaml" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -15,12 +25,32 @@
       <library name="Composer Vendors">
         <CLASSES>
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/leric/php-thrift" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/phpunit" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-timer" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-token-stream" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-code-coverage" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-file-iterator" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-text-template" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/phpunit-mock-objects" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/symfony/yaml" />
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/composer" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/mindplay/annotations" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/hafriedlander/phockito" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/leric/php-thrift" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/phpunit" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-timer" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-token-stream" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-code-coverage" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-file-iterator" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/php-text-template" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/phpunit-mock-objects" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/symfony/yaml" />
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/composer" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/mindplay/annotations" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/hafriedlander/phockito" />
         </SOURCES>
       </library>
     </orderEntry>

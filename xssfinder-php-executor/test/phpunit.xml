@@ -1,0 +1,7 @@
+<phpunit bootstrap="bootstrap.php">
+    <testsuites>
+        <testsuite name="Xss Finder PHP executor tests">
+            <directory>.</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
