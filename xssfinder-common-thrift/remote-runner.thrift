@@ -1,8 +1,6 @@
 namespace java org.xssfinder.remote
 namespace php XssFinderRemote
 
-struct PageDefinition {}
-
 struct MethodDefinition {
   1:string identifier,
   2:string returnTypeIdentifier,
