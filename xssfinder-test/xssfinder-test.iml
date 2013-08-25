@@ -131,6 +131,17 @@
     <orderEntry type="library" name="Maven: org.eclipse.jetty.orbit:com.sun.el:1.0.0.v201105211818" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.orbit:org.eclipse.jdt.core:3.7.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:jstl:1.2" level="project" />
+    <orderEntry type="module-library">
+      <library name="PHP">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../xssfinder-php-executor/vendor" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../xssfinder-php-executor/vendor" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
 
