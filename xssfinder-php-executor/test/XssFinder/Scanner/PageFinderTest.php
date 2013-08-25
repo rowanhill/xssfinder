@@ -9,7 +9,7 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
     public function testReturnsClassesFromAnyNamespaceAnnotatedAsPages()
     {
         // given
-        $classNames = array('TestPages\SomePage');
+        $classNames = array('PageFinder\TestPages\SomePage');
         $pageFinder = new PageFinder();
 
         // when
@@ -22,7 +22,7 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
     public function testDoesNotReturnClassesFromAnyNamespaceNotAnnotatedAsPages()
     {
         // given
-        $classNames = array('TestPages\NotAPage');
+        $classNames = array('PageFinder\TestPages\NotAPage');
         $pageFinder = new PageFinder();
 
         // when
@@ -35,7 +35,7 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
     public function testReturnsClassesFromSpecifiedNamespaceAnnotatedAsPages()
     {
         // given
-        $classNames = array('TestPages\SomePage');
+        $classNames = array('PageFinder\TestPages\SomePage');
         $pageFinder = new PageFinder('TestPages');
 
         // when
@@ -48,7 +48,7 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
     public function testDoesNotReturnAnnotatedClassesFromWrongNamespace()
     {
         // given
-        $classNames = array('NotTestPages\SomePage');
+        $classNames = array('PageFinder\NotTestPages\SomePage');
         $pageFinder = new PageFinder('TestPages');
 
         // when
@@ -61,8 +61,8 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
     public function testLeadingBackslashOnNamespaceOfInputClassNamesIsAllowable()
     {
         // given
-        $classNames = array('\TestPages\SomePage');
-        $pageFinder = new PageFinder('TestPages');
+        $classNames = array('\PageFinder\TestPages\SomePage');
+        $pageFinder = new PageFinder('TPageFinder\estPages');
 
         // when
         $pageClassNames = $pageFinder->findPages($classNames);
@@ -74,8 +74,8 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
     public function testLeadingBackslashOnSpecifiedNamespaceIsAllowable()
     {
         // given
-        $classNames = array('TestPages\SomePage');
-        $pageFinder = new PageFinder('\TestPages');
+        $classNames = array('PageFinder\TestPages\SomePage');
+        $pageFinder = new PageFinder('\PageFinder\TestPages');
 
         // when
         $pageClassNames = $pageFinder->findPages($classNames);
@@ -85,7 +85,7 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
     }
 }
 
-namespace TestPages;
+namespace PageFinder\TestPages;
 
 /**
  * @page
@@ -95,7 +95,7 @@ class SomePage {}
 class NotAPage {}
 
 
-namespace NotTestPages;
+namespace PageFinder\NotTestPages;
 
 /**
  * @page
