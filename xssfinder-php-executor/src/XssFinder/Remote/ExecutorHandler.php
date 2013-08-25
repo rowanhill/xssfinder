@@ -9,6 +9,7 @@ class ExecutorHandler implements ExecutorIf
     public function getPageDefinitions($namespaceIdentifier)
     {
         // TODO: Implement getPageDefinitions() method.
+        return array();
     }
 
     public function startRoute($pageIdentifier)

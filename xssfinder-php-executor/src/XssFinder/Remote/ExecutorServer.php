@@ -3,6 +3,7 @@
 namespace XssFinder\Remote;
 
 use Thrift\Factory\TBinaryProtocolFactory;
+use Thrift\Factory\TJSONProtocolFactory;
 use Thrift\Factory\TTransportFactory;
 use Thrift\Server\TServerSocket;
 use Thrift\Server\TSimpleServer;
