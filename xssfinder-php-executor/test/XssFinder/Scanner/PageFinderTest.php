@@ -6,7 +6,7 @@ use PHPUnit_Framework_TestCase;
 
 class PageFinderTest extends PHPUnit_Framework_TestCase
 {
-    public function testReturnsClassesAnnotatedAsPages()
+    public function testReturnsClassesFromAnyNamespaceAnnotatedAsPages()
     {
         // given
         $classNames = array('TestPages\SomePage');
@@ -19,7 +19,7 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
         $this->assertThat($pageClassNames, $this->equalTo($classNames));
     }
 
-    public function testDoesNotReturnClassesNotAnnotatedAsPages()
+    public function testDoesNotReturnClassesFromAnyNamespaceNotAnnotatedAsPages()
     {
         // given
         $classNames = array('TestPages\NotAPage');
@@ -31,6 +31,58 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
         // then
         $this->assertThat($pageClassNames, $this->equalTo(array()));
     }
+
+    public function testReturnsClassesFromSpecifiedNamespaceAnnotatedAsPages()
+    {
+        // given
+        $classNames = array('TestPages\SomePage');
+        $pageFinder = new PageFinder('TestPages');
+
+        // when
+        $pageClassNames = $pageFinder->findPages($classNames);
+
+        // then
+        $this->assertThat($pageClassNames, $this->equalTo($classNames));
+    }
+
+    public function testDoesNotReturnAnnotatedClassesFromWrongNamespace()
+    {
+        // given
+        $classNames = array('NotTestPages\SomePage');
+        $pageFinder = new PageFinder('TestPages');
+
+        // when
+        $pageClassNames = $pageFinder->findPages($classNames);
+
+        // then
+        $this->assertThat($pageClassNames, $this->equalTo(array()));
+    }
+
+    public function testLeadingBackslashOnNamespaceOfInputClassNamesIsAllowable()
+    {
+        // given
+        $classNames = array('\TestPages\SomePage');
+        $pageFinder = new PageFinder('TestPages');
+
+        // when
+        $pageClassNames = $pageFinder->findPages($classNames);
+
+        // then
+        $this->assertThat($pageClassNames, $this->equalTo($classNames));
+    }
+
+    public function testLeadingBackslashOnSpecifiedNamespaceIsAllowable()
+    {
+        // given
+        $classNames = array('TestPages\SomePage');
+        $pageFinder = new PageFinder('\TestPages');
+
+        // when
+        $pageClassNames = $pageFinder->findPages($classNames);
+
+        // then
+        $this->assertThat($pageClassNames, $this->equalTo($classNames));
+    }
 }
 
 namespace TestPages;
@@ -41,3 +93,11 @@ namespace TestPages;
 class SomePage {}
 
 class NotAPage {}
+
+
+namespace NotTestPages;
+
+/**
+ * @page
+ */
+class SomePage {}

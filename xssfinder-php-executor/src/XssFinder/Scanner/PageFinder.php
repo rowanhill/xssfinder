@@ -6,10 +6,15 @@ use mindplay\annotations\Annotations;
 
 class PageFinder
 {
-    public function __construct()
+    private $_namespace;
+
+    public function __construct($namespace = null)
     {
         Annotations::$config['cache'] = new AnnotationCache(sys_get_temp_dir());
         \XssFinder\Annotations\Annotations::load();
+
+        // Strip of leading backslashes from the specified namespace
+        $this->_namespace = preg_replace('/^\\\\/', '', $namespace);;
     }
 
     /**
@@ -23,7 +28,11 @@ class PageFinder
         $annotationsManager = Annotations::getManager();
         $pageClasses = array();
         foreach ($classNames as $className) {
-            $annotations = $annotationsManager->getClassAnnotations($className);
+            $class = new \ReflectionClass($className);
+            if ($this->_namespace != null && $class->getNamespaceName() !== $this->_namespace) {
+                continue;
+            }
+            $annotations = $annotationsManager->getClassAnnotations($class);
             foreach ($annotations as $annotation) {
                 if (is_a($annotation, 'PageAnnotation')) {
                     $pageClasses[] = $className;
