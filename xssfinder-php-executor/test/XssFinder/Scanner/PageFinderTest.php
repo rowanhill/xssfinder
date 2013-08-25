@@ -36,7 +36,7 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
     {
         // given
         $classNames = array('PageFinder\TestPages\SomePage');
-        $pageFinder = new PageFinder('TestPages');
+        $pageFinder = new PageFinder('PageFinder\TestPages');
 
         // when
         $pageClassNames = $pageFinder->findPages($classNames);
@@ -49,7 +49,7 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
     {
         // given
         $classNames = array('PageFinder\NotTestPages\SomePage');
-        $pageFinder = new PageFinder('TestPages');
+        $pageFinder = new PageFinder('PageFinder\TestPages');
 
         // when
         $pageClassNames = $pageFinder->findPages($classNames);
@@ -62,7 +62,7 @@ class PageFinderTest extends PHPUnit_Framework_TestCase
     {
         // given
         $classNames = array('\PageFinder\TestPages\SomePage');
-        $pageFinder = new PageFinder('TPageFinder\estPages');
+        $pageFinder = new PageFinder('PageFinder\TestPages');
 
         // when
         $pageClassNames = $pageFinder->findPages($classNames);
