@@ -1654,4 +1654,193 @@ class Executor_invokeAfterRouteHandler_result {
 
 }
 
+class ExecutorProcessor {
+  protected $handler_ = null;
+  public function __construct($handler) {
+    $this->handler_ = $handler;
+  }
+
+  public function process($input, $output) {
+    $rseqid = 0;
+    $fname = null;
+    $mtype = 0;
+
+    $input->readMessageBegin($fname, $mtype, $rseqid);
+    $methodname = 'process_'.$fname;
+    if (!method_exists($this, $methodname)) {
+      $input->skip(TType::STRUCT);
+      $input->readMessageEnd();
+      $x = new TApplicationException('Function '.$fname.' not implemented.', TApplicationException::UNKNOWN_METHOD);
+      $output->writeMessageBegin($fname, TMessageType::EXCEPTION, $rseqid);
+      $x->write($output);
+      $output->writeMessageEnd();
+      $output->getTransport()->flush();
+      return;
+    }
+    $this->$methodname($rseqid, $input, $output);
+    return true;
+  }
+
+  protected function process_getPageDefinitions($seqid, $input, $output) {
+    $args = new \XssFinder\Executor_getPageDefinitions_args();
+    $args->read($input);
+    $input->readMessageEnd();
+    $result = new \XssFinder\Executor_getPageDefinitions_result();
+    $result->success = $this->handler_->getPageDefinitions($args->namespaceIdentifier);
+    $bin_accel = ($output instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($output, 'getPageDefinitions', TMessageType::REPLY, $result, $seqid, $output->isStrictWrite());
+    }
+    else
+    {
+      $output->writeMessageBegin('getPageDefinitions', TMessageType::REPLY, $seqid);
+      $result->write($output);
+      $output->writeMessageEnd();
+      $output->getTransport()->flush();
+    }
+  }
+  protected function process_startRoute($seqid, $input, $output) {
+    $args = new \XssFinder\Executor_startRoute_args();
+    $args->read($input);
+    $input->readMessageEnd();
+    $result = new \XssFinder\Executor_startRoute_result();
+    try {
+      $this->handler_->startRoute($args->pageIdentifier);
+    } catch (\XssFinder\TWebInteractionException $webInteraction) {
+      $result->webInteraction = $webInteraction;
+    }
+    $bin_accel = ($output instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($output, 'startRoute', TMessageType::REPLY, $result, $seqid, $output->isStrictWrite());
+    }
+    else
+    {
+      $output->writeMessageBegin('startRoute', TMessageType::REPLY, $seqid);
+      $result->write($output);
+      $output->writeMessageEnd();
+      $output->getTransport()->flush();
+    }
+  }
+  protected function process_putXssAttackStringsInInputs($seqid, $input, $output) {
+    $args = new \XssFinder\Executor_putXssAttackStringsInInputs_args();
+    $args->read($input);
+    $input->readMessageEnd();
+    $result = new \XssFinder\Executor_putXssAttackStringsInInputs_result();
+    try {
+      $result->success = $this->handler_->putXssAttackStringsInInputs();
+    } catch (\XssFinder\TWebInteractionException $webInteraction) {
+      $result->webInteraction = $webInteraction;
+    }
+    $bin_accel = ($output instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($output, 'putXssAttackStringsInInputs', TMessageType::REPLY, $result, $seqid, $output->isStrictWrite());
+    }
+    else
+    {
+      $output->writeMessageBegin('putXssAttackStringsInInputs', TMessageType::REPLY, $seqid);
+      $result->write($output);
+      $output->writeMessageEnd();
+      $output->getTransport()->flush();
+    }
+  }
+  protected function process_getCurrentXssIds($seqid, $input, $output) {
+    $args = new \XssFinder\Executor_getCurrentXssIds_args();
+    $args->read($input);
+    $input->readMessageEnd();
+    $result = new \XssFinder\Executor_getCurrentXssIds_result();
+    try {
+      $result->success = $this->handler_->getCurrentXssIds();
+    } catch (\XssFinder\TWebInteractionException $webInteraction) {
+      $result->webInteraction = $webInteraction;
+    }
+    $bin_accel = ($output instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($output, 'getCurrentXssIds', TMessageType::REPLY, $result, $seqid, $output->isStrictWrite());
+    }
+    else
+    {
+      $output->writeMessageBegin('getCurrentXssIds', TMessageType::REPLY, $seqid);
+      $result->write($output);
+      $output->writeMessageEnd();
+      $output->getTransport()->flush();
+    }
+  }
+  protected function process_getFormCount($seqid, $input, $output) {
+    $args = new \XssFinder\Executor_getFormCount_args();
+    $args->read($input);
+    $input->readMessageEnd();
+    $result = new \XssFinder\Executor_getFormCount_result();
+    try {
+      $result->success = $this->handler_->getFormCount();
+    } catch (\XssFinder\TWebInteractionException $webInteraction) {
+      $result->webInteraction = $webInteraction;
+    }
+    $bin_accel = ($output instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($output, 'getFormCount', TMessageType::REPLY, $result, $seqid, $output->isStrictWrite());
+    }
+    else
+    {
+      $output->writeMessageBegin('getFormCount', TMessageType::REPLY, $seqid);
+      $result->write($output);
+      $output->writeMessageEnd();
+      $output->getTransport()->flush();
+    }
+  }
+  protected function process_traverseMethod($seqid, $input, $output) {
+    $args = new \XssFinder\Executor_traverseMethod_args();
+    $args->read($input);
+    $input->readMessageEnd();
+    $result = new \XssFinder\Executor_traverseMethod_result();
+    try {
+      $result->success = $this->handler_->traverseMethod($args->method, $args->mode);
+    } catch (\XssFinder\TUntraversableException $untraversable) {
+      $result->untraversable = $untraversable;
+        } catch (\XssFinder\TWebInteractionException $webInteraction) {
+      $result->webInteraction = $webInteraction;
+    }
+    $bin_accel = ($output instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($output, 'traverseMethod', TMessageType::REPLY, $result, $seqid, $output->isStrictWrite());
+    }
+    else
+    {
+      $output->writeMessageBegin('traverseMethod', TMessageType::REPLY, $seqid);
+      $result->write($output);
+      $output->writeMessageEnd();
+      $output->getTransport()->flush();
+    }
+  }
+  protected function process_invokeAfterRouteHandler($seqid, $input, $output) {
+    $args = new \XssFinder\Executor_invokeAfterRouteHandler_args();
+    $args->read($input);
+    $input->readMessageEnd();
+    $result = new \XssFinder\Executor_invokeAfterRouteHandler_result();
+    try {
+      $this->handler_->invokeAfterRouteHandler($args->rootPageIdentifier);
+    } catch (\XssFinder\TWebInteractionException $webInteraction) {
+      $result->webInteraction = $webInteraction;
+        } catch (\XssFinder\TLifecycleEventHandlerException $lifecycleEventHandler) {
+      $result->lifecycleEventHandler = $lifecycleEventHandler;
+    }
+    $bin_accel = ($output instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($output, 'invokeAfterRouteHandler', TMessageType::REPLY, $result, $seqid, $output->isStrictWrite());
+    }
+    else
+    {
+      $output->writeMessageBegin('invokeAfterRouteHandler', TMessageType::REPLY, $seqid);
+      $result->write($output);
+      $output->writeMessageEnd();
+      $output->getTransport()->flush();
+    }
+  }
+}
 

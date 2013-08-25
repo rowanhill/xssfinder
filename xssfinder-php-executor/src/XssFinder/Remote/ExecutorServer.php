@@ -6,6 +6,7 @@ use Thrift\Factory\TBinaryProtocolFactory;
 use Thrift\Factory\TTransportFactory;
 use Thrift\Server\TServerSocket;
 use Thrift\Server\TSimpleServer;
+use XssFinder\ExecutorProcessor;
 
 require_once(__DIR__ . '/../../../vendor/autoload.php');
 require_once(__DIR__ . '/../Executor.php');
@@ -25,7 +26,8 @@ class ExecutorServer
     {
         $this->_pageClassNames = $pageClassNames;
 
-        $processor = new ExecutorHandler();
+        $handler = new ExecutorHandler();
+        $processor = new ExecutorProcessor($handler);
         $transport = new TServerSocket($hostname, $port);
         $transportFactory = new TTransportFactory();
         $protocolFactory = new TBinaryProtocolFactory();
