@@ -2,11 +2,13 @@
 
 namespace XssFinder\Remote;
 
+use Hamcrest_Description;
 use Thrift\Protocol\TBinaryProtocol;
 use Thrift\Protocol\TJSONProtocol;
 use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use XssFinder\ExecutorClient;
+use XssFinder\PageDefinition;
 
 require_once(__DIR__ . '/../../../src/XssFinder/Executor.php');
 require_once(__DIR__ . '/../../../src/XssFinder/Types.php');
@@ -28,7 +30,7 @@ class ExecutorServerTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testServerRespondsToClientRequests()
+    public function testServerRespondsToClientRequestsAndFindsPages()
     {
         // given
         // Start the server in another process
@@ -45,7 +47,72 @@ class ExecutorServerTest extends \PHPUnit_Framework_TestCase
         $pages = $client->getPageDefinitions('');
 
         // then
-        $this->assertThat($pages, $this->equalTo(array()));
+        assertThat(count($pages), equalTo(2));
+        assertThat($pages, hasValue(new PageDefinitionMatcher('\ExecutorServerTest_SomePage')));
+        assertThat($pages, hasValue(new PageDefinitionMatcher('\ExecutorServerTest_SomeOtherPage')));
         $transport->close();
+    }
+}
+
+class PageDefinitionMatcher implements \Hamcrest_Matcher
+{
+    private $_expectedIdentifier;
+
+    public function __construct($expectedIdentifier)
+    {
+        $this->_expectedIdentifier = $expectedIdentifier;
+    }
+
+    /**
+     * Evaluates the matcher for argument <var>$item</var>.
+     *
+     * @param mixed $item the object against which the matcher is evaluated.
+     *
+     * @return boolean <code>true</code> if <var>$item</var> matches,
+     *   otherwise <code>false</code>.
+     *
+     * @see Hamcrest_BaseMatcher
+     */
+    public function matches($item)
+    {
+        if (!is_a($item, '\XssFinder\PageDefinition')) {
+            return false;
+        }
+        /** @var PageDefinition $pageDefinition */
+        $pageDefinition = $item;
+
+        return $pageDefinition->identifier === $this->_expectedIdentifier;
+    }
+
+    /**
+     * Generate a description of why the matcher has not accepted the item.
+     * The description will be part of a larger description of why a matching
+     * failed, so it should be concise.
+     * This method assumes that <code>matches($item)</code> is false, but
+     * will not check this.
+     *
+     * @param mixed $item The item that the Matcher has rejected.
+     * @param Hamcrest_Description $description
+     *   The description to be built or appended to.
+     */
+    public function describeMismatch($item, Hamcrest_Description $description)
+    {
+        $className = get_class($item);
+        $id = $this->_expectedIdentifier;
+        $description->appendText("$className is not a PageDescriptor with identifier $id");
+    }
+
+    /**
+     * Generates a description of the object.  The description may be part
+     * of a description of a larger object of which this is just a component,
+     * so it should be worded appropriately.
+     *
+     * @param Hamcrest_Description $description
+     *   The description to be built or appended to.
+     */
+    public function describeTo(Hamcrest_Description $description)
+    {
+        $id = $this->_expectedIdentifier;
+        $description->appendText("<$id>");
     }
 }

@@ -6,5 +6,21 @@
 
 require __DIR__ . '/../../../vendor/autoload.php';
 
-$server = new \XssFinder\Remote\ExecutorServer('localhost', 9090, array());
+/**
+ * @page
+ */
+class ExecutorServerTest_SomePage
+{
+    /**
+     * @return ExecutorServerTest_SomeOtherPage
+     */
+    public function goToSomeOtherPage() { return new ExecutorServerTest_SomeOtherPage(); }
+}
+
+/**
+ * @page
+ */
+class ExecutorServerTest_SomeOtherPage {}
+
+$server = new \XssFinder\Remote\ExecutorServer('localhost', 9090, array('ExecutorServerTest_SomePage', 'ExecutorServerTest_SomeOtherPage'));
 $server->serve();
