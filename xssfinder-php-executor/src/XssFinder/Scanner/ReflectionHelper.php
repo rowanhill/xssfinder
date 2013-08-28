@@ -21,8 +21,12 @@ class ReflectionHelper
         $returnAnnotation = current($returnAnnotations);
         $returnClassName = $returnAnnotation->type;
 
+        if (strpos($returnClassName, '\\') !== 0) {
+            $returnClassName = '\\'.$returnClassName;
+        }
+
         if (!class_exists($returnClassName)) {
-            $returnClassName = '\\' . $method->getDeclaringClass()->getNamespaceName() . '\\' . $returnClassName;
+            $returnClassName = '\\' . $method->getDeclaringClass()->getNamespaceName() . $returnClassName;
         }
         if (!class_exists($returnClassName)) {
             $returnClassName = null;
