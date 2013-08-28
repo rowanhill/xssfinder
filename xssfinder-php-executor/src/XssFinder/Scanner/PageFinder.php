@@ -1,8 +1,8 @@
 <?php
 namespace XssFinder\Scanner;
 
-use mindplay\annotations\AnnotationCache;
-use mindplay\annotations\Annotations;
+
+use XssFinder\Annotations\Annotations;
 
 class PageFinder
 {
@@ -10,9 +10,6 @@ class PageFinder
 
     public function __construct($namespace = null)
     {
-        Annotations::$config['cache'] = new AnnotationCache(sys_get_temp_dir());
-        \XssFinder\Annotations\Annotations::load();
-
         // Strip of leading backslashes from the specified namespace
         $this->_namespace = preg_replace('/^\\\\/', '', $namespace);;
     }
@@ -25,18 +22,16 @@ class PageFinder
      */
     public function findPages($classNames)
     {
-        $annotationsManager = Annotations::getManager();
+        $annotationsManager = Annotations::getConfiguredManager();
         $pageClasses = array();
         foreach ($classNames as $className) {
             $class = new \ReflectionClass($className);
             if ($this->_namespace != null && $class->getNamespaceName() !== $this->_namespace) {
                 continue;
             }
-            $annotations = $annotationsManager->getClassAnnotations($class);
-            foreach ($annotations as $annotation) {
-                if (is_a($annotation, 'PageAnnotation')) {
-                    $pageClasses[] = $className;
-                }
+            $annotations = $annotationsManager->getClassAnnotations($class, '@page');
+            if (!empty($annotations)) {
+                $pageClasses[] = $className;
             }
         }
         return $pageClasses;
