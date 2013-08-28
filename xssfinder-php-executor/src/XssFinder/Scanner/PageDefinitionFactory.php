@@ -38,7 +38,7 @@ class PageDefinitionFactory
         $reflectionClass = new \ReflectionClass($className);
 
         $pageDefinition = new PageDefinition();
-        $pageDefinition->identifier = $className;
+        $pageDefinition->identifier = '\\' . $reflectionClass->getName();
         $pageDefinition->methods = $this->_getMethodDefinitions($reflectionClass);
         $pageDefinition->crawlStartPoint = $this->_isCrawlStartPoint($reflectionClass);
 

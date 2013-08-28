@@ -44,6 +44,58 @@ class MethodDefinitionFactoryTest extends \PHPUnit_Framework_TestCase
         assertThat($methodDefinition->returnTypeIdentifier, equalTo(self::SOME_PAGE));
     }
 
+    public function testOwningTypeIsMethodDeclaringClass()
+    {
+        // given
+        $method = $this->_getMethod(self::SOME_PAGE, 'goToSomePage');
+        when($this->_mockReflectionHelper->getReturnType($method))->return(self::SOME_PAGE);
+
+        // when
+        $methodDefinition = $this->_factory->createMethodDefinition($method);
+
+        // then
+        assertThat($methodDefinition->owningTypeIdentifier, equalTo(self::SOME_PAGE));
+    }
+
+    public function testDefinitionHasArgumentsIfMethodHasArguments()
+    {
+        // given
+        $method = $this->_getMethod(self::SOME_PAGE, 'goToSomePageWithArgs');
+        when($this->_mockReflectionHelper->getReturnType($method))->return(self::SOME_PAGE);
+
+        // when
+        $methodDefinition = $this->_factory->createMethodDefinition($method);
+
+        // then
+        assertThat($methodDefinition->parameterised, equalTo(true));
+    }
+
+    public function testDefinitionDoesNotHaveArgumentsIfMethodDoesNotHaveArguments()
+    {
+        // given
+        $method = $this->_getMethod(self::SOME_PAGE, 'goToSomePage');
+        when($this->_mockReflectionHelper->getReturnType($method))->return(self::SOME_PAGE);
+
+        // when
+        $methodDefinition = $this->_factory->createMethodDefinition($method);
+
+        // then
+        assertThat($methodDefinition->parameterised, equalTo(false));
+    }
+
+    public function testDefinitionDoesNotHaveArgumentsIfMethodDoesOnlyHasDefaultedArguments()
+    {
+        // given
+        $method = $this->_getMethod(self::SOME_PAGE, 'goToSomePageWithDefaultArgs');
+        when($this->_mockReflectionHelper->getReturnType($method))->return(self::SOME_PAGE);
+
+        // when
+        $methodDefinition = $this->_factory->createMethodDefinition($method);
+
+        // then
+        assertThat($methodDefinition->parameterised, equalTo(false));
+    }
+
     /**
      * @param $className
      * @param $methodName
@@ -64,4 +116,16 @@ class SomePage
      * @return SomePage
      */
     public function goToSomePage() { return new SomePage(); }
+
+    /**
+     * @param $arg
+     * @return SomePage
+     */
+    public function goToSomePageWithArgs($arg) { return new SomePage(); }
+
+    /**
+     * @param $arg
+     * @return SomePage
+     */
+    public function goToSomePageWithDefaultArgs($arg = null) { return new SomePage(); }
 }

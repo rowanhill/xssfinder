@@ -23,6 +23,8 @@ class MethodDefinitionFactory
         $methodDefinition = new MethodDefinition();
         $methodDefinition->identifier = $method->getName();
         $methodDefinition->returnTypeIdentifier = $this->_reflectionHelper->getReturnType($method);
+        $methodDefinition->owningTypeIdentifier = '\\' . $method->getDeclaringClass()->getName();
+        $methodDefinition->parameterised = $method->getNumberOfRequiredParameters() > 0;
         return $methodDefinition;
     }
 }
