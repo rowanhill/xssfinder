@@ -146,19 +146,13 @@ public class PageDefinitionFactoryTest {
         // then
         InOrder inOrder = inOrder(mockMethodDefinitionFactory, mockPageDefinitionCache);
         inOrder.verify(mockPageDefinitionCache).put(eq(CircularReferencePage.class), any(PageDefinition.class));
-        inOrder.verify(mockMethodDefinitionFactory, times(1)).createMethodDefinition(
-                eq(method),
-                eq(factory)
-        );
+        inOrder.verify(mockMethodDefinitionFactory, times(1)).createMethodDefinition(method);
         verifyNoMoreInteractions(mockMethodDefinitionFactory);
     }
 
     private void setUpMockForMethod(Method method) {
         //noinspection unchecked
-        when(mockMethodDefinitionFactory.createMethodDefinition(
-                eq(method),
-                eq(factory)
-        )).thenReturn(mockMethodDefinition);
+        when(mockMethodDefinitionFactory.createMethodDefinition(method)).thenReturn(mockMethodDefinition);
     }
 
     private static class SomePage {}

@@ -58,7 +58,7 @@ public class MethodDefinitionFactoryTest {
                 createMethodDefinitionFromFactory(method);
 
         // then
-        assertThat(methodDefinition.getReturnTypeIdentifier(), is(PAGE_DEF_ID));
+        assertThat(methodDefinition.getReturnTypeIdentifier(), is(SomePage.class.getCanonicalName()));
     }
 
     @Test
@@ -140,10 +140,7 @@ public class MethodDefinitionFactoryTest {
     }
     
     private MethodDefinition createMethodDefinitionFromFactory(Method method) {
-        return factory.createMethodDefinition(
-                method,
-                mockPageDefinitionFactory
-        );
+        return factory.createMethodDefinition(method);
     }
 
     @SuppressWarnings("UnusedDeclaration")

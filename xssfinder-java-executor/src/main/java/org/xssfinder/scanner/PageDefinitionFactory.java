@@ -51,10 +51,7 @@ public class PageDefinitionFactory {
         Map<MethodDefinition, Method> methods = new HashMap<MethodDefinition, Method>();
         for (Method method : pageClass.getDeclaredMethods()) {
             if (knownPageClasses.contains(method.getReturnType())) {
-                MethodDefinition methodDefinition = methodDefinitionFactory.createMethodDefinition(
-                        method,
-                        this
-                );
+                MethodDefinition methodDefinition = methodDefinitionFactory.createMethodDefinition(method);
                 methods.put(methodDefinition, method);
             }
         }
