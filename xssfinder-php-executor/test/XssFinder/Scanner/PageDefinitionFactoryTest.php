@@ -15,6 +15,8 @@ class PageDefinitionFactoryTest extends \PHPUnit_Framework_TestCase
     private $_mockMethodFactory;
     /** @var ReflectionHelper */
     private $_mockReflectionHelper;
+    /** @var ThriftToReflectionLookup */
+    private $_mockLookup;
 
     public function setUp()
     {
@@ -23,6 +25,7 @@ class PageDefinitionFactoryTest extends \PHPUnit_Framework_TestCase
         );
         $this->_mockMethodFactory = mock('XssFinder\Scanner\MethodDefinitionFactory');
         $this->_mockReflectionHelper = mock('XssFinder\Scanner\ReflectionHelper');
+        $this->_mockLookup = mock('XssFinder\Scanner\ThriftToReflectionLookup');
         $this->_factory = new PageDefinitionFactory(
             $this->_mockMethodFactory,
             $this->_mockReflectionHelper,
@@ -33,7 +36,7 @@ class PageDefinitionFactoryTest extends \PHPUnit_Framework_TestCase
     public function testDefinitionIdentifierIsFullyQualifiedClassName()
     {
         // when
-        $pageDefinition = $this->_factory->createPageDefinition(self::SOME_PAGE);
+        $pageDefinition = $this->_factory->createPageDefinition(self::SOME_PAGE, $this->_mockLookup);
 
         // then
         assertThat($pageDefinition->identifier, equalTo(self::SOME_PAGE));
@@ -42,7 +45,7 @@ class PageDefinitionFactoryTest extends \PHPUnit_Framework_TestCase
     public function testDefinitionMethodsIsEmptySetIfClassHasNoMethods()
     {
         // when
-        $pageDefinition = $this->_factory->createPageDefinition(self::SOME_PAGE);
+        $pageDefinition = $this->_factory->createPageDefinition(self::SOME_PAGE, $this->_mockLookup);
 
         // then
         assertThat($pageDefinition->methods, equalTo(array()));
@@ -51,7 +54,7 @@ class PageDefinitionFactoryTest extends \PHPUnit_Framework_TestCase
     public function testDefinitionMethodsIsEmptySetIfClassHasNoMethodsReturningPageObjects()
     {
         // when
-        $pageDefinition = $this->_factory->createPageDefinition(self::NO_PAGE_RETURNING_PAGE);
+        $pageDefinition = $this->_factory->createPageDefinition(self::NO_PAGE_RETURNING_PAGE, $this->_mockLookup);
 
         // then
         assertThat($pageDefinition->methods, equalTo(array()));
@@ -65,7 +68,7 @@ class PageDefinitionFactoryTest extends \PHPUnit_Framework_TestCase
         when($this->_mockReflectionHelper->getReturnType($method))->return(self::SOME_PAGE);
 
         // when
-        $pageDefinition = $this->_factory->createPageDefinition(self::PAGE_RETURNING_PAGE);
+        $pageDefinition = $this->_factory->createPageDefinition(self::PAGE_RETURNING_PAGE, $this->_mockLookup);
 
         // then
         assertThat($pageDefinition->methods, equalTo(array($mockMethodDefinition)));
@@ -74,7 +77,7 @@ class PageDefinitionFactoryTest extends \PHPUnit_Framework_TestCase
     public function testDefinitionIsCrawlStartPointIfPageIsAnnotatedWithCrawlStartPoint()
     {
         // when
-        $pageDefinition = $this->_factory->createPageDefinition(self::HOME_PAGE);
+        $pageDefinition = $this->_factory->createPageDefinition(self::HOME_PAGE, $this->_mockLookup);
 
         // then
         assertThat($pageDefinition->crawlStartPoint, equalTo(true));
@@ -83,10 +86,34 @@ class PageDefinitionFactoryTest extends \PHPUnit_Framework_TestCase
     public function testDefinitionIsNotCrawlStartPointIfPageIsNotAnnotatedWithCrawlStartPoint()
     {
         // when
-        $pageDefinition = $this->_factory->createPageDefinition(self::SOME_PAGE);
+        $pageDefinition = $this->_factory->createPageDefinition(self::SOME_PAGE, $this->_mockLookup);
 
         // then
         assertThat($pageDefinition->crawlStartPoint, equalTo(false));
+    }
+
+    public function testCreatedPageDefinitionIsAddedToLookup()
+    {
+        // when
+        $this->_factory->createPageDefinition(self::SOME_PAGE, $this->_mockLookup);
+
+        // then
+        verify($this->_mockLookup)->putPageClass(self::SOME_PAGE, anInstanceOf('ReflectionClass'));
+    }
+
+    public function testCreatedMethodDefinitionIsAddedToLookup()
+    {
+        // given
+        $method = $this->_getReflectionMethod(self::PAGE_RETURNING_PAGE, 'getSomePage');
+        $mockMethodDefinition = $this->_mockMethodDefinitionCreationForMethod($method);
+        $mockMethodDefinition->identifier = 'getSomePage';
+        when($this->_mockReflectionHelper->getReturnType($method))->return(self::SOME_PAGE);
+
+        // when
+        $this->_factory->createPageDefinition(self::PAGE_RETURNING_PAGE, $this->_mockLookup);
+
+        // then
+        verify($this->_mockLookup)->putMethod('getSomePage', $method);
     }
 
     private function _getReflectionMethod($className, $methodName)

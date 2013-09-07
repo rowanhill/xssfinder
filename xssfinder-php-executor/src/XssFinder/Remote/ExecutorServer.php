@@ -3,15 +3,17 @@
 namespace XssFinder\Remote;
 
 use Thrift\Factory\TBinaryProtocolFactory;
-use Thrift\Factory\TJSONProtocolFactory;
 use Thrift\Factory\TTransportFactory;
 use Thrift\Server\TServerSocket;
 use Thrift\Server\TSimpleServer;
 use XssFinder\ExecutorProcessor;
+use XssFinder\Runner\ExecutorContext;
+use XssFinder\Runner\HtmlUnitDriverWrapper;
 use XssFinder\Scanner\MethodDefinitionFactory;
 use XssFinder\Scanner\PageDefinitionFactory;
 use XssFinder\Scanner\PageFinderFactory;
 use XssFinder\Scanner\ReflectionHelper;
+use XssFinder\Scanner\ThriftToReflectionLookupFactory;
 
 require_once(__DIR__ . '/../../../vendor/autoload.php');
 require_once(__DIR__ . '/../Executor.php');
@@ -35,7 +37,15 @@ class ExecutorServer
         $reflectionHelper = new ReflectionHelper();
         $methodDefinitionFactory = new MethodDefinitionFactory($reflectionHelper);
         $pageDefinitionFactory = new PageDefinitionFactory($methodDefinitionFactory, $reflectionHelper, $this->_pageClassNames);
-        $handler = new ExecutorHandler($pageFinderFactory, $pageDefinitionFactory, $this->_pageClassNames);
+        $lookupFactory = new ThriftToReflectionLookupFactory();
+        $executorContext = new ExecutorContext(new HtmlUnitDriverWrapper());
+        $handler = new ExecutorHandler(
+            $pageFinderFactory,
+            $pageDefinitionFactory,
+            $lookupFactory,
+            $executorContext,
+            $this->_pageClassNames
+        );
 
         $processor = new ExecutorProcessor($handler);
         $transport = new TServerSocket($hostname, $port);

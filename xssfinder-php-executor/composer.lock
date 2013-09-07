@@ -3,8 +3,39 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "1d4071caa401de44763df5c3a794363d",
+    "hash": "e807266fc16248c893dfc40e0cb0e2af",
     "packages": [
+        {
+            "name": "facebook/webdriver",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/facebook/php-webdriver.git",
+                "reference": "81cadae07b40582e9e45bafe092aba2c20229dc6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/facebook/php-webdriver/zipball/81cadae07b40582e9e45bafe092aba2c20229dc6",
+                "reference": "81cadae07b40582e9e45bafe092aba2c20229dc6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "lib/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "A php client for WebDriver",
+            "homepage": "https://github.com/facebook/php-webdriver",
+            "time": "2013-09-05 22:51:58"
+        },
         {
             "name": "leric/php-thrift",
             "version": "0.9.0",
@@ -562,6 +593,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "mindplay/annotations": 20,
+        "facebook/webdriver": 20,
         "phpunit/phpunit": 20,
         "hafriedlander/phockito": 20
     },

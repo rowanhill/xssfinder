@@ -31,25 +31,29 @@ class PageDefinitionFactory
 
     /**
      * @param $className string Fully qualified name of the page object class
+     * @param ThriftToReflectionLookup $lookup
      * @return \XssFinder\PageDefinition
      */
-    public function createPageDefinition($className)
+    public function createPageDefinition($className, ThriftToReflectionLookup $lookup)
     {
         $reflectionClass = new \ReflectionClass($className);
 
         $pageDefinition = new PageDefinition();
         $pageDefinition->identifier = '\\' . $reflectionClass->getName();
-        $pageDefinition->methods = $this->_getMethodDefinitions($reflectionClass);
+        $pageDefinition->methods = $this->_getMethodDefinitions($reflectionClass, $lookup);
         $pageDefinition->crawlStartPoint = $this->_isCrawlStartPoint($reflectionClass);
+
+        $lookup->putPageClass($pageDefinition->identifier, $reflectionClass);
 
         return $pageDefinition;
     }
 
     /**
      * @param $reflectionClass \ReflectionClass
+     * @param ThriftToReflectionLookup $lookup
      * @return array
      */
-    private function _getMethodDefinitions(\ReflectionClass $reflectionClass)
+    private function _getMethodDefinitions(\ReflectionClass $reflectionClass, ThriftToReflectionLookup $lookup)
     {
         $methodDefinitions = array();
         foreach ($reflectionClass->getMethods() as $method) {
@@ -61,6 +65,7 @@ class PageDefinitionFactory
                 $this->_createMethodDefinitionIfReturnClassIsPage($returnClassName, $method);
             if ($methodDefinition !== null) {
                 $methodDefinitions[] = $methodDefinition;
+                $lookup->putMethod($methodDefinition->identifier, $method);
             }
         }
         return $methodDefinitions;

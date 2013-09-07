@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/xssfinder-php-thrift/src/remote-runner" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/facebook/webdriver" />
       <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/hafriedlander/phockito" />
       <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/leric/php-thrift" />
       <excludeFolder url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/mindplay/annotations" />
@@ -34,6 +35,7 @@
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/phpunit-mock-objects" />
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/symfony/yaml" />
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/composer" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/facebook/webdriver" />
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/mindplay/annotations" />
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/hafriedlander/phockito" />
         </CLASSES>
@@ -49,6 +51,7 @@
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/phpunit/phpunit-mock-objects" />
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/symfony/yaml" />
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/composer" />
+          <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/facebook/webdriver" />
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/mindplay/annotations" />
           <root url="file://$MODULE_DIR$/xssfinder-php-executor/vendor/hafriedlander/phockito" />
         </SOURCES>
