@@ -8,6 +8,7 @@ require __DIR__ . '/../../../vendor/autoload.php';
 
 /**
  * @page
+ * @crawlStartPoint('url'=>'http://www.google.com')
  */
 class ExecutorServerTest_SomePage
 {

@@ -3,10 +3,12 @@
 namespace XssFinder\Remote;
 
 use Hamcrest_Description;
+use RemoteWebDriver;
 use Thrift\Protocol\TBinaryProtocol;
 use Thrift\Protocol\TJSONProtocol;
 use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
+use WebDriverCapabilityType;
 use XssFinder\ExecutorClient;
 use XssFinder\PageDefinition;
 
@@ -27,15 +29,34 @@ class ExecutorServerTest extends \PHPUnit_Framework_TestCase
         if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
             // Kill the PHP process executing _runserver, if it is still around
             exec("kill -9 `ps -e | grep \"php XssFinder/Remote/_runserver.php\" | grep -v grep | awk '{print $1}'`");
+            exec("kill -9 `ps -e | grep \"java -jar ../vendor/selenium/selenium-server-standalone-2.35.0.jar\" | grep -v grep | awk '{print $1}'`");
         }
     }
 
-    public function testServerRespondsToClientRequestsAndFindsPages()
+    /*
+     * Launches a server in a separate process and connects to it.
+     *
+     * If this test fails with a message like "TSocket read 0 bytes" then the server died when the client to
+     * communicate with it. You can debug this by commenting out the lines to start the server process and doing
+     * so manually (connecting a debugger to it if you wish) then running this test.
+     */
+    public function testServerRespondsToClientRequestsAndFindsPagesAndStartsRoutes()
     {
         // given
+        $this->_startSeleniumServer();
+
+        // Connect to the selenium server - there's no good reason this should be necessary, but this test fails
+        // without doing so. :\
+        // Running this test manually (with selenium, _runserver and _runclient all running in different terminals)
+        // passes without needing this.
+        $host = 'http://localhost:4444/wd/hub';
+        $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => 'htmlunit', 'javascriptEnabled' => true);
+        new RemoteWebDriver($host, $capabilities);
+
         // Start the server in another process
-        exec('php XssFinder/Remote/_runserver.php &> /dev/null &');
-        sleep(1);
+        exec('php XssFinder/Remote/_runserver.php &> runserver.log &');
+        sleep(2);
+
         // Create a client - in practice, it'll be a Java client, but that shouldn't matter
         $socket = new TSocket('localhost', 9090);
         $transport = new TBufferedTransport($socket, 1024, 1024);
@@ -45,12 +66,32 @@ class ExecutorServerTest extends \PHPUnit_Framework_TestCase
 
         // when
         $pages = $client->getPageDefinitions('');
+        $client->startRoute('\ExecutorServerTest_SomePage');
 
         // then
         assertThat(count($pages), equalTo(2));
         assertThat($pages, hasValue(new PageDefinitionMatcher('\ExecutorServerTest_SomePage')));
         assertThat($pages, hasValue(new PageDefinitionMatcher('\ExecutorServerTest_SomeOtherPage')));
         $transport->close();
+    }
+
+    private function _startSeleniumServer()
+    {
+        exec('java -jar ../vendor/selenium/selenium-server-standalone-2.35.0.jar &> selenium.log &');
+        $startTime = microtime(true);
+        $seleniumStarted = false;
+        while (microtime(true) - $startTime < 10) {
+            try {
+                $headers = get_headers("http://localhost:4444/wd/hub/status", 1);
+            } catch (\Exception $e) {
+                continue;
+            }
+            if (isset($headers) && isset($headers[0]) && $headers[0] === 'HTTP/1.1 200 OK') {
+                $seleniumStarted = true;
+                break;
+            }
+        }
+        assertThat($seleniumStarted, is(true));
     }
 }
 
