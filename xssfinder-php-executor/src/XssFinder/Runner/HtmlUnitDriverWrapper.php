@@ -3,8 +3,8 @@
 namespace XssFinder\Runner;
 
 use RemoteWebDriver;
-use WebDriver;
 use WebDriverCapabilityType;
+use XssFinder\Xss\XssGenerator;
 
 class HtmlUnitDriverWrapper implements DriverWrapper
 {

@@ -5,19 +5,24 @@ namespace XssFinder\Runner;
 use CrawlStartPointAnnotation;
 use XssFinder\Annotations\Annotations;
 use XssFinder\Scanner\ThriftToReflectionLookup;
+use XssFinder\Xss\XssGenerator;
 
 class ExecutorContext
 {
     /** @var DriverWrapper */
     private $_driverWrapper;
+    /** @var XssGenerator */
+    private $_xssGenerator;
     /** @var ThriftToReflectionLookup */
     private $_lookup = null;
 
     public function __construct(
-        DriverWrapper $driverWrapper
+        DriverWrapper $driverWrapper,
+        XssGenerator $xssGenerator
     ) {
         Annotations::load();
         $this->_driverWrapper = $driverWrapper;
+        $this->_xssGenerator = $xssGenerator;
     }
 
     /**
@@ -40,5 +45,10 @@ class ExecutorContext
         $pageClass = $this->_lookup->getPageClass($pageIdentifier);
         $annotation = CrawlStartPointAnnotation::getCrawlStartPoint($pageClass);
         $this->_driverWrapper->visit($annotation->url);
+    }
+
+    public function putXssAttackStringsInInputs()
+    {
+        return $this->_driverWrapper->putXssAttackStringsInInputs($this->_xssGenerator);
     }
 }

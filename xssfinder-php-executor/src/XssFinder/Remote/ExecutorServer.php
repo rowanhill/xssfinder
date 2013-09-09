@@ -14,6 +14,8 @@ use XssFinder\Scanner\PageDefinitionFactory;
 use XssFinder\Scanner\PageFinderFactory;
 use XssFinder\Scanner\ReflectionHelper;
 use XssFinder\Scanner\ThriftToReflectionLookupFactory;
+use XssFinder\Xss\XssAttackFactory;
+use XssFinder\Xss\XssGenerator;
 
 require_once(__DIR__ . '/../../../vendor/autoload.php');
 require_once(__DIR__ . '/../Executor.php');
@@ -38,7 +40,10 @@ class ExecutorServer
         $methodDefinitionFactory = new MethodDefinitionFactory($reflectionHelper);
         $pageDefinitionFactory = new PageDefinitionFactory($methodDefinitionFactory, $reflectionHelper, $this->_pageClassNames);
         $lookupFactory = new ThriftToReflectionLookupFactory();
-        $executorContext = new ExecutorContext(new HtmlUnitDriverWrapper());
+        $executorContext = new ExecutorContext(
+            new HtmlUnitDriverWrapper(),
+            new XssGenerator(new XssAttackFactory())
+        );
         $handler = new ExecutorHandler(
             $pageFinderFactory,
             $pageDefinitionFactory,

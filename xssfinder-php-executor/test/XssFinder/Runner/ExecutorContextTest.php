@@ -5,6 +5,7 @@ namespace XssFinder\Runner;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 use XssFinder\Scanner\ThriftToReflectionLookup;
+use XssFinder\Xss\XssGenerator;
 
 require '_ExecutorContext_HomePage.php';
 
@@ -15,6 +16,8 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
 
     /** @var DriverWrapper */
     private $_mockDriverWrapper;
+    /** @var XssGenerator */
+    private $_mockXssGenerator;
 
     /** @var ExecutorContext */
     private $_executorContext;
@@ -22,8 +25,12 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
     function setUp()
     {
         $this->_mockDriverWrapper = mock('\XssFinder\Runner\DriverWrapper');
+        $this->_mockXssGenerator = mock('\XssFinder\Xss\XssGenerator');
 
-        $this->_executorContext = new ExecutorContext($this->_mockDriverWrapper);
+        $this->_executorContext = new ExecutorContext(
+            $this->_mockDriverWrapper,
+            $this->_mockXssGenerator
+        );
     }
 
     function testVisitingUrlOfRootPageIsDelegatedToDriverWrapperUsingUrlFromLookup()
@@ -40,5 +47,18 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
 
         // then
         verify($this->_mockDriverWrapper)->visit(self::HOME_PAGE_URL);
+    }
+
+    function testPuttingXssAttackStringsInInputsIsDelegatedToDriverWrapper()
+    {
+        // given
+        when($this->_mockDriverWrapper->putXssAttackStringsInInputs($this->_mockXssGenerator))
+            ->return(array('foo', 'bar'));
+
+        // when
+        $inputToAttackMapping = $this->_executorContext->putXssAttackStringsInInputs();
+
+        // then
+        assertThat($inputToAttackMapping, is(array('foo', 'bar')));
     }
 }

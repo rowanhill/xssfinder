@@ -2,6 +2,8 @@
 
 namespace XssFinder\Runner;
 
+use XssFinder\Xss\XssGenerator;
+
 interface DriverWrapper
 {
     /**
