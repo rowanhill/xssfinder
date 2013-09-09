@@ -16,6 +16,11 @@ class Wiremock
     {
         return new StubBuilder($this->_port);
     }
+
+    public function verify()
+    {
+        return new VerifyBuilder($this->_port);
+    }
 }
 
 /*------------------------------------------------------------------------------
@@ -30,6 +35,23 @@ abstract class JsonApiCallFragment
 abstract class JsonApiCall
 {
     abstract function toJson();
+}
+
+class Verify extends JsonApiCall
+{
+    public $method = 'GET';
+    /** @var UrlMatcher */
+    public $urlMatcher = null;
+
+    function toJson()
+    {
+        if ($this->urlMatcher == null)
+        {
+            throw new \Exception("Url matcher must be specified");
+        }
+        $call = array_merge(array('method' => $this->method), $this->urlMatcher->toArray());
+        return json_encode($call);
+    }
 }
 
 class Stub extends JsonApiCall
@@ -136,12 +158,12 @@ abstract class JsonApiCallBuilder
         $this->_port = $port;
     }
 
-    public function setUp()
+    public function _makeCall($path)
     {
         $json = $this->_jsonApiCall->toJson();
 
         $port = $this->_port;
-        $ch = curl_init("http://localhost:$port/__admin/mappings/new");
+        $ch = curl_init("http://localhost:$port/$path");
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -150,7 +172,11 @@ abstract class JsonApiCallBuilder
                 'Content-Length: ' . strlen($json))
         );
 
-        curl_exec($ch);
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $result;
     }
 }
 
@@ -164,18 +190,67 @@ abstract class JsonApiCallFragmentBuilder
     {
         $this->_callBuilder = $callBuilder;
     }
+}
 
+abstract class StubApiCallFragmentBuilder extends JsonApiCallFragmentBuilder
+{
     public function setUp()
     {
-        $this->_callBuilder->setUp();
+        /** @var StubBuilder $callBuilder */
+        $callBuilder = $this->_callBuilder;
+        $callBuilder->setUp();
+    }
+}
+
+abstract class VerifyApiCallFragmentBuilder extends JsonApiCallFragmentBuilder
+{
+    public function check()
+    {
+        /** @var VerifyBuilder $callBuilder */
+        $callBuilder = $this->_callBuilder;
+        $callBuilder->check();
+    }
+}
+
+class VerifyBuilder extends JsonApiCallBuilder
+{
+    /** @var Verify */
+    private $_verify;
+
+    /**
+     * @param int $port
+     */
+    function __construct($port)
+    {
+        $this->_verify = new Verify();
+        parent::__construct($this->_verify, $port);
     }
 
+    public function get()
+    {
+        return new VerifyUrlMatcherBuilder($this, $this->_verify);
+    }
+
+    public function check()
+    {
+        $json = $this->_makeCall('__admin/requests/count');
+        $result = json_decode($json, true);
+        $count = $result['count'];
+        if ($count != 1) {
+            throw new \Exception("Expected call to have been made once, but was made $count times");
+        }
+        assertThat($count, is(1));
+    }
 }
 
 class StubBuilder extends JsonApiCallBuilder
 {
     /** @var Stub */
     private $_stub;
+
+    /**
+     * @param int $port
+     */
     function __construct($port)
     {
         $this->_stub = new Stub();
@@ -184,11 +259,16 @@ class StubBuilder extends JsonApiCallBuilder
 
     public function get()
     {
-        return new UrlMatcherBuilder($this, $this->_stub);
+        return new StubUrlMatcherBuilder($this, $this->_stub);
+    }
+
+    public function setUp()
+    {
+        $this->_makeCall('__admin/mappings/new');
     }
 }
 
-class UrlMatcherBuilder extends JsonApiCallFragmentBuilder
+class StubUrlMatcherBuilder extends JsonApiCallFragmentBuilder
 {
     /** @var Stub */
     private $_stub;
@@ -208,6 +288,26 @@ class UrlMatcherBuilder extends JsonApiCallFragmentBuilder
     }
 }
 
+class VerifyUrlMatcherBuilder extends VerifyApiCallFragmentBuilder
+{
+    /** @var Verify */
+    private $_verify;
+
+    function __construct(JsonApiCallBuilder $callBuilder, Verify $verify)
+    {
+        parent::__construct($callBuilder);
+        $this->_verify = $verify;
+    }
+
+    public function url($url)
+    {
+        $this->_verify->urlMatcher = new UrlMatcher();
+        $this->_verify->urlMatcher->matcherScheme = 'url';
+        $this->_verify->urlMatcher->urlValue = $url;
+        return $this;
+    }
+}
+
 class RequestSpecifiedBuilder extends JsonApiCallFragmentBuilder
 {
     private $_stub;
@@ -224,7 +324,7 @@ class RequestSpecifiedBuilder extends JsonApiCallFragmentBuilder
     }
 }
 
-class ResponseBuilder extends JsonApiCallFragmentBuilder
+class ResponseBuilder extends StubApiCallFragmentBuilder
 {
     private $_stub;
 
