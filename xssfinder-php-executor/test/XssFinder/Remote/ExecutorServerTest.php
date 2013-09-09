@@ -11,6 +11,7 @@ use Thrift\Transport\TSocket;
 use WebDriverCapabilityType;
 use XssFinder\ExecutorClient;
 use XssFinder\PageDefinition;
+use XssFinder\TestHelper\Selenium;
 
 require_once(__DIR__ . '/../../../src/XssFinder/Executor.php');
 require_once(__DIR__ . '/../../../src/XssFinder/Types.php');
@@ -29,7 +30,8 @@ class ExecutorServerTest extends \PHPUnit_Framework_TestCase
         if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
             // Kill the PHP process executing _runserver, if it is still around
             exec("kill -9 `ps -e | grep \"php XssFinder/Remote/_runserver.php\" | grep -v grep | awk '{print $1}'`");
-            exec("kill -9 `ps -e | grep \"java -jar ../vendor/selenium/selenium-server-standalone-2.35.0.jar\" | grep -v grep | awk '{print $1}'`");
+            $stoppedSelenium = Selenium::stopSeleniumServer();
+            assertThat($stoppedSelenium, is(true));
         }
     }
 
@@ -43,7 +45,8 @@ class ExecutorServerTest extends \PHPUnit_Framework_TestCase
     public function testServerRespondsToClientRequestsAndFindsPagesAndStartsRoutes()
     {
         // given
-        $this->_startSeleniumServer();
+        $startedSelenium = Selenium::startSeleniumServer();
+        assertThat($startedSelenium, is(true));
 
         // Connect to the selenium server - there's no good reason this should be necessary, but this test fails
         // without doing so. :\
@@ -73,25 +76,6 @@ class ExecutorServerTest extends \PHPUnit_Framework_TestCase
         assertThat($pages, hasValue(new PageDefinitionMatcher('\ExecutorServerTest_SomePage')));
         assertThat($pages, hasValue(new PageDefinitionMatcher('\ExecutorServerTest_SomeOtherPage')));
         $transport->close();
-    }
-
-    private function _startSeleniumServer()
-    {
-        exec('java -jar ../vendor/selenium/selenium-server-standalone-2.35.0.jar &> selenium.log &');
-        $startTime = microtime(true);
-        $seleniumStarted = false;
-        while (microtime(true) - $startTime < 10) {
-            try {
-                $headers = get_headers("http://localhost:4444/wd/hub/status", 1);
-            } catch (\Exception $e) {
-                continue;
-            }
-            if (isset($headers) && isset($headers[0]) && $headers[0] === 'HTTP/1.1 200 OK') {
-                $seleniumStarted = true;
-                break;
-            }
-        }
-        assertThat($seleniumStarted, is(true));
     }
 }
 
