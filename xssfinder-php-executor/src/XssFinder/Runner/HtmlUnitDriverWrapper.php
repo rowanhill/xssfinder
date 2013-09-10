@@ -8,6 +8,16 @@ use XssFinder\Xss\XssGenerator;
 
 class HtmlUnitDriverWrapper implements DriverWrapper
 {
+    /** @var RemoteWebDriver */
+    private $_webDriver;
+
+    function __construct()
+    {
+        $host = 'http://localhost:4444/wd/hub';
+        $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => 'htmlunit', 'javascriptEnabled' => true);
+        $this->_webDriver = new RemoteWebDriver($host, $capabilities);
+    }
+
     /**
      * @return PageInstantiator A PageInstantiator that can create pages driven by the wrapped driver
      */
@@ -23,10 +33,7 @@ class HtmlUnitDriverWrapper implements DriverWrapper
      */
     function visit($url)
     {
-        $host = 'http://localhost:4444/wd/hub';
-        $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => 'htmlunit', 'javascriptEnabled' => true);
-        $webDriver = new RemoteWebDriver($host, $capabilities);
-        $webDriver->get($url);
+        $this->_webDriver->get($url);
     }
 
     /**
@@ -37,7 +44,18 @@ class HtmlUnitDriverWrapper implements DriverWrapper
      */
     function putXssAttackStringsInInputs($xssGenerator)
     {
-        // TODO: Implement putXssAttackStringsInInputs() method.
+        $elements = $this->_webDriver->findElements(
+            \WebDriverBy::cssSelector('input[type=text],input[type=search],input[type=password],textarea')
+        );
+        $inputsToAttacks = array();
+        foreach ($elements as $element) {
+            /** @var \WebDriverElement $element */
+            $xssAttack = $xssGenerator->createXssAttack();
+            $element->sendKeys($xssAttack->getAttackString());
+            $inputIdentifier = $element->getAttribute('name'); //TODO: Derive XPath of $element to use as ID
+            $inputsToAttacks[$inputIdentifier] = $xssAttack->getIdentifier();
+        }
+        return $inputsToAttacks;
     }
 
     /**

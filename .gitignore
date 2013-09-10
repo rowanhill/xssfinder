@@ -1,6 +1,7 @@
 .idea/dictionaries/*.xml
 .idea/workspace.xml
 target/*
+wiremock/*.log
 xssfinder-core/target/*
 xssfinder-java-thrift/target/*
 xssfinder-java-annotations/target/*

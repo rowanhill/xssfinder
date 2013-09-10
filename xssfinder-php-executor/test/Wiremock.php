@@ -21,6 +21,11 @@ class Wiremock
     {
         return new VerifyBuilder($this->_port);
     }
+
+    public function findAll()
+    {
+        return new FindBuilder($this->_port);
+    }
 }
 
 /*------------------------------------------------------------------------------
@@ -142,6 +147,16 @@ class BodyLiteralSpecifier extends BodySpecifier
     }
 }
 
+class BodyFileSpecifier extends BodySpecifier
+{
+    private $_file;
+    function __construct($file) { $this->_file = $file; }
+    public function toArray()
+    {
+        return array('bodyFileName' => $this->_file);
+    }
+}
+
 /*------------------------------------------------------------------------------
  * Builders
  *------------------------------------------------------------------------------*/
@@ -202,20 +217,11 @@ abstract class StubApiCallFragmentBuilder extends JsonApiCallFragmentBuilder
     }
 }
 
-abstract class VerifyApiCallFragmentBuilder extends JsonApiCallFragmentBuilder
-{
-    public function check()
-    {
-        /** @var VerifyBuilder $callBuilder */
-        $callBuilder = $this->_callBuilder;
-        $callBuilder->check();
-    }
-}
 
-class VerifyBuilder extends JsonApiCallBuilder
+abstract class AbstractVerifyBuilder extends JsonApiCallBuilder
 {
     /** @var Verify */
-    private $_verify;
+    protected $_verify;
 
     /**
      * @param int $port
@@ -226,15 +232,60 @@ class VerifyBuilder extends JsonApiCallBuilder
         parent::__construct($this->_verify, $port);
     }
 
+    protected function getCallResult()
+    {
+        $json = $this->_makeCall($this->getCallUrl());
+        return json_decode($json, true);
+    }
+
+    abstract protected function getCallUrl();
+}
+
+class FindBuilder extends AbstractVerifyBuilder
+{
+    protected function getCallUrl()
+    {
+        return '__admin/requests/find';
+    }
+
+    public function get()
+    {
+        return new FindUrlMatcherBuilder($this, $this->_verify);
+    }
+
+    public function post()
+    {
+        $this->_verify->method = 'POST';
+        return new FindUrlMatcherBuilder($this, $this->_verify);
+    }
+
+    public function query()
+    {
+        return $this->getCallResult();
+    }
+}
+
+class VerifyBuilder extends AbstractVerifyBuilder
+{
+    protected function getCallUrl()
+    {
+        return '__admin/requests/count';
+    }
+
     public function get()
     {
         return new VerifyUrlMatcherBuilder($this, $this->_verify);
     }
 
+    public function post()
+    {
+        $this->_verify->method = 'POST';
+        return new VerifyUrlMatcherBuilder($this, $this->_verify);
+    }
+
     public function check()
     {
-        $json = $this->_makeCall('__admin/requests/count');
-        $result = json_decode($json, true);
+        $result = $this->getCallResult();
         $count = $result['count'];
         if ($count != 1) {
             throw new \Exception("Expected call to have been made once, but was made $count times");
@@ -288,23 +339,89 @@ class StubUrlMatcherBuilder extends JsonApiCallFragmentBuilder
     }
 }
 
-class VerifyUrlMatcherBuilder extends VerifyApiCallFragmentBuilder
+abstract class AbstractVerifyUrlMatcherBuilder
 {
     /** @var Verify */
     private $_verify;
 
-    function __construct(JsonApiCallBuilder $callBuilder, Verify $verify)
+    function __construct(Verify $verify)
     {
-        parent::__construct($callBuilder);
         $this->_verify = $verify;
     }
 
-    public function url($url)
+    protected function setUpUrlMatcher($url)
     {
         $this->_verify->urlMatcher = new UrlMatcher();
         $this->_verify->urlMatcher->matcherScheme = 'url';
         $this->_verify->urlMatcher->urlValue = $url;
-        return $this;
+    }
+}
+
+class VerifyUrlMatcherBuilder extends AbstractVerifyUrlMatcherBuilder
+{
+    /** @var VerifyBuilder */
+    private $_verifyCallBuilder;
+
+    function __construct(VerifyBuilder $verifyBuilder, Verify $verify)
+    {
+        parent::__construct($verify);
+        $this->_verifyCallBuilder = $verifyBuilder;
+    }
+
+    public function url($url)
+    {
+        $this->setUpUrlMatcher($url);
+        return $this->_verifyCallBuilder;
+    }
+}
+
+class VerifyMaker
+{
+    /** @var VerifyBuilder */
+    private $_verifyCallBuilder;
+
+    function __construct(VerifyBuilder $verifyBuilder)
+    {
+        $this->_verifyCallBuilder = $verifyBuilder;
+    }
+
+    public function check()
+    {
+        $this->_verifyCallBuilder->check();
+    }
+}
+
+class FindUrlMatcherBuilder extends AbstractVerifyUrlMatcherBuilder
+{
+    /** @var FindBuilder */
+    private $_findCallBuilder;
+
+    function __construct(FindBuilder $findCallBuilder, Verify $verify)
+    {
+        parent::__construct($verify);
+        $this->_findCallBuilder = $findCallBuilder;
+    }
+
+    public function url($url)
+    {
+        $this->setUpUrlMatcher($url);
+        return new QueryMaker($this->_findCallBuilder);
+    }
+}
+
+class QueryMaker
+{
+    /** @var FindBuilder */
+    private $_findCallBuilder;
+
+    function __construct(FindBuilder $findCallBuilder)
+    {
+        $this->_findCallBuilder = $findCallBuilder;
+    }
+
+    public function query()
+    {
+        return $this->_findCallBuilder->query();
     }
 }
 
@@ -351,6 +468,16 @@ class ResponseBuilder extends StubApiCallFragmentBuilder
     public function withBody($body)
     {
         $this->_stub->response->body = new BodyLiteralSpecifier($body);
+        return $this;
+    }
+
+    /**
+     * @param string $file
+     * @return $this
+     */
+    public function withBodyFile($file)
+    {
+        $this->_stub->response->body = new BodyFileSpecifier($file);
         return $this;
     }
 
