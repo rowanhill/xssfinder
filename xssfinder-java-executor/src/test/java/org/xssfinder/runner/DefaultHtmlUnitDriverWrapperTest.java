@@ -1,5 +1,6 @@
 package org.xssfinder.runner;
 
+import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.google.common.collect.ImmutableSet;
@@ -11,11 +12,13 @@ import org.openqa.selenium.WebDriver;
 import org.xssfinder.xss.XssAttack;
 import org.xssfinder.xss.XssGenerator;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
 import java.util.*;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -25,35 +28,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DefaultHtmlUnitDriverWrapperTest {
-    private static final String INDEX_PAGE =
-            "<html>\n" +
-            "    <body>\n" +
-            "        <form action=\"/submit\" method=\"post\">\n" +
-            "            <input type=\"text\" name=\"text1\" />\n" +
-            "            <input type=\"text\" name=\"text2\" />\n" +
-            "            <input type=\"password\" name=\"password\" />\n" +
-            "            <input type=\"search\" name=\"search\" />\n" +
-            "            <textarea name=\"textarea\"></textarea>\n" +
-            "            <input type=\"submit\" id=\"submit\" value=\"Submit\" />\n" +
-            "        </form>\n" +
-            "        <script type=\"text/javascript\">\n" +
-            "            window.xssfinder = ['123', '456'];\n" +
-            "        </script>\n" +
-            "    </body>\n" +
-            "</html>";
-    private static final String TWO_FORM_PAGE =
-            "<html>\n" +
-                    "    <body>\n" +
-                    "        <form action=\"/submit\" method=\"post\">\n" +
-                    "        </form>\n" +
-                    "        <form action=\"/submit\" method=\"post\">\n" +
-                    "        </form>\n" +
-                    "    </body>\n" +
-                    "</html>";
-    private static final String JSLESS_PAGE = "<html><body></body></html>";
+    private static final String INDEX_PAGE = "HtmlUnitDriverWrapperTest_index.html";
+    private static final String TWO_FORM_PAGE = "HtmlUnitDriverWrapperTest_two_forms.html";
+    private static final String NO_XSS_PAGE = "HtmlUnitDriverWrapperTest_no_xss.html";
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(8089);
+    public WireMockRule wireMockRule = new WireMockRule(
+            wireMockConfig().port(8089).fileSource(new SingleRootFileSource(
+                    // Maven set the working directory (user.dir) to the module root, xssfinder-java-executor, but IDE
+                    // JUnit runners may set it to the project root, xssfinder.
+                    (new File(System.getProperty("user.dir"))).getName().equals("xssfinder-java-executor") ?
+                            "../wiremock" :
+                            "wiremock"
+            ))
+    );
 
     @Test
     public void createsWebDriverPageInstantiator() {
@@ -88,7 +76,7 @@ public class DefaultHtmlUnitDriverWrapperTest {
         when(mockAttack.getAttackString()).thenReturn("xss");
         when(mockXssGenerator.createXssAttack()).thenReturn(mockAttack);
         stubFor(get(urlEqualTo("/"))
-                .willReturn(aResponse().withBody(INDEX_PAGE))
+                .willReturn(aResponse().withBodyFile(INDEX_PAGE))
         );
         driverWrapper.visit("http://localhost:8089/");
 
@@ -120,7 +108,7 @@ public class DefaultHtmlUnitDriverWrapperTest {
         when(mockAttack.getIdentifier()).thenReturn("xssId");
         when(mockXssGenerator.createXssAttack()).thenReturn(mockAttack);
         stubFor(get(urlEqualTo("/"))
-                .willReturn(aResponse().withBody(INDEX_PAGE))
+                .willReturn(aResponse().withBodyFile(INDEX_PAGE))
         );
         driverWrapper.visit("http://localhost:8089/");
 
@@ -140,7 +128,7 @@ public class DefaultHtmlUnitDriverWrapperTest {
         // given
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         stubFor(get(urlEqualTo("/"))
-                .willReturn(aResponse().withBody(INDEX_PAGE))
+                .willReturn(aResponse().withBodyFile(INDEX_PAGE))
         );
         driverWrapper.visit("http://localhost:8089/");
 
@@ -157,7 +145,7 @@ public class DefaultHtmlUnitDriverWrapperTest {
         // given
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         stubFor(get(urlEqualTo("/"))
-                .willReturn(aResponse().withBody(JSLESS_PAGE))
+                .willReturn(aResponse().withBodyFile(NO_XSS_PAGE))
         );
         driverWrapper.visit("http://localhost:8089/");
 
@@ -174,13 +162,13 @@ public class DefaultHtmlUnitDriverWrapperTest {
         // given
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         stubFor(get(urlEqualTo("/zero"))
-                .willReturn(aResponse().withBody(JSLESS_PAGE))
+                .willReturn(aResponse().withBodyFile(NO_XSS_PAGE))
         );
         stubFor(get(urlEqualTo("/one"))
-                .willReturn(aResponse().withBody(INDEX_PAGE))
+                .willReturn(aResponse().withBodyFile(INDEX_PAGE))
         );
         stubFor(get(urlEqualTo("/two"))
-                .willReturn(aResponse().withBody(TWO_FORM_PAGE))
+                .willReturn(aResponse().withBodyFile(TWO_FORM_PAGE))
         );
 
         // when
@@ -202,7 +190,7 @@ public class DefaultHtmlUnitDriverWrapperTest {
         // given
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         stubFor(get(urlEqualTo("/"))
-                .willReturn(aResponse().withBody(INDEX_PAGE).withHeader("Set-Cookie", "TestCookie=SomeValue;Path=/\n"))
+                .willReturn(aResponse().withBodyFile(INDEX_PAGE).withHeader("Set-Cookie", "TestCookie=SomeValue;Path=/\n"))
         );
         driverWrapper.visit("http://localhost:8089/");
 
@@ -218,7 +206,7 @@ public class DefaultHtmlUnitDriverWrapperTest {
         // given
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         stubFor(get(urlEqualTo("/"))
-                .willReturn(aResponse().withBody(INDEX_PAGE).withHeader("Set-Cookie", "TestCookie=SomeValue;Path=/\n"))
+                .willReturn(aResponse().withBodyFile(INDEX_PAGE).withHeader("Set-Cookie", "TestCookie=SomeValue;Path=/\n"))
         );
         driverWrapper.visit("http://localhost:8089/");
 
@@ -235,7 +223,7 @@ public class DefaultHtmlUnitDriverWrapperTest {
         // given
         DefaultHtmlUnitDriverWrapper driverWrapper = new DefaultHtmlUnitDriverWrapper();
         stubFor(get(urlEqualTo("/"))
-                .willReturn(aResponse().withBody(INDEX_PAGE).withHeader("Set-Cookie", "TestCookie=SomeValue;Path=/\n"))
+                .willReturn(aResponse().withBodyFile(INDEX_PAGE).withHeader("Set-Cookie", "TestCookie=SomeValue;Path=/\n"))
         );
         driverWrapper.visit("http://localhost:8089/");
         PageInstantiator pageInstantiator = driverWrapper.getPageInstantiator();
@@ -271,7 +259,7 @@ public class DefaultHtmlUnitDriverWrapperTest {
 
     private static final class WebDriverPage {
         public final WebDriver driver;
-        private WebDriverPage(WebDriver driver) {
+        WebDriverPage(WebDriver driver) {
             this.driver = driver;
         }
     }
