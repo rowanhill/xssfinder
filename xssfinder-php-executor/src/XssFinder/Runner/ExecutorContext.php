@@ -15,6 +15,11 @@ class ExecutorContext
     private $_xssGenerator;
     /** @var ThriftToReflectionLookup */
     private $_lookup = null;
+    /** @var PageInstantiator */
+    private $_pageInstantiator;
+
+    /** @var mixed Current page-annotated object */
+    private $_currentPage;
 
     public function __construct(
         DriverWrapper $driverWrapper,
@@ -23,6 +28,7 @@ class ExecutorContext
         Annotations::load();
         $this->_driverWrapper = $driverWrapper;
         $this->_xssGenerator = $xssGenerator;
+        $this->_pageInstantiator = $driverWrapper->getPageInstantiator();
     }
 
     /**
@@ -45,6 +51,7 @@ class ExecutorContext
         $pageClass = $this->_lookup->getPageClass($pageIdentifier);
         $annotation = CrawlStartPointAnnotation::getCrawlStartPoint($pageClass);
         $this->_driverWrapper->visit($annotation->url);
+        $this->_currentPage = $this->_pageInstantiator->instantiatePage($pageClass);
     }
 
     public function putXssAttackStringsInInputs()

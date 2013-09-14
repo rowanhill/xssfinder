@@ -18,6 +18,8 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
     private $_mockDriverWrapper;
     /** @var XssGenerator */
     private $_mockXssGenerator;
+    /** @var PageInstantiator */
+    private $_mockPageInstantiator;
 
     /** @var ExecutorContext */
     private $_executorContext;
@@ -26,6 +28,8 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
     {
         $this->_mockDriverWrapper = mock('\XssFinder\Runner\DriverWrapper');
         $this->_mockXssGenerator = mock('\XssFinder\Xss\XssGenerator');
+        $this->_mockPageInstantiator = mock('\XssFinder\Runner\PageInstantiator');
+        when($this->_mockDriverWrapper->getPageInstantiator())->return($this->_mockPageInstantiator);
 
         $this->_executorContext = new ExecutorContext(
             $this->_mockDriverWrapper,
@@ -47,6 +51,22 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
 
         // then
         verify($this->_mockDriverWrapper)->visit(self::HOME_PAGE_URL);
+    }
+
+    function testVisitingRootPageInstantiatesPage()
+    {
+        // given
+        /** @var ThriftToReflectionLookup $lookup */
+        $lookup = mock('\XssFinder\Scanner\ThriftToReflectionLookup');
+        $homePageClass = new ReflectionClass('\XssFinder\Runner\EC_TestPages_HomePage');
+        when($lookup->getPageClass(self::HOME_PAGE_ID))->return($homePageClass);
+        $this->_executorContext->setThriftToReflectionLookup($lookup);
+
+        // when
+        $this->_executorContext->visitUrlOfRootPage(self::HOME_PAGE_ID);
+
+        // then
+        verify($this->_mockPageInstantiator)->instantiatePage($homePageClass);
     }
 
     function testPuttingXssAttackStringsInInputsIsDelegatedToDriverWrapper()

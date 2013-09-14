@@ -8,20 +8,31 @@ require __DIR__ . '/../../../vendor/autoload.php';
 
 /**
  * @page
+ */
+abstract class ExecutorServerTest_BasePage
+{
+    protected $_driver;
+
+    public function __construct(RemoteWebDriver $driver)
+    {
+        $this->_driver = $driver;
+    }
+}
+
+/**
  * @crawlStartPoint('url'=>'http://www.google.com')
  */
-class ExecutorServerTest_SomePage
+class ExecutorServerTest_SomePage extends ExecutorServerTest_BasePage
 {
     /**
      * @return ExecutorServerTest_SomeOtherPage
      */
-    public function goToSomeOtherPage() { return new ExecutorServerTest_SomeOtherPage(); }
+    public function goToSomeOtherPage() { return new ExecutorServerTest_SomeOtherPage($this->_driver); }
 }
 
-/**
- * @page
- */
-class ExecutorServerTest_SomeOtherPage {}
+class ExecutorServerTest_SomeOtherPage extends ExecutorServerTest_BasePage
+{
+}
 
 $server = new \XssFinder\Remote\ExecutorServer('localhost', 9090, array('ExecutorServerTest_SomePage', 'ExecutorServerTest_SomeOtherPage'));
 $server->serve();
