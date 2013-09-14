@@ -79,6 +79,20 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
         verify($this->_mockExecutorContext)->visitUrlOfRootPage('SomePage');
     }
 
+    public function testPuttingXssAttackStringsInInputsIsDelegatedToExecutorContext()
+    {
+        // given
+        $this->_handler = $this->_createExecutorHandler();
+        $expectedResult = array('inputId' => 'attackId');
+        when($this->_mockExecutorContext->putXssAttackStringsInInputs())->return($expectedResult);
+
+        // when
+        $inputIdsToAttackIds = $this->_handler->putXssAttackStringsInInputs();
+
+        // then
+        assertThat($inputIdsToAttackIds, is($expectedResult));
+    }
+
     private function _createExecutorHandler($classNames = array())
     {
         return new ExecutorHandler(

@@ -71,8 +71,7 @@ class ExecutorHandler implements ExecutorIf
      */
     public function putXssAttackStringsInInputs()
     {
-        // TODO: Implement putXssAttackStringsInInputs() method.
-        return array();
+        return $this->_executorContext->putXssAttackStringsInInputs();
     }
 
     /**
