@@ -27,6 +27,18 @@ class HtmlUnitDriverWrapperTest extends \PHPUnit_Framework_TestCase
         assertThat(\XssFinder\TestHelper\Wiremock::stopWiremockServer(), is(true));
     }
 
+    public function testCreatesWebDriverPageInstantiator()
+    {
+        // given
+        $driver = new HtmlUnitDriverWrapper();
+
+        // when
+        $instantiator = $driver->getPageInstantiator();
+
+        // then
+        assertThat($instantiator, is(anInstanceOf('XssFinder\Runner\WebDriverPageInstantiator')));
+    }
+
     public function testVisitingRequestsUrl()
     {
         // given

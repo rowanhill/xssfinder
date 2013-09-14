@@ -23,7 +23,7 @@ class HtmlUnitDriverWrapper implements DriverWrapper
      */
     function getPageInstantiator()
     {
-        // TODO: Implement getPageInstantiator() method.
+        return new WebDriverPageInstantiator($this->_webDriver);
     }
 
     /**
