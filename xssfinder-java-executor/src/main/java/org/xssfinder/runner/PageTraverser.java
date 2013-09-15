@@ -9,18 +9,18 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 public class PageTraverser {
-    private final CustomTraverserInstantiator traverserInstantiator;
-    private final CustomSubmitterInstantiator submitterInstantiator;
-    private final LabelledXssGeneratorFactory labelledXssGeneratorFactory;
+    private final CustomNormalTraversalStrategy normalStrategy;
+    private final CustomSubmitTraversalStrategy submitStrategy;
+    private final SimpleMethodTraversalStrategy methodStrategy;
 
     public PageTraverser(
-            CustomTraverserInstantiator traverserInstantiator,
-            CustomSubmitterInstantiator submitterInstantiator,
-            LabelledXssGeneratorFactory labelledXssGeneratorFactory
+            CustomNormalTraversalStrategy normalStrategy,
+            CustomSubmitTraversalStrategy submitStrategy,
+            SimpleMethodTraversalStrategy methodStrategy
     ) {
-        this.traverserInstantiator = traverserInstantiator;
-        this.submitterInstantiator = submitterInstantiator;
-        this.labelledXssGeneratorFactory = labelledXssGeneratorFactory;
+        this.normalStrategy = normalStrategy;
+        this.submitStrategy = submitStrategy;
+        this.methodStrategy = methodStrategy;
     }
 
     /**
@@ -35,11 +35,8 @@ public class PageTraverser {
     public TraversalResult traverse(Object page, Method method, TraversalMode traversalMode)
             throws TUntraversableException, TWebInteractionException
     {
-        CustomNormalTraversalStrategy normalStrategy = new CustomNormalTraversalStrategy(this.traverserInstantiator);
-        CustomSubmitTraversalStrategy submitStrategy = new CustomSubmitTraversalStrategy(this.submitterInstantiator, this.labelledXssGeneratorFactory);
-        SimpleMethodTraversalStrategy methodStrategy = new SimpleMethodTraversalStrategy();
-
-        List<TraversalStrategy> traversalStrategies = ImmutableList.of(normalStrategy, submitStrategy, methodStrategy);
+        List<TraversalStrategy> traversalStrategies = ImmutableList.of(
+                this.normalStrategy, this.submitStrategy, this.methodStrategy);
 
         try {
             for (TraversalStrategy strategy : traversalStrategies) {

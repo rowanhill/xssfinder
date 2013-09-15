@@ -20,9 +20,12 @@ public class ExecutorServerFactory {
                         new DefaultHtmlUnitDriverWrapper(),
                         new XssGenerator(new XssAttackFactory()),
                         new PageTraverser(
-                                new CustomTraverserInstantiator(instantiator),
-                                new CustomSubmitterInstantiator(instantiator),
-                                new LabelledXssGeneratorFactory()
+                                new CustomNormalTraversalStrategy(new CustomTraverserInstantiator(instantiator)),
+                                new CustomSubmitTraversalStrategy(
+                                        new CustomSubmitterInstantiator(instantiator),
+                                        new LabelledXssGeneratorFactory()
+                                ),
+                                new SimpleMethodTraversalStrategy()
                         ),
                         instantiator,
                         new LifecycleEventExecutor()

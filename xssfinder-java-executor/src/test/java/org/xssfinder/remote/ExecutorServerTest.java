@@ -38,13 +38,12 @@ public class ExecutorServerTest {
                                 new XssAttackFactory()
                         ),
                         new PageTraverser(
-                                new CustomTraverserInstantiator(
-                                        new Instantiator()
+                                new CustomNormalTraversalStrategy(new CustomTraverserInstantiator(new Instantiator())),
+                                new CustomSubmitTraversalStrategy(
+                                        new CustomSubmitterInstantiator(new Instantiator()),
+                                        new LabelledXssGeneratorFactory()
                                 ),
-                                new CustomSubmitterInstantiator(
-                                        new Instantiator()
-                                ),
-                                null
+                                new SimpleMethodTraversalStrategy()
                         ),
                         new Instantiator(),
                         new LifecycleEventExecutor()
