@@ -63,7 +63,7 @@ public class PageTraverserTest {
     }
 
     @Test(expected=TWebInteractionException.class)
-    public void exceptionInvokingTraversalMethodGeneratesUntraversableException() throws Exception {
+    public void exceptionInvokingTraversalMethodGeneratesWebInteractionException() throws Exception {
         // given
         setTraversalMethodThatRaisesException();
         RootPage page = new RootPage();
@@ -135,6 +135,7 @@ public class PageTraverserTest {
         traverser.traverse(page, method, TraversalMode.NORMAL);
     }
 
+    @Test
     public void customTraverserIsUsedWhenTraversingMethodAnnotatedWithSubmitActionAndTraverseWith() throws Exception {
         // given
         RootPage page = new RootPage();
@@ -143,12 +144,13 @@ public class PageTraverserTest {
         mockMethodAsHavingCustomSubmitter();
 
         // when
-        TraversalResult result = traverser.traverse(page, method, TraversalMode.SUBMIT);
+        TraversalResult result = traverser.traverse(page, method, TraversalMode.NORMAL);
 
         // then
         assertThat(result.getPage(), is((Object)mockTraversedSecondPage));
     }
 
+    @Test
     public void customSubmitterIsUsedWhenSubmittingMethodAnnotatedWithSubmitActionAndTraverseWith() throws Exception {
         // given
         RootPage page = new RootPage();
@@ -157,7 +159,7 @@ public class PageTraverserTest {
         SecondPage mockSubmittedSecondPage = mockCustomSubmittedSecondPage(page);
 
         // when
-        TraversalResult result = traverser.traverse(page, method, TraversalMode.NORMAL);
+        TraversalResult result = traverser.traverse(page, method, TraversalMode.SUBMIT);
 
         // then
         assertThat(result.getPage(), is((Object)mockSubmittedSecondPage));

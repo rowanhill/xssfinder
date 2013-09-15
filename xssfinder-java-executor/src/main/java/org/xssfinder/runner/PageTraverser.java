@@ -1,15 +1,12 @@
 package org.xssfinder.runner;
 
-import org.xssfinder.CustomSubmitter;
-import org.xssfinder.CustomTraverser;
+import com.google.common.collect.ImmutableList;
 import org.xssfinder.remote.TUntraversableException;
 import org.xssfinder.remote.TWebInteractionException;
 import org.xssfinder.remote.TraversalMode;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class PageTraverser {
     private final CustomTraverserInstantiator traverserInstantiator;
@@ -38,41 +35,20 @@ public class PageTraverser {
     public TraversalResult traverse(Object page, Method method, TraversalMode traversalMode)
             throws TUntraversableException, TWebInteractionException
     {
-        CustomTraverser customTraverser = null;
-        CustomSubmitter customSubmitter = null;
-        boolean methodMustHaveNoArgs;
-        if (traversalMode == TraversalMode.NORMAL) {
-            customTraverser = traverserInstantiator.instantiate(method);
-            methodMustHaveNoArgs = customTraverser == null;
-        } else {
-            customSubmitter = submitterInstantiator.instantiate(method);
-            methodMustHaveNoArgs = customSubmitter == null;
-        }
+        CustomNormalTraversalStrategy normalStrategy = new CustomNormalTraversalStrategy(this.traverserInstantiator);
+        CustomSubmitTraversalStrategy submitStrategy = new CustomSubmitTraversalStrategy(this.submitterInstantiator, this.labelledXssGeneratorFactory);
+        SimpleMethodTraversalStrategy methodStrategy = new SimpleMethodTraversalStrategy();
 
-        if (method.getParameterTypes().length > 0 && methodMustHaveNoArgs) {
-            throw new TUntraversableException("Cannot traverse methods that take parameters");
-        }
+        List<TraversalStrategy> traversalStrategies = ImmutableList.of(normalStrategy, submitStrategy, methodStrategy);
 
         try {
-            Object newPage;
-            Map<String, String> inputIdsToAttackIds = new HashMap<String, String>();
-            if (traversalMode == TraversalMode.NORMAL) {
-                if (customTraverser != null) {
-                    newPage = customTraverser.traverse(page);
-                } else {
-                    newPage = invokeNoArgsMethod(page, method);
-                }
-            } else {
-                if (customSubmitter != null) {
-                    LabelledXssGeneratorImpl generator =
-                            labelledXssGeneratorFactory.createLabelledXssGenerator();
-                    newPage = customSubmitter.submit(page, generator);
-                    inputIdsToAttackIds.putAll(generator.getLabelsToAttackIds());
-                } else {
-                    newPage = invokeNoArgsMethod(page, method);
+            for (TraversalStrategy strategy : traversalStrategies) {
+                if (strategy.canSatisfyMethod(method, traversalMode)) {
+                    return strategy.traverse(page, method);
                 }
             }
-            return new TraversalResult(newPage, inputIdsToAttackIds);
+        } catch (TUntraversableException e) {
+            throw e;
         } catch (Exception e) {
             String message;
             if (e.getMessage() == null && e.getCause() != null) {
@@ -82,10 +58,8 @@ public class PageTraverser {
             }
             throw new TWebInteractionException("Error when traversing: " + message);
         }
+
+        throw new TUntraversableException("Cannot traverse method");
     }
 
-    private Object invokeNoArgsMethod(Object page, Method method) throws IllegalAccessException, InvocationTargetException {
-        method.setAccessible(true);
-        return method.invoke(page);
-    }
 }
