@@ -16,7 +16,8 @@
     ],
 
     "autoload": {
-        "psr-0": {"XssFinder\\": "src"}
+        "psr-0": {"XssFinder\\": "src"},
+        "classmap": ["src/XssFinder/Executor.php", "src/XssFinder/Types.php"]
     },
 
     "require": {
