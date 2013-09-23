@@ -11,4 +11,9 @@ namespace XssFinder\Runner;
  * @page
  * @crawlStartPoint('url' => 'http://home')
  */
-class EC_TestPages_HomePage {}
+class EC_TestPages_HomePage {
+    /**
+     * @return EC_TestPages_HomePage $this
+     */
+    function refreshHomePage() { return $this; }
+}

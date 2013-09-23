@@ -18,18 +18,22 @@ class ExecutorContext
     private $_lookup = null;
     /** @var PageInstantiator */
     private $_pageInstantiator;
+    /** @var PageTraverser */
+    private $_pageTraverser;
 
     /** @var mixed Current page-annotated object */
     private $_currentPage;
 
     public function __construct(
         DriverWrapper $driverWrapper,
-        XssGenerator $xssGenerator
+        XssGenerator $xssGenerator,
+        PageTraverser $pageTraverser
     ) {
         Annotations::load();
         $this->_driverWrapper = $driverWrapper;
         $this->_xssGenerator = $xssGenerator;
         $this->_pageInstantiator = $driverWrapper->getPageInstantiator();
+        $this->_pageTraverser = $pageTraverser;
     }
 
     /**
@@ -62,12 +66,14 @@ class ExecutorContext
 
     /**
      * @param MethodDefinition $methodDefinition
-     * @param string $traversalMode
+     * @param int $traversalMode
      * @return TraversalResult
      */
     public function traverseMethod(MethodDefinition $methodDefinition, $traversalMode)
     {
-        // TODO Implement
-        return null;
+        $method = $this->_lookup->getMethod($methodDefinition->identifier);
+        $traversalResult = $this->_pageTraverser->traverse($this->_currentPage, $method, $traversalMode);
+        //TODO Update current page
+        return $traversalResult;
     }
 }

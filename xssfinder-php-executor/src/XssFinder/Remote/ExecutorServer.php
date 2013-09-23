@@ -9,6 +9,7 @@ use Thrift\Server\TSimpleServer;
 use XssFinder\ExecutorProcessor;
 use XssFinder\Runner\ExecutorContext;
 use XssFinder\Runner\HtmlUnitDriverWrapper;
+use XssFinder\Runner\PageTraverser;
 use XssFinder\Scanner\MethodDefinitionFactory;
 use XssFinder\Scanner\PageDefinitionFactory;
 use XssFinder\Scanner\PageFinderFactory;
@@ -42,7 +43,8 @@ class ExecutorServer
         $lookupFactory = new ThriftToReflectionLookupFactory();
         $executorContext = new ExecutorContext(
             new HtmlUnitDriverWrapper(),
-            new XssGenerator(new XssAttackFactory())
+            new XssGenerator(new XssAttackFactory()),
+            new PageTraverser()
         );
         $handler = new ExecutorHandler(
             $pageFinderFactory,
