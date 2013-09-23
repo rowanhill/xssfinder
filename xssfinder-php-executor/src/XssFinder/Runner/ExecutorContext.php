@@ -4,6 +4,7 @@ namespace XssFinder\Runner;
 
 use CrawlStartPointAnnotation;
 use XssFinder\Annotations\Annotations;
+use XssFinder\MethodDefinition;
 use XssFinder\Scanner\ThriftToReflectionLookup;
 use XssFinder\Xss\XssGenerator;
 
@@ -57,5 +58,16 @@ class ExecutorContext
     public function putXssAttackStringsInInputs()
     {
         return $this->_driverWrapper->putXssAttackStringsInInputs($this->_xssGenerator);
+    }
+
+    /**
+     * @param MethodDefinition $methodDefinition
+     * @param string $traversalMode
+     * @return TraversalResult
+     */
+    public function traverseMethod(MethodDefinition $methodDefinition, $traversalMode)
+    {
+        // TODO Implement
+        return null;
     }
 }

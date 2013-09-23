@@ -3,13 +3,17 @@
 namespace XssFinder\Remote;
 
 use PHPUnit_Framework_TestCase;
+use XssFinder\MethodDefinition;
+use XssFinder\PageDefinition;
 use XssFinder\Remote\ExecutorHandler;
 use XssFinder\Runner\ExecutorContext;
+use XssFinder\Runner\TraversalResult;
 use XssFinder\Scanner\PageDefinitionFactory;
 use XssFinder\Scanner\PageFinder;
 use XssFinder\Scanner\PageFinderFactory;
 use XssFinder\Scanner\ThriftToReflectionLookup;
 use XssFinder\Scanner\ThriftToReflectionLookupFactory;
+use XssFinder\TraversalMode;
 
 class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
 {
@@ -53,6 +57,7 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
         $classNames = array('SomePage', 'NotAPage');
         $pageNames = array('SomePage');
         when($this->_mockPageFinder->findPages($classNames))->return($pageNames);
+        /** @var PageDefinition $mockPageDefinition */
         $mockPageDefinition = mock('XssFinder\PageDefinition');
         when($this->_mockPageDefinitionFactory->createPageDefinition(
             'SomePage', argOfTypeThat('XssFinder\Scanner\ThriftToReflectionLookup', anything()))
@@ -91,6 +96,26 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
 
         // then
         assertThat($inputIdsToAttackIds, is($expectedResult));
+    }
+
+    public function testTraversingMethodIsDelegatedToExecutorContext()
+    {
+        // given
+        $this->_handler = $this->_createExecutorHandler();
+        /** @var MethodDefinition $mockMethodDefinition */
+        $mockMethodDefinition = mock('XssFinder\MethodDefinition');
+        /** @var TraversalResult $mockTraversalResult */
+        $mockTraversalResult = mock('XssFinder\Runner\TraversalResult');
+        $expectedInputIdsToXssIds = array('//some/input' => '123');
+        when($mockTraversalResult->getInputIdsToAttackIds())->return($expectedInputIdsToXssIds);
+        when($this->_mockExecutorContext->traverseMethod($mockMethodDefinition, TraversalMode::NORMAL))
+            ->return($mockTraversalResult);
+
+        // when
+        $inputIdsToXssIds = $this->_handler->traverseMethod($mockMethodDefinition, TraversalMode::NORMAL);
+
+        // then
+        assertThat($inputIdsToXssIds, is($expectedInputIdsToXssIds));
     }
 
     private function _createExecutorHandler($classNames = array())

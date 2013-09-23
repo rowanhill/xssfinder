@@ -4,6 +4,7 @@ namespace XssFinder\Remote;
 use XssFinder\ExecutorIf;
 use XssFinder\MethodDefinition;
 use XssFinder\Runner\ExecutorContext;
+use XssFinder\Runner\TraversalResult;
 use XssFinder\Scanner\PageDefinitionFactory;
 use XssFinder\Scanner\PageFinderFactory;
 use XssFinder\Scanner\ThriftToReflectionLookupFactory;
@@ -101,8 +102,9 @@ class ExecutorHandler implements ExecutorIf
      */
     public function traverseMethod(MethodDefinition $method, $mode)
     {
-        // TODO: Implement traverseMethod() method.
-        return array();
+        /** @var TraversalResult $traversalResult */
+        $traversalResult = $this->_executorContext->traverseMethod($method, $mode);
+        return $traversalResult->getInputIdsToAttackIds();
     }
 
     /**
