@@ -12,6 +12,7 @@ use WebDriverCapabilityType;
 use XssFinder\ExecutorClient;
 use XssFinder\PageDefinition;
 use XssFinder\TestHelper\Selenium;
+use XssFinder\TraversalMode;
 
 require_once(__DIR__ . '/../../../src/XssFinder/Executor.php');
 require_once(__DIR__ . '/../../../src/XssFinder/Types.php');
@@ -30,9 +31,9 @@ class ExecutorServerTest extends \PHPUnit_Framework_TestCase
         if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
             // Kill the PHP process executing _runserver, if it is still around
             exec("kill -9 `ps -e | grep \"php XssFinder/Remote/_runserver.php\" | grep -v grep | awk '{print $1}'`");
-            $stoppedSelenium = Selenium::stopSeleniumServer();
-            assertThat($stoppedSelenium, is(true));
         }
+        $stoppedSelenium = Selenium::stopSeleniumServer();
+        assertThat($stoppedSelenium, is(true));
     }
 
     /*
@@ -70,11 +71,23 @@ class ExecutorServerTest extends \PHPUnit_Framework_TestCase
         // when
         $pages = $client->getPageDefinitions('');
         $client->startRoute('\ExecutorServerTest_SomePage');
+        /** @var PageDefinition $page */
+        $page = null;
+        foreach ($pages as $candidatePage) {
+            /** @var PageDefinition $candidatePage */
+            if ($candidatePage->identifier == '\ExecutorServerTest_SomePage') {
+                $page = $candidatePage;
+                break;
+            }
+        }
+        $goToSomeOtherPageMethod = current($page->methods);
+        $attackIdsToInputIds = $client->traverseMethod($goToSomeOtherPageMethod, TraversalMode::NORMAL);
 
         // then
         assertThat(count($pages), equalTo(2));
         assertThat($pages, hasValue(new PageDefinitionMatcher('\ExecutorServerTest_SomePage')));
         assertThat($pages, hasValue(new PageDefinitionMatcher('\ExecutorServerTest_SomeOtherPage')));
+        assertThat($attackIdsToInputIds, is(emptyArray()));
         $transport->close();
     }
 }

@@ -34,5 +34,5 @@ class ExecutorServerTest_SomeOtherPage extends ExecutorServerTest_BasePage
 {
 }
 
-$server = new \XssFinder\Remote\ExecutorServer('localhost', 9090, array('ExecutorServerTest_SomePage', 'ExecutorServerTest_SomeOtherPage'));
+$server = new \XssFinder\Remote\ExecutorServer('localhost', 9090, array('\ExecutorServerTest_SomePage', '\ExecutorServerTest_SomeOtherPage'));
 $server->serve();
