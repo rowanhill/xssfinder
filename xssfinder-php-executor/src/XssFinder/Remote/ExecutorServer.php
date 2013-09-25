@@ -10,6 +10,7 @@ use XssFinder\ExecutorProcessor;
 use XssFinder\Runner\ExecutorContext;
 use XssFinder\Runner\HtmlUnitDriverWrapper;
 use XssFinder\Runner\PageTraverser;
+use XssFinder\Runner\SimpleMethodTraversalStrategy;
 use XssFinder\Scanner\MethodDefinitionFactory;
 use XssFinder\Scanner\PageDefinitionFactory;
 use XssFinder\Scanner\PageFinderFactory;
@@ -44,7 +45,9 @@ class ExecutorServer
         $executorContext = new ExecutorContext(
             new HtmlUnitDriverWrapper(),
             new XssGenerator(new XssAttackFactory()),
-            new PageTraverser()
+            new PageTraverser(
+                new SimpleMethodTraversalStrategy()
+            )
         );
         $handler = new ExecutorHandler(
             $pageFinderFactory,

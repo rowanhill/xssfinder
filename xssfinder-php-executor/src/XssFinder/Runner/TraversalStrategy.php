@@ -10,10 +10,10 @@ interface TraversalStrategy
 {
     /**
      * @param ReflectionMethod $method
-     * @param TraversalMode $traversalMode
+     * @param int $traversalMode
      * @return boolean
      */
-    function canSatisfyMethod(ReflectionMethod $method, TraversalMode $traversalMode);
+    function canSatisfyMethod(ReflectionMethod $method, $traversalMode);
 
 
     /**
