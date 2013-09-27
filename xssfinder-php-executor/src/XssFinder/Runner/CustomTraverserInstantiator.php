@@ -27,6 +27,11 @@ class CustomTraverserInstantiator
         }
         return $customTraverser;
     }
+
+    public function hasCustomTraverser(ReflectionMethod $method)
+    {
+        return \TraverseWithAnnotation::isAnnotated($method);
+    }
 }
 
 class InvalidCustomTraverserException extends \Exception

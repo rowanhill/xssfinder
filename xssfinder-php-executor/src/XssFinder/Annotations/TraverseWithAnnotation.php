@@ -28,4 +28,11 @@ class TraverseWithAnnotation extends mindplay\annotations\Annotation
         $annotation = current($annotations);
         return $annotation;
     }
+
+    public static function isAnnotated(ReflectionMethod $method)
+    {
+        $annotationsManager = Annotations::getConfiguredManager();
+        $annotations = $annotationsManager->getMethodAnnotations($method, null, '@traverseWith');
+        return count($annotations) > 0;
+    }
 }

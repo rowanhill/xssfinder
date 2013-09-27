@@ -58,4 +58,28 @@ class CustomTraverserInstantiatorTest extends PHPUnit_Framework_TestCase
         // when
         $this->_instantiator->instantiate($method);
     }
+
+    function testAnnotatedMethodsHaveCustomTraversers()
+    {
+        // given
+        $method = $this->_testPageClass->getMethod('methodWithCustomTraverser');
+
+        // when
+        $hasCustomTraverser = $this->_instantiator->hasCustomTraverser($method);
+
+        // then
+        assertThat($hasCustomTraverser, is(true));
+    }
+
+    function testUnannotatedMethodsDoNotHaveCustomTraversers()
+    {
+        // given
+        $method = $this->_testPageClass->getMethod('methodWithNoAnnotation');
+
+        // when
+        $hasCustomTraverser = $this->_instantiator->hasCustomTraverser($method);
+
+        // then
+        assertThat($hasCustomTraverser, is(false));
+    }
 }

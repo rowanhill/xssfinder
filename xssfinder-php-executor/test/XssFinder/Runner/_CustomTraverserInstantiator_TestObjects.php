@@ -20,6 +20,8 @@ class CTI_TestPage
      * @traverseWith('traverserClass' => 'NonsenseClass')
      */
     function methodWithNonExistentCustomTraverser() {}
+
+    function methodWithNoAnnotation() {}
 }
 
 class CTI_Test_CustomTraverser implements CustomTraverser
