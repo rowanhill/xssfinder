@@ -9,12 +9,13 @@ use XssFinder\Scanner\ThriftToReflectionLookup;
 use XssFinder\TraversalMode;
 use XssFinder\Xss\XssGenerator;
 
-require '_ExecutorContext_HomePage.php';
+require '_ExecutorContext_TestPages.php';
 
 class ExecutorContextTest extends PHPUnit_Framework_TestCase
 {
     const HOME_PAGE_URL = 'http://home';
     const HOME_PAGE_ID = "HomePage";
+    const SECOND_PAGE_ID = "SecondPage";
 
     /** @var DriverWrapper */
     private $_mockDriverWrapper;
@@ -25,8 +26,12 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
 
     /** @var ReflectionClass */
     private $_homePageClass;
+    /** @var ReflectionClass */
+    private $_secondPageClass;
     /** @var mixed */
     private $_mockHomePage;
+    /** @var mixed */
+    private $_mockSecondPage;
     /** @var PageTraverser */
     private $_mockPageTraverser;
 
@@ -41,8 +46,12 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
         when($this->_mockDriverWrapper->getPageInstantiator())->return($this->_mockPageInstantiator);
 
         $this->_homePageClass = new ReflectionClass('\XssFinder\Runner\EC_TestPages_HomePage');
+        $this->_secondPageClass = new ReflectionClass('\XssFinder\Runner\EC_TestPages_SecondPage');
         $this->_mockPageTraverser = mock('XssFinder\Runner\PageTraverser');
         $this->_mockHomePage = new \stdClass();
+        $this->_mockHomePage->page = 'home page';
+        $this->_mockSecondPage = new \stdClass();
+        $this->_mockSecondPage->page = 'second page';
         when($this->_mockPageInstantiator->instantiatePage($this->_homePageClass))->return($this->_mockHomePage);
 
         $this->_executorContext = new ExecutorContext(
@@ -98,26 +107,88 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
     function testTraversingMethodDelegatesToPageTraverser()
     {
         // given
-        /** @var MethodDefinition $mockMethodDefinition */
-        $mockMethodDefinition = mock('XssFinder\MethodDefinition');
-        $mockMethodDefinition->identifier = 'refreshHomePage';
-        /** @var ThriftToReflectionLookup $lookup */
-        $lookup = mock('\XssFinder\Scanner\ThriftToReflectionLookup');
-        $method = $this->_homePageClass->getMethod('refreshHomePage');
-        when($lookup->getMethod('refreshHomePage'))->return($method);
-        $this->_executorContext->setThriftToReflectionLookup($lookup);
-        /** @var TraversalResult $mockTraversalResult */
-        $mockTraversalResult = mock('XssFinder\Runner\TraversalResult');
-        when($this->_mockPageTraverser->traverse($this->_mockHomePage, $method, TraversalMode::NORMAL))
-            ->return($mockTraversalResult);
+        $mockMethodDefinition = $this->_mockMethodDefinition('refreshHomePage');
+        $lookup = $this->_setMockLookup();
+        $method = $this->_getMethodAndAddToLookup($this->_homePageClass, 'refreshHomePage', $lookup);
+        $mockTraversalResult = $this->_mockTraversalResultForPageAndMethod($this->_mockHomePage, $method);
         when($lookup->getPageClass(self::HOME_PAGE_ID))->return($this->_homePageClass);
         $this->_executorContext->visitUrlOfRootPage(self::HOME_PAGE_ID);
-
 
         // when
         $traversalResult = $this->_executorContext->traverseMethod($mockMethodDefinition, TraversalMode::NORMAL);
 
         // then
         assertThat($traversalResult, is($mockTraversalResult));
+    }
+
+    function testTraversingASecondTimeTraversesFromResultingPageObjectOfFirstTraversal()
+    {
+        // given
+        $lookup = $this->_setMockLookup();
+        when($lookup->getPageClass(self::HOME_PAGE_ID))->return($this->_homePageClass);
+        when($lookup->getPageClass(self::SECOND_PAGE_ID))->return($this->_secondPageClass);
+        $goToSecondPage = $this->_getMethodAndAddToLookup($this->_homePageClass, 'goToSecondPage', $lookup);
+        $goToThirdPage = $this->_getMethodAndAddToLookup($this->_secondPageClass, 'goToThirdPage', $lookup);
+        $mockTraversalResult1 = $this->_mockTraversalResultForPageAndMethod($this->_mockHomePage, $goToSecondPage);
+        when($mockTraversalResult1->getPage())->return($this->_mockSecondPage);
+        $mockTraversalResult2 = $this->_mockTraversalResultForPageAndMethod($this->_mockSecondPage, $goToThirdPage);
+        $mockGoToSecondPageDefinition = $this->_mockMethodDefinition('goToSecondPage');
+        $mockGoToThirdPageDefinition = $this->_mockMethodDefinition('goToThirdPage');
+        $this->_executorContext->visitUrlOfRootPage(self::HOME_PAGE_ID);
+
+        // when
+        $this->_executorContext->traverseMethod($mockGoToSecondPageDefinition, TraversalMode::NORMAL);
+        $traversalResult = $this->_executorContext->traverseMethod($mockGoToThirdPageDefinition, TraversalMode::NORMAL);
+
+        // then
+        assertThat($traversalResult, is($mockTraversalResult2));
+    }
+
+    /**
+     * @param $identifier
+     * @return MethodDefinition
+     */
+    private function _mockMethodDefinition($identifier)
+    {
+        $mockMethodDefinition = mock('XssFinder\MethodDefinition');
+        $mockMethodDefinition->identifier = $identifier;
+        return $mockMethodDefinition;
+    }
+
+    /**
+     * @return ThriftToReflectionLookup
+     */
+    private function _setMockLookup()
+    {
+        /** @var ThriftToReflectionLookup $lookup */
+        $lookup = mock('\XssFinder\Scanner\ThriftToReflectionLookup');
+        $this->_executorContext->setThriftToReflectionLookup($lookup);
+        return $lookup;
+    }
+
+    /**
+     * @param \ReflectionClass $pageClass
+     * @param $methodName
+     * @param \XssFinder\Scanner\ThriftToReflectionLookup $lookup
+     * @return \ReflectionMethod
+     */
+    private function _getMethodAndAddToLookup(ReflectionClass $pageClass, $methodName, ThriftToReflectionLookup $lookup)
+    {
+        $method = $pageClass->getMethod($methodName);
+        when($lookup->getMethod($methodName))->return($method);
+        return $method;
+    }
+
+    /**
+     * @param $page
+     * @param $method
+     * @return TraversalResult
+     */
+    private function _mockTraversalResultForPageAndMethod($page, $method)
+    {
+        $mockTraversalResult = mock('XssFinder\Runner\TraversalResult');
+        when($this->_mockPageTraverser->traverse($page, $method, TraversalMode::NORMAL))
+            ->return($mockTraversalResult);
+        return $mockTraversalResult;
     }
 }

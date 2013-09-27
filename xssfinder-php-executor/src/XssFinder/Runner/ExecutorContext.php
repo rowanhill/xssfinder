@@ -73,7 +73,7 @@ class ExecutorContext
     {
         $method = $this->_lookup->getMethod($methodDefinition->identifier);
         $traversalResult = $this->_pageTraverser->traverse($this->_currentPage, $method, $traversalMode);
-        //TODO Update current page
+        $this->_currentPage = $traversalResult->getPage();
         return $traversalResult;
     }
 }
