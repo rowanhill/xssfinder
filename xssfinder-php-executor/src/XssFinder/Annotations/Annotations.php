@@ -14,6 +14,7 @@ class Annotations
     {
         require_once dirname(__FILE__) . '/PageAnnotation.php';
         require_once dirname(__FILE__) . '/CrawlStartPointAnnotation.php';
+        require_once dirname(__FILE__) . '/TraverseWithAnnotation.php';
     }
 
     /**
