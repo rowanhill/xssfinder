@@ -7,6 +7,8 @@ use Thrift\Factory\TTransportFactory;
 use Thrift\Server\TServerSocket;
 use Thrift\Server\TSimpleServer;
 use XssFinder\ExecutorProcessor;
+use XssFinder\Runner\CustomNormalTraversalStrategy;
+use XssFinder\Runner\CustomTraverserInstantiator;
 use XssFinder\Runner\ExecutorContext;
 use XssFinder\Runner\HtmlUnitDriverWrapper;
 use XssFinder\Runner\PageTraverser;
@@ -46,6 +48,7 @@ class ExecutorServer
             new HtmlUnitDriverWrapper(),
             new XssGenerator(new XssAttackFactory()),
             new PageTraverser(
+                new CustomNormalTraversalStrategy(new CustomTraverserInstantiator()),
                 new SimpleMethodTraversalStrategy()
             )
         );

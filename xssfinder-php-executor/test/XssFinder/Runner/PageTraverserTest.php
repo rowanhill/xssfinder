@@ -3,9 +3,13 @@
 namespace XssFinder\Runner;
 
 use XssFinder\TraversalMode;
+use XssFinder\TUntraversableException;
 
 class PageTraverserTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var CustomNormalTraversalStrategy */
+    private $_mockNormalStrategy;
+    /** @var SimpleMethodTraversalStrategy */
     private $_mockMethodStrategy;
     private $_traversalMode;
     private $_rootPage;
@@ -16,6 +20,7 @@ class PageTraverserTest extends \PHPUnit_Framework_TestCase
 
     function setUp()
     {
+        $this->_mockNormalStrategy = mock('XssFinder\Runner\CustomNormalTraversalStrategy');
         $this->_mockMethodStrategy = mock('XssFinder\Runner\SimpleMethodTraversalStrategy');
         $this->_traversalMode = TraversalMode::NORMAL;
 
@@ -23,7 +28,22 @@ class PageTraverserTest extends \PHPUnit_Framework_TestCase
         $rootPageClass = new \ReflectionClass('\PageTraverser_TestPages\RootPage');
         $this->_method = $rootPageClass->getMethod('goToSomePage');
 
-        $this->_traverser = new PageTraverser($this->_mockMethodStrategy);
+        $this->_traverser = new PageTraverser(
+            $this->_mockNormalStrategy,
+            $this->_mockMethodStrategy
+        );
+    }
+
+    function testTraversalSatisfiedByNormalStrategyIsDelegatedToNormalStrategy()
+    {
+        // given
+        $mockResult = $this->_mockCanSatisfyAndTraverseForStrategy($this->_mockNormalStrategy, $this->_traversalMode);
+
+        // when
+        $result = $this->_traverser->traverse($this->_rootPage, $this->_method, $this->_traversalMode);
+
+        // then
+        assertThat($result, is($mockResult));
     }
 
     function testTraversalSatisfiedBySimpleMethodStrategyIsDelegatedToSimpleMethodStrategy()
@@ -36,6 +56,15 @@ class PageTraverserTest extends \PHPUnit_Framework_TestCase
 
         // then
         assertThat($result, is($mockResult));
+    }
+
+    /**
+     * @expectedException \XssFinder\TUntraversableException
+     */
+    function testExceptionThrownIfNoStrategySatisfiesTraversal()
+    {
+        // when
+        $this->_traverser->traverse($this->_rootPage, $this->_method, $this->_traversalMode);
     }
 
     /**
