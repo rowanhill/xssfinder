@@ -36,7 +36,7 @@ class CustomNormalTraversalStrategyTest extends PHPUnit_Framework_TestCase
         assertThat($canSatisfy, is(false));
     }
 
-    function testCannotSatisfyNormalTraversalModeIfTraverserInstantiatorCannotProduceTraverser()
+    function testCannotSatisfyNormalTraversalModeIfMethodHasNoCustomTraverser()
     {
         // when
         $canSatisfy = $this->_strategy->canSatisfyMethod($this->_method, TraversalMode::NORMAL);
@@ -45,7 +45,7 @@ class CustomNormalTraversalStrategyTest extends PHPUnit_Framework_TestCase
         assertThat($canSatisfy, is(false));
     }
 
-    function testCanSatisfyNormalTraversalModeIfTraverserInstantiatorProducesTraverser()
+    function testCanSatisfyNormalTraversalModeIfMethodHasCustomTraverser()
     {
         // given
         when($this->_mockInstantiator->hasCustomTraverser($this->_method))->return(true);
@@ -70,10 +70,10 @@ class CustomNormalTraversalStrategyTest extends PHPUnit_Framework_TestCase
         when($mockTraverser->traverse($mockPageOne))->return($mockPageTwo);
 
         // when
-        $page = $this->_strategy->traverse($mockPageOne, $this->_method);
+        $traversalResult = $this->_strategy->traverse($mockPageOne, $this->_method);
 
         // then
-        assertThat($page, is($mockPageTwo));
+        assertThat($traversalResult->getPage(), is($mockPageTwo));
     }
 }
 

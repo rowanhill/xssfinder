@@ -36,6 +36,7 @@ class CustomNormalTraversalStrategy implements TraversalStrategy
     function traverse($page, ReflectionMethod $method)
     {
         $customTraverser = $this->_instantiator->instantiate($method);
-        return $customTraverser->traverse($page);
+        $newPage = $customTraverser->traverse($page);
+        return new TraversalResult($newPage, array());
     }
 }
