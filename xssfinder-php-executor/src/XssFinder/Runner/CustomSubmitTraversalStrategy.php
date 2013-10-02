@@ -10,10 +10,15 @@ class CustomSubmitTraversalStrategy implements TraversalStrategy
 {
     /** @var CustomSubmitterInstantiator */
     private $_customSubmitterInstantiator;
+    /** @var LabelledXssGeneratorImpl */
+    private $_labelledXssGenerator;
 
-    public function __construct(CustomSubmitterInstantiator $customSubmitterInstantiator)
-    {
+    public function __construct(
+        CustomSubmitterInstantiator $customSubmitterInstantiator,
+        LabelledXssGeneratorImpl $labelledXssGenerator
+    ) {
         $this->_customSubmitterInstantiator = $customSubmitterInstantiator;
+        $this->_labelledXssGenerator = $labelledXssGenerator;
     }
 
     /**
@@ -36,8 +41,8 @@ class CustomSubmitTraversalStrategy implements TraversalStrategy
     function traverse($page, ReflectionMethod $method)
     {
         $submitter = $this->_customSubmitterInstantiator->instantiate($method);
-        $newPage = $submitter->submit($page, null); //TODO: Pass LabelledXssGenerator
-        $traversalResult = new TraversalResult($newPage, array()); //TODO: Return LXG's recorded results
+        $newPage = $submitter->submit($page, $this->_labelledXssGenerator);
+        $traversalResult = new TraversalResult($newPage, $this->_labelledXssGenerator->getLabelsToAttackIds());
         return $traversalResult;
     }
 }

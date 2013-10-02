@@ -13,6 +13,7 @@ use XssFinder\Runner\CustomSubmitTraversalStrategy;
 use XssFinder\Runner\CustomTraverserInstantiator;
 use XssFinder\Runner\ExecutorContext;
 use XssFinder\Runner\HtmlUnitDriverWrapper;
+use XssFinder\Runner\LabelledXssGeneratorImpl;
 use XssFinder\Runner\PageTraverser;
 use XssFinder\Runner\SimpleMethodTraversalStrategy;
 use XssFinder\Scanner\MethodDefinitionFactory;
@@ -46,12 +47,16 @@ class ExecutorServer
         $methodDefinitionFactory = new MethodDefinitionFactory($reflectionHelper);
         $pageDefinitionFactory = new PageDefinitionFactory($methodDefinitionFactory, $reflectionHelper, $this->_pageClassNames);
         $lookupFactory = new ThriftToReflectionLookupFactory();
+        $xssGenerator = new XssGenerator(new XssAttackFactory());
         $executorContext = new ExecutorContext(
             new HtmlUnitDriverWrapper(),
-            new XssGenerator(new XssAttackFactory()),
+            $xssGenerator,
             new PageTraverser(
                 new CustomNormalTraversalStrategy(new CustomTraverserInstantiator()),
-                new CustomSubmitTraversalStrategy(new CustomSubmitterInstantiator()),
+                new CustomSubmitTraversalStrategy(
+                    new CustomSubmitterInstantiator(),
+                    new LabelledXssGeneratorImpl($xssGenerator)
+                ),
                 new SimpleMethodTraversalStrategy()
             )
         );

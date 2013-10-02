@@ -5,12 +5,15 @@ namespace XssFinder\Runner;
 use ReflectionClass;
 use ReflectionMethod;
 use XssFinder\Annotations\CustomSubmitter;
+use XssFinder\Annotations\LabelledXssGenerator;
 use XssFinder\TraversalMode;
 
 class CustomSubmitTraversalStrategyTest extends \PHPUnit_Framework_TestCase
 {
     /** @var CustomSubmitterInstantiator */
     private $_mockSubmitterInstantiator;
+    /** @var LabelledXssGeneratorImpl */
+    private $_mockLabelledXssGenerator;
 
     /** @var ReflectionMethod */
     private $_method;
@@ -21,11 +24,16 @@ class CustomSubmitTraversalStrategyTest extends \PHPUnit_Framework_TestCase
     function setUp()
     {
         $this->_mockSubmitterInstantiator = mock('XssFinder\Runner\CustomSubmitterInstantiator');
+        $this->_mockLabelledXssGenerator = mock('XssFinder\Runner\LabelledXssGeneratorImpl');
+        when($this->_mockLabelledXssGenerator->getLabelsToAttackIds())->return(array());
 
         $rootPageClass = new ReflectionClass('CustomSubmitTraversalStrategy_TestPages\RootPage');
         $this->_method = $rootPageClass->getMethod('visitSomePage');
 
-        $this->_strategy = new CustomSubmitTraversalStrategy($this->_mockSubmitterInstantiator);
+        $this->_strategy = new CustomSubmitTraversalStrategy(
+            $this->_mockSubmitterInstantiator,
+            $this->_mockLabelledXssGenerator
+        );
     }
 
     function testCannotNormalSubmissionTraversalMode()
@@ -68,13 +76,32 @@ class CustomSubmitTraversalStrategyTest extends \PHPUnit_Framework_TestCase
         $mockPageOne->page = 'one';
         $mockPageTwo = new \stdClass();
         $mockPageTwo->page = 'two';
-        when($mockSubmitter->submit($mockPageOne, null))->return($mockPageTwo);
+        when($mockSubmitter->submit($mockPageOne, $this->_mockLabelledXssGenerator))->return($mockPageTwo);
 
         // when
         $traversalResult = $this->_strategy->traverse($mockPageOne, $this->_method);
 
         // then
         assertThat($traversalResult->getPage(), is($mockPageTwo));
+    }
+
+    function testCustomSubmitterReturnsLabelToAttackIdMappingFromXssAttacksGeneratedWithLabelledXssGenerator()
+    {
+        // given
+        /** @var CustomSubmitter $mockSubmitter */
+        $mockSubmitter = mock('XssFinder\Annotations\CustomSubmitter');
+        when($this->_mockSubmitterInstantiator->instantiate($this->_method))->return($mockSubmitter);
+        $mockPageOne = new \stdClass();
+        $mockPageOne->page = 'one';
+        $expectedLabelsToAttackIds = array('label' => 'id');
+        \Phockito::reset($this->_mockLabelledXssGenerator);
+        when($this->_mockLabelledXssGenerator->getLabelsToAttackIds())->return($expectedLabelsToAttackIds);
+
+        // when
+        $traversalResult = $this->_strategy->traverse($mockPageOne, $this->_method);
+
+        // then
+        assertThat($traversalResult->getInputIdsToAttackIds(), is($expectedLabelsToAttackIds));
     }
 }
 
