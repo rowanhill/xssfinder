@@ -9,6 +9,8 @@ class PageTraverserTest extends \PHPUnit_Framework_TestCase
 {
     /** @var CustomNormalTraversalStrategy */
     private $_mockNormalStrategy;
+    /** @var CustomSubmitTraversalStrategy */
+    private $_mockSubmitStrategy;
     /** @var SimpleMethodTraversalStrategy */
     private $_mockMethodStrategy;
     private $_traversalMode;
@@ -21,6 +23,7 @@ class PageTraverserTest extends \PHPUnit_Framework_TestCase
     function setUp()
     {
         $this->_mockNormalStrategy = mock('XssFinder\Runner\CustomNormalTraversalStrategy');
+        $this->_mockSubmitStrategy = mock('XssFinder\Runner\CustomSubmitTraversalStrategy');
         $this->_mockMethodStrategy = mock('XssFinder\Runner\SimpleMethodTraversalStrategy');
         $this->_traversalMode = TraversalMode::NORMAL;
 
@@ -30,6 +33,7 @@ class PageTraverserTest extends \PHPUnit_Framework_TestCase
 
         $this->_traverser = new PageTraverser(
             $this->_mockNormalStrategy,
+            $this->_mockSubmitStrategy,
             $this->_mockMethodStrategy
         );
     }
@@ -38,6 +42,18 @@ class PageTraverserTest extends \PHPUnit_Framework_TestCase
     {
         // given
         $mockResult = $this->_mockCanSatisfyAndTraverseForStrategy($this->_mockNormalStrategy, $this->_traversalMode);
+
+        // when
+        $result = $this->_traverser->traverse($this->_rootPage, $this->_method, $this->_traversalMode);
+
+        // then
+        assertThat($result, is($mockResult));
+    }
+
+    function testTraversalSatisfiedBySubmitStrategyIsDelegatedToCustomSubmitStrategy()
+    {
+        // given
+        $mockResult = $this->_mockCanSatisfyAndTraverseForStrategy($this->_mockSubmitStrategy, $this->_traversalMode);
 
         // when
         $result = $this->_traverser->traverse($this->_rootPage, $this->_method, $this->_traversalMode);

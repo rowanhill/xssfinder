@@ -9,14 +9,18 @@ class PageTraverser
 {
     /** @var CustomNormalTraversalStrategy */
     private $_customNormalStrategy;
+    /** @var CustomSubmitTraversalStrategy */
+    private $_customSubmitStrategy;
     /** @var SimpleMethodTraversalStrategy */
     private $_simpleMethodStrategy;
 
     function __construct(
         CustomNormalTraversalStrategy $customNormalStrategy,
+        CustomSubmitTraversalStrategy $customSubmitStrategy,
         SimpleMethodTraversalStrategy $simpleMethodStrategy
     ) {
         $this->_customNormalStrategy = $customNormalStrategy;
+        $this->_customSubmitStrategy = $customSubmitStrategy;
         $this->_simpleMethodStrategy = $simpleMethodStrategy;
     }
 
@@ -29,7 +33,11 @@ class PageTraverser
      */
     function traverse($page, ReflectionMethod $method, $traversalMode)
     {
-        $orderedStrategies = array($this->_customNormalStrategy, $this->_simpleMethodStrategy);
+        $orderedStrategies = array(
+            $this->_customNormalStrategy,
+            $this->_customSubmitStrategy,
+            $this->_simpleMethodStrategy
+        );
         foreach ($orderedStrategies as $strategy) {
             /** @var TraversalStrategy $strategy */
             if ($strategy->canSatisfyMethod($method, $traversalMode)) {
