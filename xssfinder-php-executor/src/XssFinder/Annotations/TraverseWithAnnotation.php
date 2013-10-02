@@ -1,5 +1,6 @@
 <?php
 use XssFinder\Annotations\Annotations;
+use XssFinder\Annotations\ExactlyOneAnnotationRequiredException;
 
 /**
  * @usage('method' => true)
@@ -21,18 +22,11 @@ class TraverseWithAnnotation extends mindplay\annotations\Annotation
         $annotationsManager = Annotations::getConfiguredManager();
         $annotations = $annotationsManager->getMethodAnnotations($method, null, '@traverseWith');
         if (count($annotations) == 0) {
-            throw new Exception('No @traverseWith annotation found on ' . $method->getName());
+            throw new ExactlyOneAnnotationRequiredException('No @traverseWith annotation found on ' . $method->getName());
         } elseif (count($annotations) > 1) {
-            throw new Exception('Multiple @traverseWith annotation found on ' . $method->getName());
+            throw new ExactlyOneAnnotationRequiredException('Multiple @traverseWith annotation found on ' . $method->getName());
         }
         $annotation = current($annotations);
         return $annotation;
-    }
-
-    public static function isAnnotated(ReflectionMethod $method)
-    {
-        $annotationsManager = Annotations::getConfiguredManager();
-        $annotations = $annotationsManager->getMethodAnnotations($method, null, '@traverseWith');
-        return count($annotations) > 0;
     }
 }

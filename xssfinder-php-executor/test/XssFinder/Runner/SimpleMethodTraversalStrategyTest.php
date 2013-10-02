@@ -9,7 +9,7 @@ use XssFinder\TraversalMode;
 
 class SimpleMethodTraversalStrategyTest extends PHPUnit_Framework_TestCase
 {
-    /** @var CustomNormalTraversalStrategy */
+    /** @var SimpleMethodTraversalStrategy */
     private $_strategy;
     /** @var ReflectionMethod */
     private $_method;

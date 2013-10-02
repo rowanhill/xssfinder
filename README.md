@@ -224,3 +224,6 @@ TODOs
 1. Add more lifecycle events (before route, before/after traversal).
 1. Consider annotation inheritance - at a minimum, `@Page` probably wants to be marked as
 [`@Inherited`](http://docs.oracle.com/javase/6/docs/api/java/lang/annotation/Inherited.html)
+1. Rethink custom traverser and submitters - perhaps @SubmitAction should take no params, and be paired with
+@TraverseWith for a custom traverser, and the CustomTraverser interface should be expanded to that of CustomSubmitter
+(and CustomSubmitter should be dropped)?

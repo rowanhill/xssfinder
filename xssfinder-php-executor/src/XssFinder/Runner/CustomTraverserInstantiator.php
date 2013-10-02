@@ -3,7 +3,9 @@
 namespace XssFinder\Runner;
 
 use ReflectionMethod;
+use XssFinder\Annotations\Annotations;
 use XssFinder\Annotations\CustomTraverser;
+use XssFinder\Annotations\ExactlyOneAnnotationRequiredException;
 
 class CustomTraverserInstantiator
 {
@@ -20,7 +22,7 @@ class CustomTraverserInstantiator
         if (!class_exists($customTraverserClassName)) {
             throw new NonExistentCustomTraverserException("Custom traverser class $customTraverserClassName cannot be found");
         }
-        $customTraverser = new $customTraverserClassName;
+        $customTraverser = new $customTraverserClassName();
         $customTraverserInterface = 'XssFinder\Annotations\CustomTraverser';
         if (!($customTraverser instanceof $customTraverserInterface)) {
             throw new InvalidCustomTraverserException("$customTraverserClassName is not an instance of $customTraverserInterface");
@@ -30,7 +32,12 @@ class CustomTraverserInstantiator
 
     public function hasCustomTraverser(ReflectionMethod $method)
     {
-        return \TraverseWithAnnotation::isAnnotated($method);
+        try {
+            \TraverseWithAnnotation::getTraverseWith($method);
+            return true;
+        } catch (ExactlyOneAnnotationRequiredException $e) {
+            return false;
+        }
     }
 }
 
