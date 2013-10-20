@@ -63,7 +63,14 @@ class HtmlUnitDriverWrapper implements DriverWrapper
      */
     function getCurrentXssIds()
     {
-        // TODO: Implement getCurrentXssIds() method.
+        // RemoteWebDriver doesn't (yet) implement returning arrays, so we have to get the values one by one - this
+        // is significantly slower
+        $numberOfXssIds = $this->_webDriver->executeScript('return (window.xssfinder || []).length');
+        $xssIds = array();
+        for ($i = 0; $i < $numberOfXssIds; $i++) {
+            $xssIds[] = $this->_webDriver->executeScript("return window.xssfinder[$i]");
+        }
+        return $xssIds;
     }
 
     /**

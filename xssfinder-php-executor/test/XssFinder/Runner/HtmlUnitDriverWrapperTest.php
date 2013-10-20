@@ -15,16 +15,29 @@ class HtmlUnitDriverWrapperTest extends \PHPUnit_Framework_TestCase
     const TWO_FORM_PAGE = "HtmlUnitDriverWrapperTest_two_forms.html";
     const NO_XSS_PAGE = "HtmlUnitDriverWrapperTest_no_xss.html";
 
+    /** @var Wiremock */
+    private static $_wiremock;
+    
+    public static function setUpBeforeClass()
+    {
+        assertThat(\XssFinder\TestHelper\Wiremock::startWiremockServer(), is(true));
+        self::$_wiremock = new Wiremock(8080);
+    }
+
+    public static function tearDownAfterClass()
+    {
+        assertThat(\XssFinder\TestHelper\Wiremock::stopWiremockServer(), is(true));
+    }
+
     public function setUp()
     {
+        self::$_wiremock->reset();
         assertThat(Selenium::startSeleniumServer(), is(true));
-        assertThat(\XssFinder\TestHelper\Wiremock::startWiremockServer(), is(true));
     }
 
     public function tearDown()
     {
         assertThat(Selenium::stopSeleniumServer(), is(true));
-        assertThat(\XssFinder\TestHelper\Wiremock::stopWiremockServer(), is(true));
     }
 
     public function testCreatesWebDriverPageInstantiator()
@@ -42,22 +55,20 @@ class HtmlUnitDriverWrapperTest extends \PHPUnit_Framework_TestCase
     public function testVisitingRequestsUrl()
     {
         // given
-        $wiremock = new Wiremock(8080);
-        $wiremock->stubFor()->get()->url('/some-url')->willReturnResponse()->withBody('Here is a body')->setUp();
+        self::$_wiremock->stubFor()->get()->url('/some-url')->willReturnResponse()->withBody('Here is a body')->setUp();
         $driver = new HtmlUnitDriverWrapper();
 
         // when
         $driver->visit('http://localhost:8080/some-url');
 
         // then
-        $wiremock->verify()->get()->url('/some-url')->check();
+        self::$_wiremock->verify()->get()->url('/some-url')->check();
     }
     
     public function testXssAttackingPutsXssFromGeneratorInAllTextInputAndTextArea()
     {
         // given
-        $wiremock = new Wiremock(8080);
-        $wiremock->stubFor()->get()->url('/')->willReturnResponse()->withBodyFile(self::INDEX_PAGE)->setUp();
+        self::$_wiremock->stubFor()->get()->url('/')->willReturnResponse()->withBodyFile(self::INDEX_PAGE)->setUp();
         $driver = new HtmlUnitDriverWrapper();
         $driver->visit('http://localhost:8080/');
         /** @var XssGenerator $mockXssGenerator */
@@ -72,7 +83,7 @@ class HtmlUnitDriverWrapperTest extends \PHPUnit_Framework_TestCase
         $this->_clickSubmit($driver);
 
         // then
-        $requests = $wiremock->findAll()->post()->url('/submit')->query();
+        $requests = self::$_wiremock->findAll()->post()->url('/submit')->query();
         assertThat(count($requests['requests']), is(1));
         $request = $requests['requests'][0];
         $body = $request['body'];
@@ -83,6 +94,20 @@ class HtmlUnitDriverWrapperTest extends \PHPUnit_Framework_TestCase
         assertThat($params, hasEntry('search', 'xss'));
         assertThat($params, hasEntry('password', 'xss'));
         assertThat($params, hasEntry('textarea', 'xss'));
+    }
+
+    public function testCurrentXssIdsAreGotFromJsArrayVar()
+    {
+        // given
+        self::$_wiremock->stubFor()->get()->url('/')->willReturnResponse()->withBodyFile(self::INDEX_PAGE)->setUp();
+        $driver = new HtmlUnitDriverWrapper();
+        $driver->visit('http://localhost:8080/');
+
+        // when
+        $currentXssIds = $driver->getCurrentXssIds();
+
+        // then
+        assertThat($currentXssIds, is(array('123', '456')));
     }
 
     private function _clickSubmit($driver)

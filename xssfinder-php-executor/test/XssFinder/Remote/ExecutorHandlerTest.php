@@ -118,6 +118,19 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
         assertThat($inputIdsToXssIds, is($expectedInputIdsToXssIds));
     }
 
+    public function testGettingCurrentXssIdsIsDelegatedToExecutorContext()
+    {
+        // given
+        $this->_handler = $this->_createExecutorHandler();
+        when($this->_mockExecutorContext->getCurrentXssIds())->return(array('1','2'));
+
+        // when
+        $currentXssIds = $this->_handler->getCurrentXssIds();
+
+        // then
+        assertThat($currentXssIds, is(array('1','2')));
+    }
+
     private function _createExecutorHandler($classNames = array())
     {
         return new ExecutorHandler(

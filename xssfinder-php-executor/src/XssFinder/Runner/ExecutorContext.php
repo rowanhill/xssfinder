@@ -76,4 +76,12 @@ class ExecutorContext
         $this->_currentPage = $traversalResult->getPage();
         return $traversalResult;
     }
+
+    /**
+     * @return array
+     */
+    public function getCurrentXssIds()
+    {
+        return $this->_driverWrapper->getCurrentXssIds();
+    }
 }

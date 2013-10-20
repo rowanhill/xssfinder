@@ -80,8 +80,7 @@ class ExecutorHandler implements ExecutorIf
      */
     public function getCurrentXssIds()
     {
-        // TODO: Implement getCurrentXssIds() method.
-        return array();
+        return $this->_executorContext->getCurrentXssIds();
     }
 
     /**

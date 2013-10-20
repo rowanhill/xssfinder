@@ -144,6 +144,18 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
         assertThat($traversalResult, is($mockTraversalResult2));
     }
 
+    function testGettingCurrentXssIdsIsDelegatedToDriverWrapper()
+    {
+        // given
+        when($this->_mockDriverWrapper->getCurrentXssIds())->return(array('1','2'));
+
+        // when
+        $currentXssIds = $this->_executorContext->getCurrentXssIds();
+
+        // then
+        assertThat($currentXssIds, is(array('1','2')));
+    }
+
     /**
      * @param $identifier
      * @return MethodDefinition
