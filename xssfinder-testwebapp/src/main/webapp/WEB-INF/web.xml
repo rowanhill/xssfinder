@@ -32,7 +32,7 @@
 
     <servlet-mapping>
         <servlet-name>simple</servlet-name>
-        <url-pattern>simple/*</url-pattern>
+        <url-pattern>/simple/*</url-pattern>
     </servlet-mapping>
 
 

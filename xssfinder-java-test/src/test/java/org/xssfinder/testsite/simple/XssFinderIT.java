@@ -13,7 +13,9 @@ import org.xssfinder.reporting.XssSighting;
 
 import java.io.File;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class XssFinderIT {
@@ -23,14 +25,20 @@ public class XssFinderIT {
     @Before
     public void setUp() throws Exception {
         if (System.getProperty("jetty.port") != null) {
+            // If we're running in Maven, Jetty is already running
             return;
         }
+
+        // Start the Jetty server running, referencing the xssfinder-testwebapp project. Note: this is slightly
+        // different to the maven tests, which builds the war first and deploys that. This shouldn't have any
+        // impact on the tests.
+
         Server server = new Server(8085);
         server.setStopAtShutdown(true);
 
         WebAppContext webAppContext = new WebAppContext();
         webAppContext.setContextPath("/");
-        webAppContext.setResourceBase("xssfinder-test/src/main/webapp");
+        webAppContext.setResourceBase("xssfinder-testwebapp/src/main/webapp");
         webAppContext.setDescriptor("WEB-INF/web.xml");
         webAppContext.setClassLoader(getClass().getClassLoader());
         server.setHandler(webAppContext);

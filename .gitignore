@@ -6,6 +6,7 @@ xssfinder-core/target/*
 xssfinder-java-thrift/target/*
 xssfinder-java-annotations/target/*
 xssfinder-java-executor/target/*
-xssfinder-test/target/*
+xssfinder-testwebapp/target/*
+xssfinder-java-test/target/*
 xssfinder-php-executor/vendor/*
 xssfinder-php-executor/test/*.log

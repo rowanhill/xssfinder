@@ -24,26 +24,32 @@
         <processorPath useClasspath="true" />
         <module name="xssfinder-annotations" />
         <module name="xssfinder-core" />
+        <module name="xssfinder-core-test" />
         <module name="xssfinder-executor" />
         <module name="xssfinder-executor-java" />
         <module name="xssfinder-java-annotations" />
         <module name="xssfinder-java-executor" />
+        <module name="xssfinder-java-test" />
         <module name="xssfinder-java-thrift" />
         <module name="xssfinder-test" />
+        <module name="xssfinder-testwebapp" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="xssfinder" target="1.6" />
       <module name="xssfinder-annotations" target="1.6" />
       <module name="xssfinder-core" target="1.6" />
+      <module name="xssfinder-core-test" target="1.6" />
       <module name="xssfinder-executor" target="1.6" />
       <module name="xssfinder-executor-java" target="1.6" />
       <module name="xssfinder-java-annotations" target="1.6" />
       <module name="xssfinder-java-executor" target="1.6" />
+      <module name="xssfinder-java-test" target="1.6" />
       <module name="xssfinder-java-thrift" target="1.6" />
       <module name="xssfinder-remote" target="1.6" />
       <module name="xssfinder-remote-java" target="1.6" />
       <module name="xssfinder-test" target="1.6" />
+      <module name="xssfinder-testwebapp" target="1.6" />
     </bytecodeTargetLevel>
   </component>
 </project>

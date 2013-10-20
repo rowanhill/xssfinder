@@ -73,7 +73,7 @@ Usage (Java)
     1. Annotate a method on that class with `@AfterRoute`
 1. Run XSS Finder - currently easiest from a unit test
 
-See the xssfinder-test module for an example.
+See the xssfinder-java-test module for an example.
 
 ### Basic Annotations ###
 XSS Finder tries to keep things as simple and unobtrusive as
