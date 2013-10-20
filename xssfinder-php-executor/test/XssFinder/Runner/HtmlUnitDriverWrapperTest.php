@@ -110,6 +110,20 @@ class HtmlUnitDriverWrapperTest extends \PHPUnit_Framework_TestCase
         assertThat($currentXssIds, is(array('123', '456')));
     }
 
+    public function testCurrentXssIdsReturnsEmptyArrayIfJsVarNotDefined()
+    {
+        // given
+        self::$_wiremock->stubFor()->get()->url('/')->willReturnResponse()->withBodyFile(self::NO_XSS_PAGE)->setUp();
+        $driver = new HtmlUnitDriverWrapper();
+        $driver->visit('http://localhost:8080/');
+
+        // when
+        $currentXssIds = $driver->getCurrentXssIds();
+
+        // then
+        assertThat($currentXssIds, is(array()));
+    }
+
     private function _clickSubmit($driver)
     {
         $reflectionProperty = new \ReflectionProperty('XssFinder\Runner\HtmlUnitDriverWrapper', '_webDriver');
