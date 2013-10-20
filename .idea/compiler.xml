@@ -29,7 +29,6 @@
         <module name="xssfinder-executor-java" />
         <module name="xssfinder-java-annotations" />
         <module name="xssfinder-java-executor" />
-        <module name="xssfinder-java-test" />
         <module name="xssfinder-java-thrift" />
         <module name="xssfinder-test" />
         <module name="xssfinder-testwebapp" />

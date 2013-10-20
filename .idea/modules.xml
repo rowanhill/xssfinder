@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/xssfinder-core/xssfinder-core.iml" filepath="$PROJECT_DIR$/xssfinder-core/xssfinder-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/xssfinder-java-annotations/xssfinder-java-annotations.iml" filepath="$PROJECT_DIR$/xssfinder-java-annotations/xssfinder-java-annotations.iml" />
       <module fileurl="file://$PROJECT_DIR$/xssfinder-java-executor/xssfinder-java-executor.iml" filepath="$PROJECT_DIR$/xssfinder-java-executor/xssfinder-java-executor.iml" />
-      <module fileurl="file://$PROJECT_DIR$/xssfinder-java-test/xssfinder-java-test.iml" filepath="$PROJECT_DIR$/xssfinder-java-test/xssfinder-java-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/xssfinder-java-thrift/xssfinder-java-thrift.iml" filepath="$PROJECT_DIR$/xssfinder-java-thrift/xssfinder-java-thrift.iml" />
       <module fileurl="file://$PROJECT_DIR$/xssfinder-testwebapp/xssfinder-testwebapp.iml" filepath="$PROJECT_DIR$/xssfinder-testwebapp/xssfinder-testwebapp.iml" />
     </modules>
