@@ -78,7 +78,7 @@ class HtmlUnitDriverWrapper implements DriverWrapper
      */
     function getFormCount()
     {
-        // TODO: Implement getFormCount() method.
+        return count($this->_webDriver->findElements(\WebDriverBy::xpath('//form')));
     }
 
     /**

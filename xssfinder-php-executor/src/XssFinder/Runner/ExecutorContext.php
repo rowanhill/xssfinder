@@ -84,4 +84,12 @@ class ExecutorContext
     {
         return $this->_driverWrapper->getCurrentXssIds();
     }
+
+    /**
+     * @return int
+     */
+    public function getFormCount()
+    {
+        return $this->_driverWrapper->getFormCount();
+    }
 }

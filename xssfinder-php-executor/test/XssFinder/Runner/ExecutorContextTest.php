@@ -156,6 +156,18 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
         assertThat($currentXssIds, is(array('1','2')));
     }
 
+    function testGettingFormCountIsDelegatedToDriverWrapper()
+    {
+        // given
+        when($this->_mockDriverWrapper->getFormCount())->return(3);
+
+        // when
+        $formCount = $this->_executorContext->getFormCount();
+
+        // then
+        assertThat($formCount, is(3));
+    }
+
     /**
      * @param $identifier
      * @return MethodDefinition

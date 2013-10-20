@@ -131,6 +131,19 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
         assertThat($currentXssIds, is(array('1','2')));
     }
 
+    public function testGettingFormCountIsDelegatedToExecutorContext()
+    {
+        // given
+        $this->_handler = $this->_createExecutorHandler();
+        when($this->_mockExecutorContext->getFormCount())->return(3);
+
+        // when
+        $formCount = $this->_handler->getFormCount();
+
+        // then
+        assertThat($formCount, is(3));
+    }
+
     private function _createExecutorHandler($classNames = array())
     {
         return new ExecutorHandler(

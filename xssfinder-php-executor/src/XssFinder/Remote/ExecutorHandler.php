@@ -88,8 +88,7 @@ class ExecutorHandler implements ExecutorIf
      */
     public function getFormCount()
     {
-        // TODO: Implement getFormCount() method.
-        return 0;
+        return $this->_executorContext->getFormCount();
     }
 
     /**

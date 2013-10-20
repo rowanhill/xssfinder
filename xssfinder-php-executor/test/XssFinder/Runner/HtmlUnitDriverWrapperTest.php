@@ -124,6 +124,20 @@ class HtmlUnitDriverWrapperTest extends \PHPUnit_Framework_TestCase
         assertThat($currentXssIds, is(array()));
     }
 
+    public function testFormCountIsCountOfNumberOfFormElementsOnPage()
+    {
+        // given
+        self::$_wiremock->stubFor()->get()->url('/')->willReturnResponse()->withBodyFile(self::INDEX_PAGE)->setUp();
+        $driver = new HtmlUnitDriverWrapper();
+        $driver->visit('http://localhost:8080/');
+
+        // when
+        $formCount = $driver->getFormCount();
+
+        // then
+        assertThat($formCount, is(1));
+    }
+
     private function _clickSubmit($driver)
     {
         $reflectionProperty = new \ReflectionProperty('XssFinder\Runner\HtmlUnitDriverWrapper', '_webDriver');
