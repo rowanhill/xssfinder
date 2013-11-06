@@ -13,9 +13,15 @@
         <module>xssfinder-core</module>
         <module>xssfinder-java-thrift</module>
         <module>xssfinder-java-annotations</module>
+        <module>xssfinder-php-executor</module>
         <module>xssfinder-java-executor</module>
         <module>xssfinder-testwebapp</module>
     </modules>
+
+    <properties>
+        <!-- Use Jetty 7; Can't solve JSTL lib issues in 8, and 9 requires Java 7 -->
+        <jetty.version>7.6.13.v20130916</jetty.version>
+    </properties>
 
     <dependencyManagement>
         <dependencies>

@@ -30,7 +30,7 @@
         <module name="xssfinder-java-annotations" />
         <module name="xssfinder-java-executor" />
         <module name="xssfinder-java-thrift" />
-        <module name="xssfinder-test" />
+        <module name="xssfinder-php-executor" />
         <module name="xssfinder-testwebapp" />
       </profile>
     </annotationProcessing>
@@ -45,6 +45,7 @@
       <module name="xssfinder-java-executor" target="1.6" />
       <module name="xssfinder-java-test" target="1.6" />
       <module name="xssfinder-java-thrift" target="1.6" />
+      <module name="xssfinder-php-executor" target="1.6" />
       <module name="xssfinder-remote" target="1.6" />
       <module name="xssfinder-remote-java" target="1.6" />
       <module name="xssfinder-test" target="1.6" />

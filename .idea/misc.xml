@@ -14,6 +14,7 @@
         <option value="$PROJECT_DIR$/xssfinder-java-test/pom.xml" />
         <option value="$PROJECT_DIR$/xssfinder-core-test/pom.xml" />
         <option value="$PROJECT_DIR$/xssfinder-testwebapp/pom.xml" />
+        <option value="$PROJECT_DIR$/xssfinder-php-executor/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
