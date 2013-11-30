@@ -14,6 +14,7 @@ class XssAttack
 HTML;
 
     private $_identifier;
+    private $_attackString;
 
     /**
      * @param string $identifier
@@ -21,6 +22,7 @@ HTML;
     public function __construct($identifier)
     {
         $this->_identifier = $identifier;
+        $this->_attackString = sprintf(preg_replace('/\\n/', '', self::ATTACK_TEMPLATE), $this->_identifier);
     }
 
     public function getIdentifier()
@@ -30,6 +32,6 @@ HTML;
 
     public function getAttackString()
     {
-        return sprintf(self::ATTACK_TEMPLATE, $this->_identifier);
+        return $this->_attackString;
     }
 }

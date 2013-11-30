@@ -25,7 +25,7 @@ class XssAttackTest extends \PHPUnit_Framework_TestCase
         $attackString = $xssAttack->getAttackString();
 
         // then
-        assertThat($attackString, is("<script type=\"text/javascript\">\n  if (typeof(window.xssfinder) === \"undefined\") {\n    window.xssfinder = [];\n  }\n  window.xssfinder.push('1');\n</script>"));
+        assertThat($attackString, is("<script type=\"text/javascript\">  if (typeof(window.xssfinder) === \"undefined\") {    window.xssfinder = [];  }  window.xssfinder.push('1');</script>"));
 
     }
 }
