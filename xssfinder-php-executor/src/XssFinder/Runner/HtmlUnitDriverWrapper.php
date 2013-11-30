@@ -46,11 +46,12 @@ class HtmlUnitDriverWrapper implements DriverWrapper
             \WebDriverBy::cssSelector('input[type=text],input[type=search],input[type=password],textarea')
         );
         $inputsToAttacks = array();
+        $xpathFinder = new WebDriverXPathFinder();
         foreach ($elements as $element) {
             /** @var \WebDriverElement $element */
             $xssAttack = $xssGenerator->createXssAttack();
             $element->sendKeys($xssAttack->getAttackString());
-            $inputIdentifier = rand() . $element->getAttribute('name'); //TODO: Derive XPath of $element to use as ID
+            $inputIdentifier = $xpathFinder->getXPath($element);
             $inputsToAttacks[$inputIdentifier] = $xssAttack->getIdentifier();
         }
         return $inputsToAttacks;

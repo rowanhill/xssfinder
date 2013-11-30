@@ -83,6 +83,5 @@ public class WebDriverXPathFinderTest {
 
         // then
         assertThat(xpath, is("//div[@id=\"parentId\"]/div[2]"));
-
     }
 }
