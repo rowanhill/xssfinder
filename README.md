@@ -40,7 +40,8 @@ show up on earlier pages).
 originated and where they were executed.
 
 ### Language Support ###
-TL;DR: Only Java is supported, but wider support is possible.
+TL;DR: Java and PHP are supported (but supporting other languages is possible).
+Java is needed to run XSS Finder regardless of the language of the page objects.
 
 XSS Finder is split in two: a coordinator (responsible for designing
 routes, deciding which page to go to next, recording & reporting on XSS
@@ -54,7 +55,7 @@ the same language. Fortunately, even though the coordinator is written in Java,
 the executor doesn't have to be, as the two communicate via Thrift. If a language
 has Thrift support, an executor can be written for that language.
 
-Currently, however, there is only a Java implementation of the executor.
+Currently, however, there are only Java and PHP implementations of the executor.
 
 Usage (Java)
 ------------
@@ -213,6 +214,8 @@ once the route has finished with `@AfterRoute`.
 
 TODOs
 -----
+1. Move usage docs to Github wiki, and include PHP usage docs
+1. Support @AfterRoute in PHP
 1. Record entirety of route that had error
 1. Pass DriverWrapper to @AfterRoute method
 1. Somehow group / de-duplicate errors that happen on both runs (attack / observe)
@@ -222,7 +225,7 @@ TODOs
 1. Make the reports (lots) prettier.
 1. Add DriverWrappers beyond just HtmlUnitDriver.
 1. Add more lifecycle events (before route, before/after traversal).
-1. Consider annotation inheritance - at a minimum, `@Page` probably wants to be marked as
+1. Consider annotation inheritance in Java - at a minimum, `@Page` probably wants to be marked as
 [`@Inherited`](http://docs.oracle.com/javase/6/docs/api/java/lang/annotation/Inherited.html)
 1. Rethink custom traverser and submitters - perhaps @SubmitAction should take no params, and be paired with
 @TraverseWith for a custom traverser, and the CustomTraverser interface should be expanded to that of CustomSubmitter
