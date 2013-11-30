@@ -1,4 +1,4 @@
 language: java
 jdk:
   - openjdk6
-script: mvn -Djetty.port=8085 clean verify
+script: mvn -Djetty.port=8085 -P travis clean verify
