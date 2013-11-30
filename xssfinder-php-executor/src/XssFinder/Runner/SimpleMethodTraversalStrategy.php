@@ -29,7 +29,11 @@ class SimpleMethodTraversalStrategy implements TraversalStrategy
     {
         if ($method->getNumberOfRequiredParameters() > 0)
         {
-            throw new TUntraversableException();
+            $methodName = $method->getName();
+            $numParams = $method->getNumberOfRequiredParameters();
+            throw new TUntraversableException(array(
+                'message' => "$methodName requires $numParams params - simple method traversal cannot handle this"
+            ));
         }
         $newPage = $method->invoke($page);
         return new TraversalResult($newPage, array());
