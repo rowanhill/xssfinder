@@ -168,6 +168,25 @@ class ExecutorContextTest extends PHPUnit_Framework_TestCase
         assertThat($formCount, is(3));
     }
 
+    function testRenewingSessionIsDelegatedToDriverWrapper()
+    {
+        // when
+        $this->_executorContext->renewSession();
+
+        // then
+        verify($this->_mockDriverWrapper)->renewSession();
+    }
+
+    function testRenewingSessionGetsNewPageInstantiator()
+    {
+        // when
+        $this->_executorContext->renewSession();
+
+        // then
+        // Check the instantiator is got a second time (the first being on construction of the executor context)
+        verify($this->_mockDriverWrapper, 2)->getPageInstantiator();
+    }
+
     /**
      * @param $identifier
      * @return MethodDefinition

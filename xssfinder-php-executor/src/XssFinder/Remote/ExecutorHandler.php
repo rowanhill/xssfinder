@@ -113,5 +113,6 @@ class ExecutorHandler implements ExecutorIf
     public function invokeAfterRouteHandler($rootPageIdentifier)
     {
         // TODO: Implement invokeAfterRouteHandler() method.
+        $this->_executorContext->renewSession();
     }
 }

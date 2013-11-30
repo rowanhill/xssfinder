@@ -59,6 +59,8 @@ class Verify extends JsonApiCall
     public $method = 'GET';
     /** @var UrlMatcher */
     public $urlMatcher = null;
+    /** @var array of HeaderMatcher */
+    public $headers = array();
 
     function toJson()
     {
@@ -66,7 +68,20 @@ class Verify extends JsonApiCall
         {
             throw new \Exception("Url matcher must be specified");
         }
+
         $call = array_merge(array('method' => $this->method), $this->urlMatcher->toArray());
+
+        if (!empty($this->headers)) {
+            $headersArray = array_map(
+                function($headerMatcher) { /** @var $headerMatcher HeaderMatcher */ return $headerMatcher->toArray(); },
+                $this->headers
+            );
+            $headers = array();
+            foreach ($headersArray as $header) {
+                $headers = array_merge($headers, $header);
+            }
+            $call = array_merge($call, array('headers' => $headers));
+        }
         return json_encode($call);
     }
 }
@@ -121,6 +136,21 @@ class UrlMatcher extends JsonApiCallFragment
             throw new \Exception('Matching scheme and URL value must be specified');
         }
         return array($this->matcherScheme => $this->urlValue);
+    }
+}
+
+class HeaderMatcher extends JsonApiCallFragment
+{
+    public $headerName;
+    public $matcherScheme;
+    public $matchedValue;
+
+    public function toArray()
+    {
+        if ($this->headerName == null || $this->matcherScheme == null || $this->matchedValue == null) {
+            throw new \Exception('Header name, matching scheme and header value must be specified');
+        }
+        return array($this->headerName => array($this->matcherScheme => $this->matchedValue));
     }
 }
 
@@ -293,6 +323,26 @@ class VerifyBuilder extends AbstractVerifyBuilder
     {
         $this->_verify->method = 'POST';
         return new VerifyUrlMatcherBuilder($this, $this->_verify);
+    }
+
+    public function withHeader($headerName, $matchedValue)
+    {
+        $headerMatcher = new HeaderMatcher();
+        $headerMatcher->headerName = $headerName;
+        $headerMatcher->matchedValue = $matchedValue;
+        $headerMatcher->matcherScheme = "matches";
+        $this->_verify->headers[] = $headerMatcher;
+        return $this;
+    }
+
+    public function withoutHeader($headerName)
+    {
+        $headerMatcher = new HeaderMatcher();
+        $headerMatcher->headerName = $headerName;
+        $headerMatcher->matcherScheme = "absent";
+        $headerMatcher->matchedValue = true;
+        $this->_verify->headers[] = $headerMatcher;
+        return $this;
     }
 
     public function check()

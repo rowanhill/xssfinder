@@ -10,7 +10,7 @@ class HttpWait
         $serverStarted = false;
         while (microtime(true) - $startTime < $timeoutSecs) {
             try {
-                $headers = get_headers($url, 1);
+                $headers = @get_headers($url, 1);
             } catch (\Exception $e) {
                 continue;
             }
@@ -28,8 +28,10 @@ class HttpWait
         $serverShutDown = false;
         while (microtime(true) - $startTime < $timeoutSecs) {
             try {
-                get_headers($url, 1);
-                continue;
+                if (!@get_headers($url, 1)) {
+                    $serverShutDown = true;
+                    break;
+                }
             } catch (\Exception $e) {
                 $serverShutDown = true;
                 break;

@@ -49,6 +49,8 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
 
         when($this->_mockPageFinderFactory->createPageFinder(self::SOME_NAMESPACE))->return($this->_mockPageFinder);
 
+        // Create a default executor handler with no pages
+        $this->_handler = $this->_createExecutorHandler();
     }
 
     public function testGettingPageDefinitionsIsDelegatedToFinderAndFactoryAndLookupIsSetOnContext()
@@ -74,9 +76,6 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testStartingRouteIsDelegatedToExecutorContext()
     {
-        // given
-        $this->_handler = $this->_createExecutorHandler();
-
         // when
         $this->_handler->startRoute('SomePage');
 
@@ -87,7 +86,6 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
     public function testPuttingXssAttackStringsInInputsIsDelegatedToExecutorContext()
     {
         // given
-        $this->_handler = $this->_createExecutorHandler();
         $expectedResult = array('inputId' => 'attackId');
         when($this->_mockExecutorContext->putXssAttackStringsInInputs())->return($expectedResult);
 
@@ -101,7 +99,6 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
     public function testTraversingMethodIsDelegatedToExecutorContext()
     {
         // given
-        $this->_handler = $this->_createExecutorHandler();
         /** @var MethodDefinition $mockMethodDefinition */
         $mockMethodDefinition = mock('XssFinder\MethodDefinition');
         /** @var TraversalResult $mockTraversalResult */
@@ -121,7 +118,6 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
     public function testGettingCurrentXssIdsIsDelegatedToExecutorContext()
     {
         // given
-        $this->_handler = $this->_createExecutorHandler();
         when($this->_mockExecutorContext->getCurrentXssIds())->return(array('1','2'));
 
         // when
@@ -134,7 +130,6 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
     public function testGettingFormCountIsDelegatedToExecutorContext()
     {
         // given
-        $this->_handler = $this->_createExecutorHandler();
         when($this->_mockExecutorContext->getFormCount())->return(3);
 
         // when
@@ -142,6 +137,15 @@ class ExecutorHandlerTest extends PHPUnit_Framework_TestCase
 
         // then
         assertThat($formCount, is(3));
+    }
+
+    public function testInvokingAfterRouteHandlerRenewsContextSession()
+    {
+        // when
+        $this->_handler->invokeAfterRouteHandler('dummy');
+
+        // then
+        verify($this->_mockExecutorContext)->renewSession();
     }
 
     private function _createExecutorHandler($classNames = array())

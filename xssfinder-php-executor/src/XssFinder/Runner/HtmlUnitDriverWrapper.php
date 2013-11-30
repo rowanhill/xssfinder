@@ -13,9 +13,7 @@ class HtmlUnitDriverWrapper implements DriverWrapper
 
     function __construct()
     {
-        $host = 'http://localhost:4444/wd/hub';
-        $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => 'htmlunit', 'javascriptEnabled' => true);
-        $this->_webDriver = new RemoteWebDriver($host, $capabilities);
+        $this->_webDriver = $this->_createDriver();
     }
 
     /**
@@ -52,7 +50,7 @@ class HtmlUnitDriverWrapper implements DriverWrapper
             /** @var \WebDriverElement $element */
             $xssAttack = $xssGenerator->createXssAttack();
             $element->sendKeys($xssAttack->getAttackString());
-            $inputIdentifier = $element->getAttribute('name'); //TODO: Derive XPath of $element to use as ID
+            $inputIdentifier = rand() . $element->getAttribute('name'); //TODO: Derive XPath of $element to use as ID
             $inputsToAttacks[$inputIdentifier] = $xssAttack->getIdentifier();
         }
         return $inputsToAttacks;
@@ -68,7 +66,9 @@ class HtmlUnitDriverWrapper implements DriverWrapper
         $numberOfXssIds = $this->_webDriver->executeScript('return (window.xssfinder || []).length');
         $xssIds = array();
         for ($i = 0; $i < $numberOfXssIds; $i++) {
-            $xssIds[] = $this->_webDriver->executeScript("return window.xssfinder[$i]");
+            // Thrift takes the _keys_ of the array when serialising a 'set', so we use the xss attack ID as the key.
+            $xssId = $this->_webDriver->executeScript("return window.xssfinder[$i]");
+            $xssIds[$xssId] = true;
         }
         return $xssIds;
     }
@@ -86,6 +86,14 @@ class HtmlUnitDriverWrapper implements DriverWrapper
      */
     function renewSession()
     {
-        // TODO: Implement renewSession() method.
+        $this->_webDriver->close();
+        $this->_webDriver = $this->_createDriver();
+    }
+
+    private function _createDriver()
+    {
+        $host = 'http://localhost:4444/wd/hub';
+        $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => 'htmlunit', 'javascriptEnabled' => true);
+        return new RemoteWebDriver($host, $capabilities);
     }
 }

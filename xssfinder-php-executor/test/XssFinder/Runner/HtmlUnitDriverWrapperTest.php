@@ -22,22 +22,18 @@ class HtmlUnitDriverWrapperTest extends \PHPUnit_Framework_TestCase
     {
         assertThat(\XssFinder\TestHelper\Wiremock::startWiremockServer(), is(true));
         self::$_wiremock = new Wiremock(8080);
+        assertThat(Selenium::startSeleniumServer(), is(true));
     }
 
     public static function tearDownAfterClass()
     {
         assertThat(\XssFinder\TestHelper\Wiremock::stopWiremockServer(), is(true));
+        assertThat(Selenium::stopSeleniumServer(), is(true));
     }
 
     public function setUp()
     {
         self::$_wiremock->reset();
-        assertThat(Selenium::startSeleniumServer(), is(true));
-    }
-
-    public function tearDown()
-    {
-        assertThat(Selenium::stopSeleniumServer(), is(true));
     }
 
     public function testCreatesWebDriverPageInstantiator()
@@ -96,7 +92,7 @@ class HtmlUnitDriverWrapperTest extends \PHPUnit_Framework_TestCase
         assertThat($params, hasEntry('textarea', 'xss'));
     }
 
-    public function testCurrentXssIdsAreGotFromJsArrayVar()
+    public function testCurrentXssIdsAreGotFromJsArrayVarAndReturnedAsArrayKeys()
     {
         // given
         self::$_wiremock->stubFor()->get()->url('/')->willReturnResponse()->withBodyFile(self::INDEX_PAGE)->setUp();
@@ -107,7 +103,7 @@ class HtmlUnitDriverWrapperTest extends \PHPUnit_Framework_TestCase
         $currentXssIds = $driver->getCurrentXssIds();
 
         // then
-        assertThat($currentXssIds, is(array('123', '456')));
+        assertThat(array_keys($currentXssIds), is(array('123', '456')));
     }
 
     public function testCurrentXssIdsReturnsEmptyArrayIfJsVarNotDefined()
@@ -136,6 +132,41 @@ class HtmlUnitDriverWrapperTest extends \PHPUnit_Framework_TestCase
 
         // then
         assertThat($formCount, is(1));
+    }
+
+    public function testBrowserSessionIsMaintainedAcrossRequests()
+    {
+        // given
+        self::$_wiremock->stubFor()->get()->url('/')->willReturnResponse()
+            ->withBodyFile(self::INDEX_PAGE)
+            ->withHeader("Set-Cookie", "TestCookie=SomeValue;Path=/\n")
+            ->setUp();
+        $driver = new HtmlUnitDriverWrapper();
+        $driver->visit('http://localhost:8080/');
+
+        // when
+        $driver->visit('http://localhost:8080/cookie');
+
+        // then
+        self::$_wiremock->verify()->get()->url('/cookie')->withHeader('Cookie','TestCookie=SomeValue')->check();
+    }
+
+    public function testRenewingSessionClosesBrowserSessionAndStartsNewOne()
+    {
+        // given
+        self::$_wiremock->stubFor()->get()->url('/')->willReturnResponse()
+            ->withBodyFile(self::INDEX_PAGE)
+            ->withHeader("Set-Cookie", "TestCookie=SomeValue;Path=/\n")
+            ->setUp();
+        $driver = new HtmlUnitDriverWrapper();
+        $driver->visit('http://localhost:8080/');
+
+        // when
+        $driver->renewSession();
+        $driver->visit('http://localhost:8080/cookie');
+
+        // then
+        self::$_wiremock->verify()->get()->url('/cookie')->withoutHeader('Cookie')->check();
     }
 
     private function _clickSubmit($driver)

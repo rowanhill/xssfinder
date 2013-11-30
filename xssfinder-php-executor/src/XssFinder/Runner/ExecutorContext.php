@@ -92,4 +92,11 @@ class ExecutorContext
     {
         return $this->_driverWrapper->getFormCount();
     }
+
+    public function renewSession()
+    {
+        $this->_driverWrapper->renewSession();
+        $this->_pageInstantiator = $this->_driverWrapper->getPageInstantiator();
+        $this->_currentPage = null;
+    }
 }
