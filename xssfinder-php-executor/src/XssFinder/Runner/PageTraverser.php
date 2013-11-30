@@ -38,11 +38,16 @@ class PageTraverser
             $this->_customSubmitStrategy,
             $this->_simpleMethodStrategy
         );
-        foreach ($orderedStrategies as $strategy) {
-            /** @var TraversalStrategy $strategy */
-            if ($strategy->canSatisfyMethod($method, $traversalMode)) {
-                return $strategy->traverse($page, $method);
+        try {
+            foreach ($orderedStrategies as $strategy) {
+                /** @var TraversalStrategy $strategy */
+                if ($strategy->canSatisfyMethod($method, $traversalMode)) {
+                    return $strategy->traverse($page, $method);
+                }
             }
+        } catch (\Exception $e) {
+            $msg = $e->getMessage();
+            throw new TUntraversableException(array('message' => "Error traversing method: $msg"));
         }
         throw new TUntraversableException(array('message' => 'Cannot traverse method'));
     }

@@ -84,6 +84,19 @@ class PageTraverserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \XssFinder\TUntraversableException
+     */
+    function testThriftExceptionThrownIfTraversingThrowsException()
+    {
+        // given
+        when($this->_mockMethodStrategy->canSatisfyMethod($this->_method, $this->_traversalMode))->return(true);
+        when($this->_mockMethodStrategy->traverse($this->_rootPage, $this->_method))->throw(new \Exception());
+
+        // when
+        $this->_traverser->traverse($this->_rootPage, $this->_method, $this->_traversalMode);
+    }
+
+    /**
      * @param TraversalStrategy $mockStrategy
      * @param int $traversalMode
      * @return TraversalResult
