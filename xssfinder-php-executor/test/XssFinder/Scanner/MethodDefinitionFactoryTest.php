@@ -96,6 +96,58 @@ class MethodDefinitionFactoryTest extends \PHPUnit_Framework_TestCase
         assertThat($methodDefinition->parameterised, equalTo(false));
     }
 
+    public function testDefinitionIsNotSubmitIfMethodDoesNotHaveSubmitActionAnnotation()
+    {
+        // given
+        $method = $this->_getMethod(self::SOME_PAGE, 'goToSomePage');
+        when($this->_mockReflectionHelper->isSubmitAnnotated($method))->return(false);
+
+        // when
+        $methodDefinition = $this->_factory->createMethodDefinition($method);
+
+        // then
+        assertThat($methodDefinition->submitAnnotated, equalTo(false));
+    }
+
+    public function testDefinitionIsSubmitIfMethodHasSubmitActionAnnotation()
+    {
+        // given
+        $method = $this->_getMethod(self::SOME_PAGE, 'submitToSomePage');
+        when($this->_mockReflectionHelper->isSubmitAnnotated($method))->return(true);
+
+        // when
+        $methodDefinition = $this->_factory->createMethodDefinition($method);
+
+        // then
+        assertThat($methodDefinition->submitAnnotated, equalTo(true));
+    }
+
+    public function testDefinitionIsNotCustomTraverseAnnotatedIfMethodDoesNotHaveTraverseWithAnnotation()
+    {
+        // given
+        $method = $this->_getMethod(self::SOME_PAGE, 'goToSomePage');
+        when($this->_mockReflectionHelper->isTraverseWithAnnotated($method))->return(false);
+
+        // when
+        $methodDefinition = $this->_factory->createMethodDefinition($method);
+
+        // then
+        assertThat($methodDefinition->customTraversed, equalTo(false));
+    }
+
+    public function testDefinitionIsCustomTraverseAnnotatedIfMethodHasTraverseWithAnnotation()
+    {
+        // given
+        $method = $this->_getMethod(self::SOME_PAGE, 'submitToSomePage');
+        when($this->_mockReflectionHelper->isTraverseWithAnnotated($method))->return(true);
+
+        // when
+        $methodDefinition = $this->_factory->createMethodDefinition($method);
+
+        // then
+        assertThat($methodDefinition->customTraversed, equalTo(true));
+    }
+
     /**
      * @param $className
      * @param $methodName
@@ -128,4 +180,11 @@ class SomePage
      * @return SomePage
      */
     public function goToSomePageWithDefaultArgs($arg = null) { return new SomePage(); }
+
+    /**
+     * @submitAction
+     * @traverseWith
+     * @return SomePage
+     */
+    public function submitToSomePage() { return new SomePage(); }
 }

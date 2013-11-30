@@ -24,6 +24,8 @@ class MethodDefinitionFactory
         $methodDefinition->identifier = $method->getName();
         $methodDefinition->returnTypeIdentifier = $this->_reflectionHelper->getReturnType($method);
         $methodDefinition->owningTypeIdentifier = '\\' . $method->getDeclaringClass()->getName();
+        $methodDefinition->submitAnnotated = $this->_reflectionHelper->isSubmitAnnotated($method);
+        $methodDefinition->customTraversed = $this->_reflectionHelper->isTraverseWithAnnotated($method);
         $methodDefinition->parameterised = $method->getNumberOfRequiredParameters() > 0;
         return $methodDefinition;
     }

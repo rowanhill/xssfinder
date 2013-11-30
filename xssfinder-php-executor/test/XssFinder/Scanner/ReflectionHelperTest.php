@@ -49,6 +49,62 @@ class ReflectionHelperTest extends PHPUnit_Framework_TestCase
         //then
         assertThat($returnClassName, equalTo('\ReflectionHelperTest_SomeObject'));
     }
+
+    public function testMethodIsSubmitAnnotatedIfMethodHasSubmitActionAnnotation()
+    {
+        // given
+        $reflectionClass = new \ReflectionClass('\ReflectionHelperTest\TestObjects\SomeObject');
+        $method = $reflectionClass->getMethod('submit');
+        $reflectionHelper = new ReflectionHelper();
+
+        // when
+        $isSubmit = $reflectionHelper->isSubmitAnnotated($method);
+
+        // then
+        assertThat($isSubmit, equalTo(true));
+    }
+
+    public function testMethodIsNotSubmitAnnotatedIfMethodDoesNotHaveSubmitActionAnnotation()
+    {
+        // given
+        $reflectionClass = new \ReflectionClass('\ReflectionHelperTest\TestObjects\SomeObject');
+        $method = $reflectionClass->getMethod('getSomeObjectSimple');
+        $reflectionHelper = new ReflectionHelper();
+
+        // when
+        $isSubmit = $reflectionHelper->isSubmitAnnotated($method);
+
+        // then
+        assertThat($isSubmit, equalTo(false));
+    }
+
+    public function testMethodIsTraverserAnnotatedIfMethodHasTraverseWithAnnotation()
+    {
+        // given
+        $reflectionClass = new \ReflectionClass('\ReflectionHelperTest\TestObjects\SomeObject');
+        $method = $reflectionClass->getMethod('submit');
+        $reflectionHelper = new ReflectionHelper();
+
+        // when
+        $isCustomTraversed = $reflectionHelper->isTraverseWithAnnotated($method);
+
+        // then
+        assertThat($isCustomTraversed, equalTo(true));
+    }
+
+    public function testMethodIsNotTraverserAnnotatedIfMethodDoesNotHaveTraverseWithAnnotation()
+    {
+        // given
+        $reflectionClass = new \ReflectionClass('\ReflectionHelperTest\TestObjects\SomeObject');
+        $method = $reflectionClass->getMethod('getSomeObjectSimple');
+        $reflectionHelper = new ReflectionHelper();
+
+        // when
+        $isCustomTraversed = $reflectionHelper->isTraverseWithAnnotated($method);
+
+        // then
+        assertThat($isCustomTraversed, equalTo(false));
+    }
 }
 
 namespace ReflectionHelperTest\TestObjects;
@@ -69,4 +125,10 @@ class SomeObject
      * @return \stdClass
      */
     public function getStdClass() { return new \stdClass(); }
+
+    /**
+     * @submitAction
+     * @traverseWith
+     */
+    public function submit() { }
 }
