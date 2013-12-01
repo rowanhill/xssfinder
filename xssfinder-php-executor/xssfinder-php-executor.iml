@@ -18,7 +18,9 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-token-stream" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit-mock-objects" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/rowanhill/wiremock-php" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/yaml" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/wiremock-php/wiremock-php" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -37,6 +39,7 @@
           <root url="file://$MODULE_DIR$/vendor/composer" />
           <root url="file://$MODULE_DIR$/vendor/facebook/webdriver" />
           <root url="file://$MODULE_DIR$/vendor/mindplay/annotations" />
+          <root url="file://$MODULE_DIR$/vendor/wiremock-php/wiremock-php" />
           <root url="file://$MODULE_DIR$/vendor/hafriedlander/phockito" />
         </CLASSES>
         <JAVADOC />
@@ -53,6 +56,7 @@
           <root url="file://$MODULE_DIR$/vendor/composer" />
           <root url="file://$MODULE_DIR$/vendor/facebook/webdriver" />
           <root url="file://$MODULE_DIR$/vendor/mindplay/annotations" />
+          <root url="file://$MODULE_DIR$/vendor/wiremock-php/wiremock-php" />
           <root url="file://$MODULE_DIR$/vendor/hafriedlander/phockito" />
         </SOURCES>
       </library>
