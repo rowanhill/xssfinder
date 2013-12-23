@@ -230,3 +230,7 @@ TODOs
 1. Rethink custom traverser and submitters - perhaps @SubmitAction should take no params, and be paired with
 @TraverseWith for a custom traverser, and the CustomTraverser interface should be expanded to that of CustomSubmitter
 (and CustomSubmitter should be dropped)?
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/rowanhill/xssfinder/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
